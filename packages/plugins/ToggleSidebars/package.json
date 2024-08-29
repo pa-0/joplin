@@ -23,8 +23,8 @@
     "tar": "6.1.11",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.3",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
     "yargs": "16.2.0"
   }
 }
