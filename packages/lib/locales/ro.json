@@ -65,6 +65,9 @@
 	"%s is not optimised for synchronising many small files so your initial synchronisation will be slow.": [
 		"%s nu este optimizat pentru sincronizarea multor fișiere mici, astfel încât sincronizarea inițială va fi lentă."
 	],
+	"%s tab opened": [
+		""
+	],
 	"%s: %d": [
 		"%s: %d"
 	],
@@ -107,6 +110,9 @@
 	"(In plugin: %s)": [
 		"(În plugin: %s)"
 	],
+	"(level %d)": [
+		""
+	],
 	"(None)": [
 		"(Nimic)"
 	],
@@ -139,6 +145,9 @@
 	],
 	"A5": [
 		"A5"
+	],
+	"About": [
+		""
 	],
 	"About Joplin": [
 		"Despre Joplin"
@@ -188,6 +197,9 @@
 	"Add recipient:": [
 		"Adăugați destinatar:"
 	],
+	"Add tag %s to note": [
+		""
+	],
 	"Add title": [
 		"Adăugați titlu"
 	],
@@ -209,11 +221,17 @@
 	"All data, including notes, notebooks and tags will be permanently deleted.": [
 		"Toate datele, inclusiv notițele, caietele de notițe și etichetele vor fi șterse definitiv."
 	],
+	"All item sync failures have been marked as \"ignored\".": [
+		""
+	],
 	"All notes": [
 		"Toate notițele"
 	],
 	"All potential ports are in use - please report the issue at %s": [
 		"Toate porturile potențiale sunt în uz - vă rugăm să raportați problema la %s"
+	],
+	"Allows debugging mobile plugins. See %s for details.": [
+		""
 	],
 	"Also displays unset and hidden config variables.": [
 		"Afișează, de asemenea, variabile de configurare nesetate și ascunse."
@@ -226,6 +244,9 @@
 	],
 	"Always ask": [
 		"Mereu întrebați"
+	],
+	"Always open %s files without asking.": [
+		""
 	],
 	"Always resize": [
 		"Mereu redimensionați"
@@ -244,6 +265,9 @@
 	],
 	"An update is available, do you want to download it now?": [
 		"Este disponibilă o nouă actualizare, doriți să o descărcați acum?"
+	],
+	"Android API level: %d": [
+		""
 	],
 	"Any email sent to this address will be converted into a note and added to your collection. The note will be saved into the Inbox notebook": [
 		"Orice e-mail trimis la această adresă va fi convertit într-o notă și va fi adăugat la colecția dumneavoastră. Nota va fi salvată în carnețelul Inbox"
@@ -268,6 +292,9 @@
 	],
 	"Aritim Dark": [
 		"Aritim Dark"
+	],
+	"At present, Joplin Web can only be open in one tab at a time. Please close the other instance of Joplin.": [
+		""
 	],
 	"Attach": [
 		"Atașati"
@@ -314,11 +341,17 @@
 	"Auto-add disabled accounts for deletion": [
 		"Adăugarea automată a conturilor dezactivate pentru ștergere"
 	],
-	"Auto-pair braces, parenthesis, quotations, etc.": [
+	"Auto-pair braces, parentheses, quotations, etc.": [
 		"Auto-perechere de paranteze, paranteze, ghilimele etc."
+	],
+	"Autocomplete Markdown and HTML": [
+		""
 	],
 	"Automatically check for updates": [
 		"Verificarea automată a actualizărilor"
+	],
+	"Automatically delete notes in the trash after a number of days": [
+		""
 	],
 	"Automatically switch theme to match system theme": [
 		"Comutați automat tema pentru a se potrivi cu tema sistemului"
@@ -329,8 +362,8 @@
 	"Basic": [
 		"Basic"
 	],
-	"Biometric unlock is not setup on the device. Please set it up in order to unlock Joplin. If the device is on lockout, consider switching it off and on to reset biometrics scanning.": [
-		"Deblocarea biometrică nu este configurată pe dispozitiv. Vă rugăm să îl configurați pentru a debloca Joplin. Dacă dispozitivul este blocat, luați în considerare oprirea și pornirea acestuia pentru a reseta scanarea biometrică."
+	"Beta": [
+		""
 	],
 	"Bold": [
 		"Bold"
@@ -343,6 +376,12 @@
 	],
 	"Bulleted List": [
 		"Listă cu puncte"
+	],
+	"by %s": [
+		""
+	],
+	"by word": [
+		""
 	],
 	"Can Share": [
 		"Se poate partaja"
@@ -419,11 +458,17 @@
 	"Change language": [
 		"Schimbați limba"
 	],
+	"Change shortcut for \"%s\"": [
+		""
+	],
 	"Characters": [
 		"Caractere"
 	],
 	"Characters excluding spaces": [
 		"Caractere cu excepția spațiilor libere"
+	],
+	"Check elements to display in the toolbar": [
+		""
 	],
 	"Check for updates...": [
 		"Verificați actualizările..."
@@ -467,11 +512,20 @@
 	"Close dropdown": [
 		"Închideți meniul derulant"
 	],
+	"Close side menu": [
+		""
+	],
 	"Close the application, then delete your profile in \"%s\", and start the application again. Make sure you create a backup first by exporting all your notes as JEX.": [
 		""
 	],
 	"Close Window": [
 		"Închide fereastra"
+	],
+	"Cmd-click to open": [
+		""
+	],
+	"Cmd-click to open: %s": [
+		""
 	],
 	"Code": [
 		"Cod"
@@ -488,8 +542,8 @@
 	"Collaborate on notebooks with others": [
 		"Colaborați cu alte persoane la notebook-uri"
 	],
-	"Collapse": [
-		"Restrânge"
+	"Collapsed, press space to expand.": [
+		""
 	],
 	"Coming alarms": [
 		"Alarmele următoare"
@@ -518,8 +572,14 @@
 	"Completed decryption.": [
 		"Decriptare completă."
 	],
+	"Completed with warnings:\n%s": [
+		""
+	],
 	"Completed: %s (%s)": [
 		"Completat: %s (%s)"
+	],
+	"completion date": [
+		""
 	],
 	"Compress old changes": [
 		"Comprimarea modificărilor vechi"
@@ -685,6 +745,12 @@
 	"Creating report...": [
 		"Se creează raport..."
 	],
+	"Ctrl-click to open": [
+		""
+	],
+	"Ctrl-click to open: %s": [
+		""
+	],
 	"Current version is up-to-date.": [
 		"Versiunea curentă este actualizată."
 	],
@@ -714,9 +780,6 @@
 	],
 	"Dashboard": [
 		"Dashboard"
-	],
-	"Database v%s": [
-		"Baza de date v%s"
 	],
 	"Date": [
 		"Data"
@@ -763,23 +826,14 @@
 	"Delete local data and re-download from sync target": [
 		"Ștergeți datele locale și descărcați din nou de la destinația de sincronizare"
 	],
+	"Delete model and re-download?\nThis cannot be undone.": [
+		""
+	],
 	"Delete note": [
 		"Ștergeți notița"
 	],
-	"Delete note \"%s\"?": [
-		"Ștergeți notițele \"%s\"?"
-	],
-	"Delete note?": [
-		"Ștergeți notița?"
-	],
 	"Delete notebook": [
 		"Ștergeți notebook-ul"
-	],
-	"Delete notebook \"%s\"?\n\nAll notes and sub-notebooks within this notebook will also be deleted.": [
-		"Ștergeți agenda \"%s\"?\n\nToate notițele și sub-notițele în această agendă vor fi șterse."
-	],
-	"Delete notebook? All notes and sub-notebooks within this notebook will also be deleted.": [
-		"Ștergeți agenda? Toate notițele și sub-notițele din această agendă vor fi șterse."
 	],
 	"Delete plugin \"%s\"?": [
 		"Ștergeți plugin \"%s\"?"
@@ -793,9 +847,6 @@
 	"Delete the Inbox notebook?\n\nIf you delete the inbox notebook, any email that's recently been sent to it may be lost.": [
 		"Ștergeți caietul Inbox?\n\nDacă ștergeți caietul de notițe din Inbox, orice e-mail trimis recent în acesta poate fi pierdut."
 	],
-	"Delete these %d notes?": [
-		"Ștergeți aceste %d notițe?"
-	],
 	"Delete this invitation? The recipient will no longer have access to this shared notebook.": [
 		"Ștergeți această invitație? Destinatarul nu va mai avea acces la acest notebook partajat."
 	],
@@ -807,6 +858,9 @@
 	],
 	"Deleted remote items: %d.": [
 		"Elemente șterse de la distanță: %d."
+	],
+	"Deletes notes permanently, skipping the trash.": [
+		""
 	],
 	"Deletes the given notebook.": [
 		"Șterge agenda."
@@ -825,6 +879,9 @@
 	],
 	"Detailed": [
 		"Detaliat"
+	],
+	"Dev": [
+		""
 	],
 	"Directory": [
 		"Directoriu"
@@ -943,6 +1000,9 @@
 	"Dropbox Login": [
 		"Autentificare Dropbox"
 	],
+	"Due": [
+		""
+	],
 	"Duplicate": [
 		"Duplicați"
 	],
@@ -960,6 +1020,9 @@
 	],
 	"Edit in external editor": [
 		"Editați într-un editor extern"
+	],
+	"Edit in new window": [
+		""
 	],
 	"Edit link": [
 		"Editați link-ul"
@@ -1021,6 +1084,9 @@
 	"emphasised text": [
 		"text accentuat"
 	],
+	"Empty trash": [
+		""
+	],
 	"Enable": [
 		"Activați"
 	],
@@ -1047,6 +1113,9 @@
 	],
 	"Enable encryption": [
 		"Activați criptarea"
+	],
+	"Enable file:// URLs for images and videos": [
+		""
 	],
 	"Enable footnotes": [
 		"Activați notele de subsol"
@@ -1104,6 +1173,9 @@
 	],
 	"Enabled": [
 		"Activat"
+	],
+	"Enables Markdown list continuation, auto-closing HTML tags, and other markup autocompletions.": [
+		""
 	],
 	"Enabling encryption means *all* your notes and attachments are going to be re-synchronised and sent encrypted to the sync target.": [
 		"Activarea criptării înseamnă că *toate* notele și atașamentele dvs. vor fi resincronizate și trimise criptate către ținta de sincronizare."
@@ -1171,8 +1243,8 @@
 	"Exits the application.": [
 		"Ieșire din aplicație."
 	],
-	"Expand": [
-		"Extindeți"
+	"Expanded, press space to collapse.": [
+		""
 	],
 	"Export": [
 		"Exportați"
@@ -1191,9 +1263,6 @@
 	],
 	"Export profile": [
 		"Exportați profilul"
-	],
-	"Export your data": [
-		"Exportați datele dumneavoastră"
 	],
 	"Exported successfully!": [
 		"Exportat cu succes!"
@@ -1243,9 +1312,6 @@
 	"Filter tags": [
 		"Filtrează etichetele"
 	],
-	"Find and replace": [
-		"Găsiți și înlocuiți"
-	],
 	"Find: ": [
 		"Găsiți: "
 	],
@@ -1267,8 +1333,8 @@
 	"Focus title": [
 		"Focus titlu"
 	],
-	"Folders": [
-		"Fișiere"
+	"Follow link": [
+		""
 	],
 	"For debugging purpose only: export your profile to an external SD card.": [
 		"Numai în scop de depanare: exportați profilul pe un card SD extern."
@@ -1287,9 +1353,6 @@
 	],
 	"Force path style": [
 		"Forțați path style"
-	],
-	"Formatting": [
-		"Formatare"
 	],
 	"Forward": [
 		"Forward"
@@ -1329,6 +1392,15 @@
 	"Gets or sets a config value. If [value] is not provided, it will show the value of [name]. If neither [name] nor [value] is provided, it will list the current configuration.": [
 		"Obține sau setează o valoare de configurare. Dacă [valoare] nu este furnizată, va afișa valoarea [nume]. Dacă nu este furnizat nici [nume], nici [valoare], va afișa configurația curentă."
 	],
+	"go": [
+		""
+	],
+	"Go back": [
+		""
+	],
+	"Go to line": [
+		""
+	],
 	"Go to source URL": [
 		"Accesați sursa URL"
 	],
@@ -1338,17 +1410,20 @@
 	"Grant authorisation": [
 		"Acordarea autorizării"
 	],
+	"Have you authorised the application login in the above URL?": [
+		""
+	],
 	"Header %d": [
 		"Header %d"
-	],
-	"Headers": [
-		"Headers"
 	],
 	"Heading": [
 		"Titlu"
 	],
 	"Help": [
 		"Ajutor"
+	],
+	"Here's what we do to make plugins safer:": [
+		""
 	],
 	"Hermes enabled: %d": [
 		"Hermes activat: %d"
@@ -1370,9 +1445,6 @@
 	],
 	"Hide keyboard": [
 		"Ascundeți tastatura"
-	],
-	"Hide more actions": [
-		"Ascundeți mai multe acțiuni"
 	],
 	"Highlight": [
 		"Highlight"
@@ -1404,6 +1476,9 @@
 	"Idle": [
 		"Idee"
 	],
+	"If you have already authorised, please wait for the application to sync to Joplin Cloud.": [
+		""
+	],
 	"Ignore": [
 		"Ignore"
 	],
@@ -1415,6 +1490,15 @@
 	],
 	"Import": [
 		"Importați"
+	],
+	"Import failed. Make sure a JEX file was selected.\nDetails: %s": [
+		""
+	],
+	"Import from JEX": [
+		""
+	],
+	"Import notes from a JEX (Joplin Export) file.": [
+		""
 	],
 	"Importing from \"%s\" as \"%s\" format. Please wait...": [
 		"Se exportă către \"%s\" în format \"%s\". Vă rugăm să așteptați..."
@@ -1452,6 +1536,9 @@
 	"In: %s": [
 		"În: %s"
 	],
+	"Incompatible": [
+		""
+	],
 	"Increase indent level": [
 		"Creșteți nivelul de indentare"
 	],
@@ -1460,6 +1547,9 @@
 	],
 	"Indent more": [
 		"Indentați mai mult"
+	],
+	"Info": [
+		""
 	],
 	"Information": [
 		"Informație"
@@ -1521,20 +1611,14 @@
 	"Items that cannot be synchronised": [
 		"Elementele nu pot fi sincronizați"
 	],
-	"Join us on Twitter": [
-		"Alăturați-vă nouă pe Twitter"
-	],
 	"Joplin can synchronise your notes using various providers. Select one from the list below.": [
 		"Joplin vă poate sincroniza notițele folosind diverși furnizori. Selectați unul din lista de mai jos."
 	],
 	"Joplin Cloud": [
 		"Joplin Cloud"
 	],
-	"Joplin Cloud email": [
-		"Joplin Cloud email"
-	],
-	"Joplin Cloud password": [
-		"Joplin Cloud parolă"
+	"Joplin doesn't recognise the %s extension. Opening this file could be dangerous. What would you like to do?": [
+		""
 	],
 	"Joplin Export Directory": [
 		"Joplin Export Directory"
@@ -1569,9 +1653,6 @@
 	"Joplin's own sync service. Also gives access to Joplin-specific features such as publishing notes or collaborating on notebooks with others.": [
 		"Serviciu de sincronizare al lui Joplin. Oferă, de asemenea, acces la caracteristici specifice Joplin, cum ar fi publicarea de notițe sau colaborarea cu alte persoane pe notebook-uri."
 	],
-	"KaTeX": [
-		"KaTeX"
-	],
 	"Keep note history for": [
 		"Păstrați istoricul notițelor pentru"
 	],
@@ -1605,6 +1686,9 @@
 	"Later": [
 		"Mai târziu"
 	],
+	"Latitude": [
+		""
+	],
 	"Layout": [
 		"Layout"
 	],
@@ -1626,6 +1710,9 @@
 	"Light": [
 		"Light"
 	],
+	"Like any software you install, plugins can potentially cause security issues or data loss.": [
+		""
+	],
 	"Lines": [
 		"Linii"
 	],
@@ -1643,14 +1730,8 @@
 	"Link text": [
 		"Link text"
 	],
-	"Links with protocol \"%s\" are not supported": [
-		"Legăturile cu protocolul “%s” nu sunt acceptate"
-	],
 	"List item": [
 		"Listați item"
-	],
-	"Lists": [
-		"Liste"
 	],
 	"Loaded": [
 		"Încărcat"
@@ -1667,12 +1748,6 @@
 	"Log": [
 		"Log"
 	],
-	"Login": [
-		"Login"
-	],
-	"Login below.": [
-		"Autentificați-vă mai jos."
-	],
 	"Login with Dropbox": [
 		"Autentificați-vă cu Dropbox"
 	],
@@ -1684,6 +1759,9 @@
 	],
 	"Logs, profiles, sync status": [
 		"Locuri, profiluri, stare de sincronizare"
+	],
+	"Longitude": [
+		""
 	],
 	"Make a donation": [
 		"Faceți o donație"
@@ -1733,6 +1811,12 @@
 	"Master password:": [
 		"Parola master:"
 	],
+	"match case": [
+		""
+	],
+	"Math": [
+		""
+	],
 	"Max concurrent connections": [
 		"Conexiuni maxime simultane"
 	],
@@ -1774,6 +1858,9 @@
 	],
 	"More than one item match \"%s\". Please narrow down your query.": [
 		"Mai multe elemente se potrivesc cu „%s\". Vă rugăm să restrângeți interogarea."
+	],
+	"Most plugins have source code available for review on the plugin website.": [
+		""
 	],
 	"Move %d notes to notebook \"%s\"?": [
 		"Mutați %d notițe în caietul de notițe \"%s\"?"
@@ -1823,6 +1910,9 @@
 	"New version: %s": [
 		"Versiune nouă:% s"
 	],
+	"next": [
+		""
+	],
 	"Next match": [
 		"Next match"
 	],
@@ -1847,8 +1937,8 @@
 	"No active notebook.": [
 		"Niciun caiet de notițe activ."
 	],
-	"No item with ID %s": [
-		"Niciun item cu ID-ul %s"
+	"No new invitations": [
+		""
 	],
 	"No notebook has been specified.": [
 		"Niciun caiet de notițe nu a fost specificat."
@@ -1858,6 +1948,9 @@
 	],
 	"No notes in here. Create one by clicking on \"New note\".": [
 		"Nu aveți niciun caiet de notițe creat. Creați unul făcând click pe “Notiță nouă”."
+	],
+	"No plugins are installed.": [
+		""
 	],
 	"No resources!": [
 		"Fără resurse!"
@@ -1973,6 +2066,9 @@
 	"Numbered List": [
 		"Listă numerotată"
 	],
+	"OCR: Clear cache and re-download language data files": [
+		""
+	],
 	"OK": [
 		"OK"
 	],
@@ -1981,6 +2077,9 @@
 	],
 	"On %s: %s": [
 		"Pe %s: %s"
+	],
+	"on line": [
+		""
 	],
 	"One of your master keys use an obsolete encryption method.": [
 		"Una dintre cheile dvs. master utilizează o metodă de criptare învechită."
@@ -2027,9 +2126,6 @@
 	"Options": [
 		"Opțiuni"
 	],
-	"Or create an account.": [
-		"Sau creați-vă un cont."
-	],
 	"Ordered list": [
 		"Listă ordonată"
 	],
@@ -2075,9 +2171,6 @@
 	"Permission needed": [
 		"Permisiune necesară"
 	],
-	"Permission to use camera": [
-		"Permisiunea de a utliza camera"
-	],
 	"Please click on \"%s\" to proceed, or set the passwords in the \"%s\" list below.": [
 		"Vă rugăm să faceți clic pe “%s” pentru a continua, sau să setați parolele din lista “%s” de mai jos."
 	],
@@ -2111,20 +2204,26 @@
 	"Please specify the notebook where the notes should be imported to.": [
 		"Vă rugăm să specificați notebook-ul în care trebuie importate notițele."
 	],
-	"Please upgrade Joplin to use this plugin": [
-		"Vă rugăm să actualizați Joplin pentru a utiliza acest plugin"
-	],
 	"Please wait for all attachments to be downloaded and decrypted. You may also switch to %s to edit the note.": [
 		"Vă rugăm să așteptați descărcarea și decriptarea tuturor atașamentelor. De asemenea, puteți comuta la %s pentru a edita notița."
 	],
 	"Please wait...": [
 		"Vă rugăm să așteptați..."
 	],
+	"Plugin repository failed to load": [
+		""
+	],
 	"Plugin tools": [
 		"Instrumente Plugin"
 	],
+	"Plugin WebView debugging": [
+		""
+	],
 	"Plugins": [
 		"Plugin"
+	],
+	"Plugins extend Joplin with features that are not present by default. Plugins can extend Joplin's editor, viewer, and more.": [
+		""
 	],
 	"Portrait": [
 		"Portrait"
@@ -2147,6 +2246,12 @@
 	"Preferred light theme": [
 		"Tema light preferată"
 	],
+	"Preferred voice typing provider": [
+		""
+	],
+	"Preserve colours when pasting text in Rich Text Editor": [
+		""
+	],
 	"Press Ctrl+D or type \"exit\" to exit the application": [
 		"Apăsați Ctrl+D ori scrieți \"exit\" pentru a ieși din aplicație"
 	],
@@ -2158,6 +2263,9 @@
 	],
 	"Press to set the decryption password.": [
 		"Apăsați pentru a seta parola de decriptare."
+	],
+	"previous": [
+		""
 	],
 	"Previous match": [
 		""
@@ -2185,6 +2293,9 @@
 	],
 	"Process user deletions": [
 		"Procesarea ștergerilor de utilizator"
+	],
+	"Processing": [
+		""
 	],
 	"Profile": [
 		"Profil"
@@ -2227,6 +2338,9 @@
 	],
 	"Quit": [
 		"Ieșiți"
+	],
+	"Re-download model": [
+		""
 	],
 	"Re-encrypt data": [
 		"Re-criptați datele"
@@ -2303,6 +2417,21 @@
 	"Replace: ": [
 		"Înlocuiți: "
 	],
+	"replaced $ matches": [
+		""
+	],
+	"replaced match on line $": [
+		""
+	],
+	"Report an issue": [
+		""
+	],
+	"Report any issues concerning the plugin.": [
+		""
+	],
+	"Report fraudulent plugin": [
+		""
+	],
 	"Reset application layout": [
 		"Resetarea aspectului aplicației"
 	],
@@ -2330,6 +2459,9 @@
 	"Restored Notes": [
 		"Notițe restabilite"
 	],
+	"Results (%d):": [
+		""
+	],
 	"Retry": [
 		"Încercați din nou"
 	],
@@ -2347,6 +2479,12 @@
 	],
 	"Revision: %s (%s)": [
 		"Revizuire:% s (% s)"
+	],
+	"Rich Text": [
+		""
+	],
+	"Rich Text editor. Press Escape then Tab to escape focus.": [
+		""
 	],
 	"Runs the commands contained in the text file. There should be one command per line.": [
 		"Execută comenzile conținute în fișierul text. Ar trebui să existe câte o comandă pe linie."
@@ -2392,6 +2530,9 @@
 	],
 	"Save geo-location with notes": [
 		"Salvați geo-locația în  notițe"
+	],
+	"Scanned code": [
+		""
 	],
 	"Search": [
 		"Caută"
@@ -2468,6 +2609,9 @@
 	"Sets the property <name> of the given <note> to the given [value]. Possible properties are:\n\n%s": [
 		"Setează proprietatea <name>a <note> date la [valoarea] dată. Proprietățile posibile sunt: % s"
 	],
+	"Settings": [
+		""
+	],
 	"Share": [
 		"Distribuie"
 	],
@@ -2509,9 +2653,6 @@
 	],
 	"Show disabled keys": [
 		"Afișare taste dezactivate"
-	],
-	"Show more actions": [
-		"Afișare mai multe acțiuni"
 	],
 	"Show note counts": [
 		"Afișare numărul de notițe"
@@ -2570,6 +2711,12 @@
 	"Some items cannot be synchronised. Press for more info.": [
 		"Unele elemente nu pot fi sincronizate. Apăsați pentru mai multe informații."
 	],
+	"Sort \"%s\" in ascending order": [
+		""
+	],
+	"Sort \"%s\" in descending order": [
+		""
+	],
 	"Sort notebooks by": [
 		"Sortați notițele după"
 	],
@@ -2582,11 +2729,17 @@
 	"Sorts the item by <field> (eg. title, updated_time, created_time).": [
 		"Sortează elementul după <field> (de exemplu, titlu, data_actualizării, data_creării)."
 	],
+	"Source": [
+		"Sursă"
+	],
 	"Source format: %s": [
 		"Formatul sursei: %s"
 	],
 	"Source: ": [
 		"Sursă: "
+	],
+	"Spacer": [
+		""
 	],
 	"Specify the port that should be used by the API server. If not set, a default will be used.": [
 		"Specificați portul care trebuie utilizat de serverul API. Dacă nu este setat, se va utiliza un port implicit."
@@ -2678,6 +2831,9 @@
 	"Switch profile": [
 		"Comutați profilul"
 	],
+	"Switch to back-facing camera": [
+		""
+	],
 	"Switch to note type": [
 		"Comutați la tipul de notiță"
 	],
@@ -2765,6 +2921,9 @@
 	"Take photo": [
 		"Faceți foto"
 	],
+	"Task \"%s\" failed with error: %s": [
+		""
+	],
 	"Task list": [
 		"Lista de task-uri"
 	],
@@ -2779,9 +2938,6 @@
 	],
 	"Text editor command": [
 		"Comandă editor de text"
-	],
-	"Thank you! Your Joplin Cloud account is now setup and ready to use.": [
-		"Vă mulțumesc! Contul dumneavoastră Joplin Cloud este acum configurat și gata de utilizare."
 	],
 	"The active profile cannot be deleted. Switch to a different profile and try again.": [
 		"Profilul activ nu poate fi șters. Treceți la un alt profil și încercați din nou."
@@ -2839,8 +2995,8 @@
 	"The following keys use an out-dated encryption algorithm and it is recommended to upgrade them. The upgraded key will still be able to decrypt and encrypt your data as usual.": [
 		"Următoarele chei utilizează un algoritm de criptare depășit și se recomandă actualizarea lor. Cheia actualizată va fi în continuare capabilă să decripteze și să cripteze datele dumneavoastră ca de obicei."
 	],
-	"The Joplin mobile app does not currently support this type of link: %s": [
-		"Aplicația mobilă Joplin nu acceptă în prezent acest tip de link: %s"
+	"The following plugins may not support the current markdown editor:": [
+		""
 	],
 	"The Joplin team has vetted this plugin and it meets our standards for security and performance.": [
 		"Echipa Joplin a verificat acest plugin și acesta îndeplinește standardele noastre de securitate și performanță."
@@ -2887,6 +3043,9 @@
 	"The target to synchronise to. Each sync target may have additional parameters which are named as `sync.NUM.NAME` (all documented below).": [
 		"Ținta la care se sincronizează. Fiecare țintă de sincronizare poate avea parametri suplimentari care sunt numiți `sync.NUM.NAME` (toți documentați mai jos)."
 	],
+	"The web client does not support accepting encrypted shared notebooks. Please switch to the desktop or mobile app before accepting the share.\n\nError: \"%s\"": [
+		""
+	],
 	"The Web Clipper needs your authorisation to access your data.": [
 		"Web Clipper are nevoie de autorizația dumneavoastră pentru a vă accesa datele."
 	],
@@ -2911,9 +3070,6 @@
 	"There are unsaved changes.": [
 		"Există schimbări nesalvate."
 	],
-	"There is currently no notebook. Create one by clicking on \"New notebook\".": [
-		"În prezent, nu există niciun notebook. Creați unul făcând clic pe “Notebook nou”."
-	],
 	"There is no data to export.": [
 		"Nu există date de exportat."
 	],
@@ -2923,8 +3079,8 @@
 	"There was an error downloading this attachment:": [
 		"A apărut o eroare la descărcarea acestui atașament:"
 	],
-	"There was an error setting up your Joplin Cloud account. Please verify your email and password and try again. Error was:\n\n%s": [
-		"S-a produs o eroare la configurarea contului tău Joplin Cloud. Vă rugăm să vă verificați e-mailul și parola și să încercați din nou. Eroarea a fost:\n\n%s"
+	"These items failed to sync, but have been marked as \"ignored\". They won't cause the sync warning to appear, but still aren't synced. To unignore, click \"retry\".": [
+		""
 	],
 	"These items will remain on the device but will not be uploaded to the sync target. In order to find these items, either search for the title or the ID (which is displayed in brackets above).": [
 		"Aceste elemente vor rămâne pe dispozitiv, dar nu vor fi încărcate pe obiectivul de sincronizare. Pentru a găsi aceste elemente, căutați fie titlul, fie ID-ul (care este afișat în paranteze mai sus)."
@@ -2935,11 +3091,11 @@
 	"This allows another user to share a notebook with you, and you can then both collaborate on it. It does not however allow you to share a notebook with someone else, unless you have the feature \"%s\".": [
 		"Acest lucru permite unui alt utilizator să partajeze un notebook cu dvs., iar apoi puteți colabora amândoi la el. Cu toate acestea, nu vă permite să partajați un notebook cu altcineva, cu excepția cazului în care aveți caracteristica “%s”."
 	],
+	"This attachment does not have OCR data (Status: %s)": [
+		""
+	],
 	"This attachment is not downloaded or not decrypted yet": [
 		"Acest atașament nu este descărcat sau nu este încă decriptat"
-	],
-	"This attachment is not downloaded or not decrypted yet.": [
-		"Acest atașament nu este descărcat sau nu este încă decriptat."
 	],
 	"This authorisation token is only needed to allow third-party applications to access Joplin.": [
 		"Acest token de autorizare este necesar doar pentru a permite aplicațiilor terțe părți să acceseze Joplin."
@@ -2977,17 +3133,26 @@
 	"This note has no history": [
 		"Această notă nu are istoric"
 	],
+	"This plugin doesn't support %s.": [
+		""
+	],
 	"This Rich Text editor has a number of limitations and it is recommended to be aware of them before using it.": [
 		"Acest editor Rich Text are o serie de limitări și este recomandat să le cunoașteți înainte de a-l utiliza."
 	],
 	"This service allows the browser extension to communicate with Joplin. When enabling it your firewall may ask you to give permission to Joplin to listen to a particular port.": [
 		"Acest serviciu permite extensia browserul-ui pentru a comunica cu Joplin. Atunci când se permite firewall poate cere să dea permisiunea Joplin pentru a asculta un anumit port."
 	],
+	"This subfolder of the trash has no notes.": [
+		""
+	],
 	"This will allow Joplin to run in the background. It is recommended to enable this setting so that your notes are constantly being synchronised, thus reducing the number of conflicts.": [
 		"Acest lucru va permite ca Joplin să ruleze în fundal. Se recomandă să activați această setare pentru ca notele dvs. să fie sincronizate în mod constant, reducând astfel numărul de conflicte."
 	],
 	"This will open a new screen. Save your current changes?": [
 		"Se va deschide un nou ecran. Doriți să salvați modificările dumnevoastră actuale?"
+	],
+	"This will permanently delete all items in the trash. Continue?": [
+		""
 	],
 	"This will remove the notebook from your collection and you will no longer have access to its content. Do you wish to continue?": [
 		"Astfel, notebook-ul va fi eliminat din colecția dvs. și nu veți mai avea acces la conținutul său. Doriți să continuați?"
@@ -3088,6 +3253,9 @@
 	"Total: %d/%d": [
 		"Total: %d/%d"
 	],
+	"Trash": [
+		""
+	],
 	"Try again": [
 		"Încercați din nou"
 	],
@@ -3112,9 +3280,6 @@
 	"Unable to edit resource of type %s": [
 		"Nu se poate edita resursa de tip %s"
 	],
-	"Unable to export or share data. Reason: %s": [
-		"Imposibilitatea de a exporta sau de a partaja date. Motivul: %s"
-	],
 	"Unable to share log data. Reason: %s": [
 		"Imposibilitatea de a partaja datele din jurnal. Motivul: %s"
 	],
@@ -3126,6 +3291,9 @@
 	],
 	"Uninstall and reinstall the application. Make sure you create a backup first by exporting all your notes as JEX from the desktop application.": [
 		""
+	],
+	"Unknown": [
+		"Necunoscut"
 	],
 	"Unknown flag: %s": [
 		"Unknown flag: %s"
@@ -3241,6 +3409,9 @@
 	"View": [
 		"Vizualizați"
 	],
+	"View OCR text": [
+		""
+	],
 	"View on map": [
 		"Vizualizați pe hartă"
 	],
@@ -3259,14 +3430,20 @@
 	"Voice typing...": [
 		"Tastarea vocală…"
 	],
+	"Vosk": [
+		""
+	],
 	"Warning": [
 		"Avertizare"
 	],
 	"Warning: not all resources shown for performance reasons (limit: %s).": [
 		"Avertizare: nu toate resursele sunt afișate din motive de performanță (limită:% s)."
 	],
-	"Warnings:\n%s": [
-		"Avertizare: %s"
+	"We have a system for reporting and removing problematic plugins.": [
+		""
+	],
+	"We mark plugins developed by trusted Joplin community members as \"recommended\".": [
+		""
 	],
 	"Web Clipper": [
 		"Web Clipper"
@@ -3286,6 +3463,9 @@
 	"Website and documentation": [
 		"Website și documentație"
 	],
+	"WebView package: %s": [
+		""
+	],
 	"Welcome to Joplin!\n\nType `:help shortcuts` for the list of keyboard shortcuts, or just `:help` for usage information.\n\nFor example, to create a notebook press `mb`; to create a note press `mn`.": [
 		"Bine ați venit în Joplin!\n\nTastați `:help shortcuts` pentru afișarea listei scurtăturilor for ori doar `:help` pentru informații de utilizare.\n\nDe exemplu, creați un caiet de notițe apăsând 'mb'; pentru a crea o notă apăsați 'mn'."
 	],
@@ -3300,6 +3480,9 @@
 	],
 	"When enabled, the application will scan your attachments and extract the text from it. This will allow you to search for text in these attachments.": [
 		"Atunci când este activată, aplicația va scana atașamentele și va extrage textul din ele. Acest lucru vă va permite să căutați text în aceste atașamente."
+	],
+	"Whisper": [
+		""
 	],
 	"Window unresponsive.": [
 		"Fereastra nu răspunde."
@@ -3322,6 +3505,9 @@
 	"You are about to attach a large image (%dx%d pixels). Would you like to resize it down to %d pixels before attaching it?": [
 		"Ești pe cale să atașezi o imagine mare (%dx%d pixeli). Doriți să îl redimensionați până la %d pixeli înainte de a-l atașa?"
 	],
+	"You are logged in into Joplin Cloud, you can leave this screen now.": [
+		""
+	],
 	"You currently have no notebooks.": [
 		"Nu aveți niciun caiet de notițe activ."
 	],
@@ -3334,20 +3520,23 @@
 	"You may use the tool below to re-encrypt your data, for example if you know that some of your notes are encrypted with an obsolete encryption method.": [
 		"Puteți utiliza instrumentul de mai jos pentru a vă cripta din nou datele, de exemplu, dacă știți că unele note sunt criptate cu o metodă de criptare învechită."
 	],
+	"Your account doesn't have access to this feature": [
+		""
+	],
 	"Your choice: ": [
 		"Alegerea dumneavoastră: "
 	],
 	"Your data is going to be re-encrypted and synced again.": [
 		"Datele dumneavoastre vor fi re-criptate și sincronizate din nou."
 	],
+	"Your Joplin Cloud credentials are invalid, please login.": [
+		""
+	],
 	"Your password is needed to decrypt some of your data.": [
 		"Parola dvs. este necesară pentru a decripta unele dintre datele dvs."
 	],
 	"Your password is needed to decrypt some of your data. Type `:e2ee decrypt` to set it.": [
 		"Parola dvs. este necesară pentru a decripta unele dintre datele dvs. Introduceți `:e2ee decrypt` pentru a o seta."
-	],
-	"Your permission to use your camera is required.": [
-		"Este necesară permisiunea dumnevoastră de a utiliza camera."
 	],
 	"Your version: %s": [
 		"Versiunea dvs.:% s"

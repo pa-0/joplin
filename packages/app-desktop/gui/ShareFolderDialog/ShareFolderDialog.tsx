@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { reg } from '@joplin/lib/registry';
 import useAsyncEffect, { AsyncEffectEvent } from '@joplin/lib/hooks/useAsyncEffect';
 import { ChangeEvent, Dropdown, DropdownOptions, DropdownVariant } from '../Dropdown/Dropdown';
+import shim from '@joplin/lib/shim';
 
 const logger = Logger.create('ShareFolderDialog');
 
@@ -47,6 +48,7 @@ const StyledAddRecipient = styled.div`
 	margin-bottom: 1em;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const StyledRecipient = styled(StyledMessage)<any>`
 	display: flex;
 	flex-direction: row;
@@ -68,8 +70,11 @@ const StyledRecipients = styled.div`
 	margin-bottom: 10px;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied;
+type StyleProps = any;
+
 const StyledRecipientList = styled.div`
-	border: 1px solid ${(props: any) => props.theme.dividerColor};
+	border: 1px solid ${(props: StyleProps) => props.theme.dividerColor};
 	border-radius: 3px;
 	height: 300px;
 	overflow-x: hidden;
@@ -81,6 +86,7 @@ const StyledError = styled(StyledMessage)`
 	margin-bottom: 1em;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const StyledShareState = styled(StyledMessage)<any>`
 	word-break: break-all;
 	margin-bottom: 1em;
@@ -187,12 +193,14 @@ function ShareFolderDialog(props: Props) {
 
 		let errorSet = false;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const handleError = (error: any) => {
 			if (!errorSet) setLatestError(error);
 			errorSet = true;
 			logger.error(error);
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const defer = (error: any) => {
 			if (error) handleError(error);
 			setShareState(ShareState.Idle);
@@ -229,18 +237,19 @@ function ShareFolderDialog(props: Props) {
 		}
 	}, [recipientPermissions, props.folderId, recipientEmail]);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	function recipientEmail_change(event: any) {
 		setRecipientEmail(event.target.value);
 	}
 
 	async function recipient_delete(event: RecipientDeleteEvent) {
-		if (!confirm(_('Delete this invitation? The recipient will no longer have access to this shared notebook.'))) return;
+		if (!await shim.showConfirmationDialog(_('Delete this invitation? The recipient will no longer have access to this shared notebook.'))) return;
 
 		try {
 			await ShareService.instance().deleteShareRecipient(event.shareUserId);
 		} catch (error) {
 			logger.error(error);
-			alert(_('The recipient could not be removed from the list. Please try again.\n\nThe error was: "%s"', error.message));
+			await shim.showErrorDialog(_('The recipient could not be removed from the list. Please try again.\n\nThe error was: "%s"', error.message));
 		}
 
 		await ShareService.instance().refreshShareUsers(share.id);
@@ -282,7 +291,7 @@ function ShareFolderDialog(props: Props) {
 			});
 			await ShareService.instance().setPermissions(share.id, shareUserId, permissionsFromString(value));
 		} catch (error) {
-			alert(`Could not set permissions: ${error.message}`);
+			void shim.showErrorDialog(`Could not set permissions: ${error.message}`);
 			logger.error(error);
 		} finally {
 			setRecipientsBeingUpdated(prev => {
@@ -313,7 +322,13 @@ function ShareFolderDialog(props: Props) {
 				<StyledRecipientName>{shareUser.user.email}</StyledRecipientName>
 				{dropdown}
 				<StyledRecipientStatusIcon title={statusToMessage[shareUser.status]} className={statusToIcon[shareUser.status]}></StyledRecipientStatusIcon>
-				<Button disabled={!enabled} size={ButtonSize.Small} iconName="far fa-times-circle" onClick={() => recipient_delete({ shareUserId: shareUser.id })}/>
+				<Button
+					disabled={!enabled}
+					size={ButtonSize.Small}
+					iconName="far fa-times-circle"
+					onClick={() => recipient_delete({ shareUserId: shareUser.id })}
+					tooltip={_('Remove %s from share', shareUser.user.email)}
+				/>
 			</StyledRecipient>
 		);
 	}
@@ -369,7 +384,9 @@ function ShareFolderDialog(props: Props) {
 
 	async function buttonRow_click(event: ClickEvent) {
 		if (event.buttonName === 'unshare') {
-			if (!confirm(_('Unshare this notebook? The recipients will no longer have access to its content.'))) return;
+			if (!await shim.showConfirmationDialog(_('Unshare this notebook? The recipients will no longer have access to its content.'))) {
+				return;
+			}
 			await ShareService.instance().unshareFolder(props.folderId);
 			void synchronize();
 		}
@@ -399,7 +416,7 @@ function ShareFolderDialog(props: Props) {
 	}
 
 	return (
-		<Dialog renderContent={renderContent}/>
+		<Dialog>{renderContent()}</Dialog>
 	);
 }
 

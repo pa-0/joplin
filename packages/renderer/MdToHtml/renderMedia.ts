@@ -11,11 +11,17 @@ export interface Options {
 	useCustomPdfViewer: boolean;
 	noteId: string;
 	vendorDir: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	theme: any;
 }
 
 function resourceUrl(resourceFullPath: string): string {
-	if (resourceFullPath.indexOf('http://') === 0 || resourceFullPath.indexOf('https://')) return resourceFullPath;
+	if (
+		resourceFullPath.indexOf('http://') === 0 || resourceFullPath.indexOf('https://') === 0 || resourceFullPath.indexOf('joplin-content://') === 0 ||
+		resourceFullPath.indexOf('file://') === 0
+	) {
+		return resourceFullPath;
+	}
 	return `file://${toForwardSlashes(resourceFullPath)}`;
 }
 

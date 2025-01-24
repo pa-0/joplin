@@ -1,6 +1,5 @@
 import { utils as pluginUtils, PluginStates } from '@joplin/lib/services/plugins/reducer';
 import CommandService from '@joplin/lib/services/CommandService';
-import eventManager, { EventName } from '@joplin/lib/eventManager';
 import InteropService from '@joplin/lib/services/interop/InteropService';
 import MenuUtils from '@joplin/lib/services/commands/MenuUtils';
 import InteropServiceHelper from '../../InteropServiceHelper';
@@ -13,12 +12,13 @@ import Note from '@joplin/lib/models/Note';
 import Setting from '@joplin/lib/models/Setting';
 const { clipboard } = require('electron');
 import { Dispatch } from 'redux';
+import { NoteEntity } from '@joplin/lib/services/database/types';
 
 const Menu = bridge().Menu;
 const MenuItem = bridge().MenuItem;
 
 interface ContextMenuProps {
-	notes: any[];
+	notes: NoteEntity[];
 	dispatch: Dispatch;
 	watchedNoteFiles: string[];
 	plugins: PluginStates;
@@ -32,38 +32,39 @@ export default class NoteListUtils {
 
 		const menuUtils = new MenuUtils(cmdService);
 
-		const notes = noteIds.map(id => BaseModel.byId(props.notes, id));
+		const notes: NoteEntity[] = BaseModel.modelsByIds(props.notes, noteIds);
 
 		const singleNoteId = noteIds.length === 1 ? noteIds[0] : null;
 
-		let hasEncrypted = false;
-		for (let i = 0; i < notes.length; i++) {
-			if (notes[i].encryption_applied) hasEncrypted = true;
-		}
+		const includeDeletedNotes = notes.find(n => !!n.deleted_time);
+		const includeEncryptedNotes = notes.find(n => !!n.encryption_applied);
 
 		const menu = new Menu();
 
-		if (!hasEncrypted) {
+		if (!includeEncryptedNotes && !includeDeletedNotes) {
+			if (singleNoteId) {
+				menu.append(
+					new MenuItem(menuUtils.commandToStatefulMenuItem('openNoteInNewWindow', singleNoteId)),
+				);
+
+				const cmd = props.watchedNoteFiles.includes(singleNoteId) ? 'stopExternalEditing' : 'startExternalEditing';
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+				menu.append(new MenuItem(menuUtils.commandToStatefulMenuItem(cmd, singleNoteId) as any));
+
+				menu.append(new MenuItem({ type: 'separator' }));
+			}
+
 			menu.append(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				new MenuItem(menuUtils.commandToStatefulMenuItem('setTags', noteIds) as any),
 			);
 
-			menu.append(
-				new MenuItem(menuUtils.commandToStatefulMenuItem('moveToFolder', noteIds) as any),
-			);
-
-			menu.append(
-				new MenuItem(menuUtils.commandToStatefulMenuItem('duplicateNote', noteIds) as any),
-			);
-
-			if (singleNoteId) {
-				const cmd = props.watchedNoteFiles.includes(singleNoteId) ? 'stopExternalEditing' : 'startExternalEditing';
-				menu.append(new MenuItem(menuUtils.commandToStatefulMenuItem(cmd, singleNoteId) as any));
-			}
+			menu.append(new MenuItem({ type: 'separator' }));
 
 			if (noteIds.length <= 1) {
 				menu.append(
 					new MenuItem(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 						menuUtils.commandToStatefulMenuItem('toggleNoteType', noteIds) as any,
 					),
 				);
@@ -74,7 +75,6 @@ export default class NoteListUtils {
 						const newNote = Note.changeNoteType(note, type);
 						if (newNote === note) continue;
 						await Note.save(newNote, { userSideValidation: true });
-						eventManager.emit(EventName.NoteTypeToggle, { noteId: note.id });
 					}
 				};
 
@@ -96,6 +96,41 @@ export default class NoteListUtils {
 					}),
 				);
 			}
+
+			menu.append(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+				new MenuItem(menuUtils.commandToStatefulMenuItem('moveToFolder', noteIds) as any),
+			);
+
+			menu.append(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+				new MenuItem(menuUtils.commandToStatefulMenuItem('duplicateNote', noteIds) as any),
+			);
+
+			if (includeDeletedNotes) {
+				menu.append(
+					new MenuItem(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+						menuUtils.commandToStatefulMenuItem('restoreNote', noteIds) as any,
+					),
+				);
+
+				menu.append(
+					new MenuItem(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+						menuUtils.commandToStatefulMenuItem('permanentlyDeleteNote', noteIds) as any,
+					),
+				);
+			} else {
+				menu.append(
+					new MenuItem(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+						menuUtils.commandToStatefulMenuItem('deleteNote', noteIds) as any,
+					),
+				);
+			}
+
+			menu.append(new MenuItem({ type: 'separator' }));
 
 			menu.append(
 				new MenuItem({
@@ -122,9 +157,12 @@ export default class NoteListUtils {
 				);
 			}
 
+			menu.append(new MenuItem({ type: 'separator' }));
+
 			if ([9, 10].includes(Setting.value('sync.target'))) {
 				menu.append(
 					new MenuItem(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 						menuUtils.commandToStatefulMenuItem('showShareNoteDialog', noteIds.slice()) as any,
 					),
 				);
@@ -156,6 +194,7 @@ export default class NoteListUtils {
 
 			exportMenu.append(
 				new MenuItem(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					menuUtils.commandToStatefulMenuItem('exportPdf', noteIds) as any,
 				),
 			);
@@ -165,12 +204,6 @@ export default class NoteListUtils {
 			menu.append(exportMenuItem);
 		}
 
-		menu.append(
-			new MenuItem(
-				menuUtils.commandToStatefulMenuItem('deleteNote', noteIds) as any,
-			),
-		);
-
 		const pluginViewInfos = pluginUtils.viewInfosByType(props.plugins, 'menuItem');
 
 		for (const info of pluginViewInfos) {
@@ -179,6 +212,7 @@ export default class NoteListUtils {
 
 			if (cmdService.isEnabled(info.view.commandName)) {
 				menu.append(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					new MenuItem(menuUtils.commandToStatefulMenuItem(info.view.commandName, noteIds) as any),
 				);
 			}

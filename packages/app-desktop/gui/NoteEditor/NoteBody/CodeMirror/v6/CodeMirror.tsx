@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, useMemo, ForwardedRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, useMemo, ForwardedRef, useContext } from 'react';
 
 import { EditorCommand, MarkupToHtmlOptions, NoteBodyEditorProps, NoteBodyEditorRef, OnChangeEvent } from '../../../utils/types';
 import { getResourcesFromPasteEvent } from '../../../utils/resourceHandling';
@@ -16,7 +16,7 @@ import { MarkupToHtml } from '@joplin/renderer';
 const { clipboard } = require('electron');
 import { reg } from '@joplin/lib/registry';
 import ErrorBoundary from '../../../../ErrorBoundary';
-import { EditorKeymap, EditorLanguageType, EditorSettings } from '@joplin/editor/types';
+import { EditorKeymap, EditorLanguageType, EditorSettings, SearchState, UserEventSource } from '@joplin/editor/types';
 import useStyles from '../utils/useStyles';
 import { EditorEvent, EditorEventType } from '@joplin/editor/events';
 import useScrollHandler from '../utils/useScrollHandler';
@@ -26,12 +26,17 @@ import CodeMirrorControl from '@joplin/editor/CodeMirror/CodeMirrorControl';
 import useContextMenu from '../utils/useContextMenu';
 import useWebviewIpcMessage from '../utils/useWebviewIpcMessage';
 import Toolbar from '../Toolbar';
+import useEditorSearchHandler from '../utils/useEditorSearchHandler';
+import CommandService from '@joplin/lib/services/CommandService';
+import useRefocusOnVisiblePaneChange from './utils/useRefocusOnVisiblePaneChange';
+import { WindowIdContext } from '../../../../NewWindowOrIFrame';
 
 const logger = Logger.create('CodeMirror6');
 const logDebug = (message: string) => logger.debug(message);
 
 interface RenderedBody {
 	html: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	pluginAssets: any[];
 }
 
@@ -76,11 +81,11 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		}
 	}, [props.content]);
 
-	const onEditorPaste = useCallback(async (event: any = null) => {
+	const onEditorPaste = useCallback(async (event: Event|null = null) => {
 		const resourceMds = await getResourcesFromPasteEvent(event);
 		if (!resourceMds.length) return;
 		if (editorRef.current) {
-			editorRef.current.insertText(resourceMds.join('\n'));
+			editorRef.current.insertText(resourceMds.join('\n'), UserEventSource.Paste);
 		}
 	}, []);
 
@@ -127,7 +132,7 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 	const editorPasteText = useCallback(async () => {
 		if (editorRef.current) {
 			const modifiedMd = await Note.replaceResourceExternalToInternalLinks(clipboard.readText(), { useAbsolutePaths: true });
-			editorRef.current.insertText(modifiedMd);
+			editorRef.current.insertText(modifiedMd, UserEventSource.Paste);
 		}
 	}, []);
 
@@ -173,6 +178,9 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 				}
 			},
 			supportsCommand: (name: string) => {
+				if (name === 'search' && !props.visiblePanes.includes('editor')) {
+					return false;
+				}
 				return name in commands || editorRef.current.supportsCommand(name);
 			},
 			execCommand: async (cmd: EditorCommand) => {
@@ -182,6 +190,7 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 				let commandOutput = null;
 				if (cmd.name in commands) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					commandOutput = (commands as any)[cmd.name](cmd.value);
 				} else if (editorRef.current.supportsCommand(cmd.name)) {
 					commandOutput = editorRef.current.execCommand(cmd.name);
@@ -194,7 +203,7 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 				return commandOutput;
 			},
 		};
-	}, [props.content, commands, resetScroll, setEditorPercentScroll, setViewerPercentScroll]);
+	}, [props.content, props.visiblePanes, commands, resetScroll, setEditorPercentScroll, setViewerPercentScroll]);
 
 	const webview_domReady = useCallback(() => {
 		setWebviewReady(true);
@@ -269,6 +278,7 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 			lineCount = editorRef.current.editor.state.doc.lines;
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const options: any = {
 			pluginAssets: renderedBody.pluginAssets,
 			downloadResources: Setting.value('sync.resourceDownloadMode'),
@@ -285,66 +295,33 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 			const percent = getLineScrollPercent();
 			setEditorPercentScroll(percent);
 			options.percent = percent;
-			webviewRef.current.send('setHtml', renderedBody.html, options);
+			webviewRef.current.setHtml(renderedBody.html, options);
 		} else {
 			console.error('Trying to set HTML on an undefined webview ref');
 		}
 	}, [renderedBody, webviewReady, getLineScrollPercent, setEditorPercentScroll]);
 
-	const cellEditorStyle = useMemo(() => {
-		const output = { ...styles.cellEditor };
-		if (!props.visiblePanes.includes('editor')) {
-			output.display = 'none'; // Seems to work fine since the refactoring
-		}
+	useRefocusOnVisiblePaneChange({ editorRef, webviewRef, visiblePanes: props.visiblePanes });
 
-		return output;
-	}, [styles.cellEditor, props.visiblePanes]);
-
-	const cellViewerStyle = useMemo(() => {
-		const output = { ...styles.cellViewer };
-		if (!props.visiblePanes.includes('viewer')) {
-			// Note: setting webview.display to "none" is currently not supported due
-			// to this bug: https://github.com/electron/electron/issues/8277
-			// So instead setting the width 0.
-			output.width = 1;
-			output.maxWidth = 1;
-		} else if (!props.visiblePanes.includes('editor')) {
-			output.borderLeftStyle = 'none';
-		}
-		return output;
-	}, [styles.cellViewer, props.visiblePanes]);
-
-	// Disable this effect to fix this:
-	//
-	// https://github.com/laurent22/joplin/issues/6514 It doesn't seem essential
-	// to automatically focus the editor when the layout changes. The workaround
-	// is to toggle the layout Cmd+L, then manually focus the editor Cmd+Shift+B.
-	//
-	// On the other hand, if we automatically focus the editor, and the user
-	// does not want this, there's no workaround, so it's better to have this
-	// disabled.
-
-	// const editorPaneVisible = props.visiblePanes.indexOf('editor') >= 0;
-
-	// useEffect(() => {
-	// 	if (!editorRef.current) return;
-
-	// 	// Anytime the user toggles the visible panes AND the editor is visible as a result
-	// 	// we should focus the editor
-	// 	// The intuition is that a panel toggle (with editor in view) is the equivalent of
-	// 	// an editor interaction so users should expect the editor to be focused
-	// 	if (editorPaneVisible) {
-	// 		editorRef.current.focus();
-	// 	}
-	// }, [editorPaneVisible]);
+	useEditorSearchHandler({
+		setLocalSearchResultCount: props.setLocalSearchResultCount,
+		searchMarkers: props.searchMarkers,
+		webviewRef,
+		editorRef,
+		noteContent: props.content,
+		renderedBody,
+		showEditorMarkers: !props.useLocalSearch,
+	});
 
 	useContextMenu({
 		plugins: props.plugins,
 		editorCutText, editorCopyText, editorPaste,
 		editorRef,
 		editorClassName: 'cm-editor',
+		containerRef: rootRef,
 	});
 
+	const lastSearchState = useRef<SearchState|null>(null);
 	const onEditorEvent = useCallback((event: EditorEvent) => {
 		if (event.kind === EditorEventType.Scroll) {
 			editor_scroll();
@@ -352,8 +329,21 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 			codeMirror_change(event.value);
 		} else if (event.kind === EditorEventType.SelectionRangeChange) {
 			setSelectionRange({ from: event.from, to: event.to });
+		} else if (event.kind === EditorEventType.UpdateSearchDialog) {
+			if (lastSearchState.current?.searchText !== event.searchState.searchText) {
+				props.setLocalSearch(event.searchState.searchText);
+			}
+
+			if (lastSearchState.current?.dialogVisible !== event.searchState.dialogVisible) {
+				props.setShowLocalSearch(event.searchState.dialogVisible);
+			}
+			lastSearchState.current = event.searchState;
 		}
-	}, [editor_scroll, codeMirror_change]);
+	}, [editor_scroll, codeMirror_change, props.setLocalSearch, props.setShowLocalSearch]);
+
+	const onSelectPastBeginning = useCallback(() => {
+		void CommandService.instance().execute('focusElement', 'noteTitle');
+	}, []);
 
 	const editorSettings = useMemo((): EditorSettings => {
 		const isHTMLNote = props.contentMarkupLanguage === MarkupToHtml.MARKUP_LANGUAGE_HTML;
@@ -367,22 +357,25 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 		return {
 			language: isHTMLNote ? EditorLanguageType.Html : EditorLanguageType.Markdown,
-			readOnly: props.disabled || props.visiblePanes.indexOf('editor') < 0,
+			readOnly: props.disabled,
 			katexEnabled: Setting.value('markdown.plugin.katex'),
 			themeData: {
 				...styles.globalTheme,
+				marginLeft: 0,
+				marginRight: 0,
 				monospaceFont: Setting.value('style.editor.monospaceFontFamily'),
 			},
 			automatchBraces: Setting.value('editor.autoMatchingBraces'),
+			autocompleteMarkup: Setting.value('editor.autocompleteMarkup'),
 			useExternalSearch: false,
 			ignoreModifiers: true,
 			spellcheckEnabled: Setting.value('editor.spellcheckBeta'),
 			keymap: keyboardMode,
 			indentWithTabs: true,
+			editorLabel: _('Markdown editor'),
 		};
 	}, [
-		props.contentMarkupLanguage, props.disabled, props.visiblePanes,
-		props.keyboardMode, styles.globalTheme,
+		props.contentMarkupLanguage, props.disabled, props.keyboardMode, styles.globalTheme,
 	]);
 
 	// Update the editor's value
@@ -394,16 +387,20 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 	const renderEditor = () => {
 		return (
-			<div style={cellEditorStyle}>
+			<div className='editor'>
 				<Editor
 					style={styles.editor}
 					initialText={props.content}
 					ref={editorRef}
 					settings={editorSettings}
 					pluginStates={props.plugins}
+					onPasteFile={null}
 					onEvent={onEditorEvent}
 					onLogMessage={logDebug}
 					onEditorPaste={onEditorPaste}
+					onSelectPastBeginning={onSelectPastBeginning}
+					externalSearch={props.searchMarkers}
+					useLocalSearch={props.useLocalSearch}
 				/>
 			</div>
 		);
@@ -411,7 +408,7 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 	const renderViewer = () => {
 		return (
-			<div style={cellViewerStyle}>
+			<div className='viewer'>
 				<NoteTextViewer
 					ref={webviewRef}
 					themeId={props.themeId}
@@ -424,17 +421,26 @@ const CodeMirror = (props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		);
 	};
 
+	const editorViewerRow = (
+		<div className={[
+			'note-editor-viewer-row',
+			props.visiblePanes.includes('editor') ? '-show-editor' : '',
+			props.visiblePanes.includes('viewer') ? '-show-viewer' : '',
+		].join(' ')}>
+			{renderEditor()}
+			{renderViewer()}
+		</div>
+	);
+
+	const windowId = useContext(WindowIdContext);
 	return (
 		<ErrorBoundary message="The text editor encountered a fatal error and could not continue. The error might be due to a plugin, so please try to disable some of them and try again.">
 			<div style={styles.root} ref={rootRef}>
 				<div style={styles.rowToolbar}>
-					<Toolbar themeId={props.themeId}/>
+					<Toolbar themeId={props.themeId} windowId={windowId}/>
 					{props.noteToolbar}
 				</div>
-				<div style={styles.rowEditorViewer}>
-					{renderEditor()}
-					{renderViewer()}
-				</div>
+				{editorViewerRow}
 			</div>
 		</ErrorBoundary>
 	);

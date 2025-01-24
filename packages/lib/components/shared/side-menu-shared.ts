@@ -1,48 +1,56 @@
-import Folder from '../../models/Folder';
-import BaseModel from '../../BaseModel';
-import { FolderEntity, TagEntity } from '../../services/database/types';
+import { FolderEntity, TagEntity, TagsWithNoteCountEntity } from '../../services/database/types';
+import { getDisplayParentId } from '../../services/trash';
+import { getCollator } from '../../models/utils/getCollator';
 
-interface Props {
-	folders: FolderEntity[];
+export type RenderFolderItem<T> = (folder: FolderEntity, hasChildren: boolean, depth: number)=> T;
+export type RenderTagItem<T> = (tag: TagsWithNoteCountEntity)=> T;
+
+interface FolderSelectedContext {
 	selectedFolderId: string;
 	notesParentType: string;
+}
+export const isFolderSelected = (folder: FolderEntity, context: FolderSelectedContext) => {
+	return context.selectedFolderId === folder.id && context.notesParentType === 'Folder';
+};
+
+
+type ItemsWithOrder<ItemType> = {
+	items: ItemType[];
+	order: string[];
+};
+
+interface FolderTree {
+	folders: FolderEntity[];
+	parentIdToChildren: Map<string, FolderEntity[]>;
+	idToItem: Map<string, FolderEntity>;
+}
+
+interface RenderFoldersProps {
+	folderTree: FolderTree;
 	collapsedFolderIds: string[];
-	selectedTagId: string;
-	tags?: TagEntity[];
 }
 
-type RenderFolderItem = (folder: FolderEntity, selected: boolean, hasChildren: boolean, depth: number)=> any;
-type RenderTagItem = (tag: TagEntity, selected: boolean)=> any;
-
-function folderHasChildren_(folders: FolderEntity[], folderId: string) {
-	for (let i = 0; i < folders.length; i++) {
-		const folder = folders[i];
-		if (folder.parent_id === folderId) return true;
-	}
-	return false;
-}
-
-function folderIsVisible(folders: FolderEntity[], folderId: string, collapsedFolderIds: string[]) {
-	if (!collapsedFolderIds || !collapsedFolderIds.length) return true;
+function folderIsCollapsed(context: RenderFoldersProps, folderId: string) {
+	if (!context.collapsedFolderIds || !context.collapsedFolderIds.length) return false;
 
 	while (true) {
-		const folder = BaseModel.byId(folders, folderId);
-		if (!folder) throw new Error(`No folder with id ${folder.id}`);
-		if (!folder.parent_id) return true;
-		if (collapsedFolderIds.indexOf(folder.parent_id) >= 0) return false;
-		folderId = folder.parent_id;
+		const folder = context.folderTree.idToItem.get(folderId);
+		const folderParentId = getDisplayParentId(folder, context.folderTree.idToItem.get(folder.parent_id));
+		if (!folderParentId) return false;
+		if (context.collapsedFolderIds.includes(folderParentId)) return true;
+		folderId = folderParentId;
 	}
 }
 
-function renderFoldersRecursive_(props: Props, renderItem: RenderFolderItem, items: any[], parentId: string, depth: number, order: string[]) {
-	const folders = props.folders;
-	for (let i = 0; i < folders.length; i++) {
-		const folder = folders[i];
-		if (!Folder.idsEqual(folder.parent_id, parentId)) continue;
-		if (!folderIsVisible(props.folders, folder.id, props.collapsedFolderIds)) continue;
-		const hasChildren = folderHasChildren_(folders, folder.id);
+function renderFoldersRecursive_<T>(props: RenderFoldersProps, renderItem: RenderFolderItem<T>, items: T[], parentId: string, depth: number, order: string[]): ItemsWithOrder<T> {
+	const folders = props.folderTree.parentIdToChildren.get(parentId ?? '') ?? [];
+	const parentIdToChildren = props.folderTree.parentIdToChildren;
+	for (const folder of folders) {
+		if (folderIsCollapsed(props, folder.id)) continue;
+
+		const hasChildren = parentIdToChildren.has(folder.id);
 		order.push(folder.id);
-		items.push(renderItem(folder, props.selectedFolderId === folder.id && props.notesParentType === 'Folder', hasChildren, depth));
+		items.push(renderItem(folder, hasChildren, depth));
 		if (hasChildren) {
 			const result = renderFoldersRecursive_(props, renderItem, items, folder.id, depth + 1, order);
 			items = result.items;
@@ -55,12 +63,31 @@ function renderFoldersRecursive_(props: Props, renderItem: RenderFolderItem, ite
 	};
 }
 
-export const renderFolders = (props: Props, renderItem: RenderFolderItem) => {
+export const renderFolders = <T> (props: RenderFoldersProps, renderItem: RenderFolderItem<T>): ItemsWithOrder<T> => {
 	return renderFoldersRecursive_(props, renderItem, [], '', 0, []);
 };
 
-export const renderTags = (props: Props, renderItem: RenderTagItem) => {
-	const tags = props.tags.slice();
+export const buildFolderTree = (folders: FolderEntity[]): FolderTree => {
+	const idToItem = new Map<string, FolderEntity>();
+	for (const folder of folders) {
+		idToItem.set(folder.id, folder);
+	}
+
+	const parentIdToChildren = new Map<string, FolderEntity[]>();
+	for (const folder of folders) {
+		const displayParentId = getDisplayParentId(folder, idToItem.get(folder.parent_id)) ?? '';
+		if (!parentIdToChildren.has(displayParentId)) {
+			parentIdToChildren.set(displayParentId, []);
+		}
+		parentIdToChildren.get(displayParentId).push(folder);
+	}
+
+	return { folders, parentIdToChildren, idToItem };
+};
+
+const sortTags = (tags: TagEntity[]) => {
+	tags = tags.slice();
+	const collator = getCollator();
 	tags.sort((a, b) => {
 		// It seems title can sometimes be undefined (perhaps when syncing
 		// and before tag has been decrypted?). It would be best to find
@@ -72,14 +99,27 @@ export const renderTags = (props: Props, renderItem: RenderTagItem) => {
 		// Note: while newly created tags are normalized and lowercase
 		// imported tags might be any case, so we need to do case-insensitive
 		// sort.
-		return a.title.toLowerCase() < b.title.toLowerCase() ? -1 : +1;
+		return collator.compare(a.title, b.title);
 	});
+	return tags;
+};
+
+interface TagSelectedContext {
+	selectedTagId: string;
+	notesParentType: string;
+}
+export const isTagSelected = (tag: TagEntity, context: TagSelectedContext) => {
+	return context.selectedTagId === tag.id && context.notesParentType === 'Tag';
+};
+
+export const renderTags = <T> (unsortedTags: TagsWithNoteCountEntity[], renderItem: RenderTagItem<T>): ItemsWithOrder<T> => {
+	const tags = sortTags(unsortedTags);
 	const tagItems = [];
-	const order = [];
+	const order: string[] = [];
 	for (let i = 0; i < tags.length; i++) {
 		const tag = tags[i];
 		order.push(tag.id);
-		tagItems.push(renderItem(tag, props.selectedTagId === tag.id && props.notesParentType === 'Tag'));
+		tagItems.push(renderItem(tag));
 	}
 	return {
 		items: tagItems,
