@@ -8,8 +8,7 @@ import shim from '@joplin/lib/shim';
 import * as pathUtils from '@joplin/lib/path-utils';
 import { getEncryptionEnabled, localSyncInfo } from '@joplin/lib/services/synchronizer/syncInfoUtils';
 import { generateMasterKeyAndEnableEncryption, loadMasterKeysFromSettings, masterPasswordIsValid, setupAndDisableEncryption } from '@joplin/lib/services/e2ee/utils';
-const imageType = require('image-type');
-const readChunk = require('read-chunk');
+import { fromFile as fileTypeFromFile } from 'file-type';
 
 class Command extends BaseCommand {
 	public usage() {
@@ -30,9 +29,11 @@ class Command extends BaseCommand {
 		];
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async action(args: any) {
 		const options = args.options;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const askForMasterKey = async (error: any) => {
 			const masterKeyId = error.masterKeyId;
 			const password = await this.prompt(_('Enter master password:'), { type: 'string', secure: true });
@@ -134,8 +135,7 @@ class Command extends BaseCommand {
 					const outputDir = options.output ? options.output : require('os').tmpdir();
 					let outFile = `${outputDir}/${pathUtils.filename(args.path)}.${Date.now()}.bin`;
 					await EncryptionService.instance().decryptFile(args.path, outFile);
-					const buffer = await readChunk(outFile, 0, 64);
-					const detectedType = imageType(buffer);
+					const detectedType = await fileTypeFromFile(outFile);
 
 					if (detectedType) {
 						const newOutFile = `${outFile}.${detectedType.ext}`;

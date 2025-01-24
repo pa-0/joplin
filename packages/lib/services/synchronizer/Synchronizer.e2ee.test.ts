@@ -11,6 +11,8 @@ import BaseItem from '../../models/BaseItem';
 import Synchronizer from '../../Synchronizer';
 import { fetchSyncInfo, getEncryptionEnabled, localSyncInfo, setEncryptionEnabled } from '../synchronizer/syncInfoUtils';
 import { loadMasterKeysFromSettings, setupAndDisableEncryption, setupAndEnableEncryption } from '../e2ee/utils';
+import { remoteNotesAndFolders } from '../../testing/test-utils-synchronizer';
+import { EncryptionMethod } from '../e2ee/EncryptionService';
 
 let insideBeforeEach = false;
 
@@ -30,8 +32,12 @@ describe('Synchronizer.e2ee', () => {
 		insideBeforeEach = false;
 	});
 
-	it('notes and folders should get encrypted when encryption is enabled', (async () => {
+	it.each([
+		EncryptionMethod.SJCL1a,
+		EncryptionMethod.StringV1,
+	])('notes and folders should get encrypted when encryption is enabled', (async (encryptionMethod) => {
 		setEncryptionEnabled(true);
+		encryptionService().defaultEncryptionMethod_ = encryptionMethod;
 		const masterKey = await loadEncryptionMasterKey();
 		const folder1 = await Folder.save({ title: 'folder1' });
 		let note1 = await Note.save({ title: 'un', body: 'to be encrypted', parent_id: folder1.id });
@@ -70,6 +76,25 @@ describe('Synchronizer.e2ee', () => {
 		expect(folder1_2.title).toBe(folder1.title);
 		expect(folder1_2.updated_time).toBe(folder1.updated_time);
 		expect(!folder1_2.encryption_cipher_text).toBe(true);
+	}));
+
+	it('should not encrypt structural properties', (async () => {
+		setEncryptionEnabled(true);
+		await loadEncryptionMasterKey();
+		const folder1 = await Folder.save({});
+		const folder2 = await Folder.save({});
+		const note1 = await Note.save({ parent_id: folder1.id });
+		const note2 = await Note.save({ parent_id: folder2.id });
+
+		await Folder.delete(folder2.id, { toTrash: true, deleteChildren: true });
+
+		await synchronizerStart();
+
+		const remoteItems = await remoteNotesAndFolders();
+		expect(remoteItems.find(i => i.id === folder1.id).deleted_time).toBe(0);
+		expect(remoteItems.find(i => i.id === folder2.id).deleted_time).toBeGreaterThan(0);
+		expect(remoteItems.find(i => i.id === note1.id).deleted_time).toBe(0);
+		expect(remoteItems.find(i => i.id === note2.id).deleted_time).toBeGreaterThan(0);
 	}));
 
 	it('should mark the key has having been used when synchronising the first time', (async () => {
@@ -235,8 +260,13 @@ describe('Synchronizer.e2ee', () => {
 		expect(allEncrypted).toBe(false);
 	}));
 
-	it('should set the resource file size after decryption', (async () => {
+	it.each([
+		[EncryptionMethod.SJCL1a, EncryptionMethod.SJCL1a],
+		[EncryptionMethod.StringV1, EncryptionMethod.FileV1],
+	])('should set the resource file size after decryption', (async (stringEncryptionMethod, fileEncryptionMethod) => {
 		setEncryptionEnabled(true);
+		encryptionService().defaultEncryptionMethod_ = stringEncryptionMethod;
+		encryptionService().defaultFileEncryptionMethod_ = fileEncryptionMethod;
 		const masterKey = await loadEncryptionMasterKey();
 
 		const folder1 = await Folder.save({ title: 'folder1' });
@@ -262,8 +292,14 @@ describe('Synchronizer.e2ee', () => {
 		expect(resource1_2.size).toBe(2720);
 	}));
 
-	it('should encrypt remote resources after encryption has been enabled', (async () => {
+	it.each([
+		[EncryptionMethod.SJCL1a, EncryptionMethod.SJCL1a],
+		[EncryptionMethod.StringV1, EncryptionMethod.FileV1],
+	])('should encrypt remote resources after encryption has been enabled', (async (stringEncryptionMethod, fileEncryptionMethod) => {
 		while (insideBeforeEach) await time.msleep(100);
+
+		encryptionService().defaultEncryptionMethod_ = stringEncryptionMethod;
+		encryptionService().defaultFileEncryptionMethod_ = fileEncryptionMethod;
 
 		const folder1 = await Folder.save({ title: 'folder1' });
 		const note1 = await Note.save({ title: 'ma note', parent_id: folder1.id });
@@ -330,9 +366,13 @@ describe('Synchronizer.e2ee', () => {
 		expect(!!resource.encryption_blob_encrypted).toBe(false);
 	}));
 
-	it('should stop trying to decrypt item after a few attempts', (async () => {
+	it.each([
+		EncryptionMethod.SJCL1a,
+		EncryptionMethod.StringV1,
+	])('should stop trying to decrypt item after a few attempts', (async (encryptionMethod) => {
 		let hasThrown;
 
+		encryptionService().defaultEncryptionMethod_ = encryptionMethod;
 		const note = await Note.save({ title: 'ma note' });
 		const masterKey = await loadEncryptionMasterKey();
 		await setupAndEnableEncryption(encryptionService(), masterKey, '123456');

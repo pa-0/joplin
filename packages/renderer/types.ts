@@ -1,23 +1,40 @@
 import { MarkupLanguage } from './MarkupToHtml';
 import { Options as NoteStyleOptions } from './noteStyle';
 
-export type ItemIdToUrlHandler = (resource: any)=> string;
+export type ItemIdToUrlHandler = (resourceId: string, urlParameters?: string)=> string;
 
 interface ResourceEntity {
-	id: string;
+	id?: string;
 	title?: string;
 	mime?: string;
 	file_extension?: string;
+	updated_time?: number;
+
+	encryption_applied?: number;
+	encryption_blob_encrypted?: number;
 }
+
+interface ResourceLocalState {
+	fetch_status?: number;
+}
+
+export interface ResourceInfo {
+	localState: ResourceLocalState;
+	item: ResourceEntity;
+}
+
+export type ResourceInfos = Record<string, ResourceInfo>;
 
 export interface FsDriver {
 	writeFile: (path: string, content: string, encoding: string)=> Promise<void>;
 	exists: (path: string)=> Promise<boolean>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	cacheCssToFile: (cssStrings: string[])=> Promise<any>;
 }
 
 export interface RenderOptions {
 	contentMaxWidth?: number;
+	scrollbarSize?: number;
 	bodyOnly?: boolean;
 	splitted?: boolean;
 	enableLongPress?: boolean;
@@ -26,8 +43,10 @@ export interface RenderOptions {
 	externalAssetsOnly?: boolean;
 	highlightedKeywords?: string[];
 	codeTheme?: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	theme?: any;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	plugins?: Record<string, any>;
 	audioPlayerEnabled?: boolean;
 	videoPlayerEnabled?: boolean;
@@ -42,15 +61,24 @@ export interface RenderOptions {
 	vendorDir?: string;
 	itemIdToUrl?: ItemIdToUrlHandler;
 	allowedFilePrefixes?: string[];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	settingValue?: (pluginId: string, key: string)=> any;
 
-	resources?: Record<string, ResourceEntity>;
+	resources?: ResourceInfos;
+
+	onResourceLoaded?: ()=> void;
+	editPopupFiletypes?: string[];
+	createEditPopupSyntax?: string;
+	destroyEditPopupSyntax?: string;
+
+	platformName?: string;
 
 	// HtmlToHtml only
 	whiteBackgroundNoteRendering?: boolean;
 }
 
 export interface RenderResultPluginAsset {
+	source: string;
 	name: string;
 	mime: string;
 	path: string;
@@ -70,8 +98,10 @@ export interface RenderResult {
 }
 
 export interface MarkupRenderer {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	render(markup: string, theme: any, options: RenderOptions): Promise<RenderResult>;
 	clearCache(): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	allAssets(theme: any, noteStyleOptions: NoteStyleOptions|null): Promise<RenderResultPluginAsset[]>;
 }
 
@@ -80,9 +110,11 @@ interface StripMarkupOptions {
 }
 
 export interface MarkupToHtmlConverter {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	render(markupLanguage: MarkupLanguage, markup: string, theme: any, options: any): Promise<RenderResult>;
 	clearCache(markupLanguage: MarkupLanguage): void;
 	stripMarkup(markupLanguage: MarkupLanguage, markup: string, options: StripMarkupOptions): string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	allAssets(markupLanguage: MarkupLanguage, theme: any, noteStyleOptions: NoteStyleOptions|null): Promise<RenderResultPluginAsset[]>;
 }
 

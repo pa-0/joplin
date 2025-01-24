@@ -4,14 +4,14 @@ import shim from './shim';
 const { setupProxySettings } = require('./shim-init-node');
 import BaseService from './services/BaseService';
 import reducer, { getNotesParent, serializeNotesParent, setStore, State } from './reducer';
-import KeychainServiceDriver from './services/keychain/KeychainServiceDriver.node';
-import KeychainServiceDriverDummy from './services/keychain/KeychainServiceDriver.dummy';
+import KeychainServiceDriverNode from './services/keychain/KeychainServiceDriver.node';
+import KeychainServiceDriverElectron from './services/keychain/KeychainServiceDriver.electron';
 import { setLocale } from './locale';
 import KvStore from './services/KvStore';
 import SyncTargetJoplinServer from './SyncTargetJoplinServer';
 import SyncTargetOneDrive from './SyncTargetOneDrive';
 import { createStore, applyMiddleware, Store } from 'redux';
-const { defaultState, stateUtils } = require('./reducer');
+import { defaultState, stateUtils } from './reducer';
 import JoplinDatabase from './JoplinDatabase';
 import { cancelTimers as folderScreenUtilsCancelTimers, refreshFolders, scheduleRefreshFolders } from './folders-screen-utils';
 const { DatabaseDriverNode } = require('./database-driver-node.js');
@@ -21,6 +21,7 @@ import BaseItem from './models/BaseItem';
 import Note from './models/Note';
 import Tag from './models/Tag';
 import { splitCommandString } from '@joplin/utils';
+import { setDateFormat, setTimeFormat, setTimeLocale } from '@joplin/utils/time';
 import { reg } from './registry';
 import time from './time';
 import BaseSyncTarget from './BaseSyncTarget';
@@ -30,7 +31,7 @@ import fs = require('fs-extra');
 const EventEmitter = require('events');
 const syswidecas = require('./vendor/syswide-cas');
 import SyncTargetRegistry from './SyncTargetRegistry';
-const SyncTargetFilesystem = require('./SyncTargetFilesystem.js');
+import SyncTargetFilesystem from './SyncTargetFilesystem';
 const SyncTargetNextcloud = require('./SyncTargetNextcloud.js');
 const SyncTargetWebDAV = require('./SyncTargetWebDAV.js');
 const SyncTargetDropbox = require('./SyncTargetDropbox.js');
@@ -38,7 +39,7 @@ const SyncTargetAmazonS3 = require('./SyncTargetAmazonS3.js');
 import EncryptionService from './services/e2ee/EncryptionService';
 import ResourceFetcher from './services/ResourceFetcher';
 import SearchEngineUtils from './services/search/SearchEngineUtils';
-import SearchEngine, { ProcessResultsRow } from './services/search/SearchEngine';
+import SearchEngine, { ComplexTerm, ProcessResultsRow } from './services/search/SearchEngine';
 import RevisionService from './services/RevisionService';
 import ResourceService from './services/ResourceService';
 import DecryptionWorker from './services/DecryptionWorker';
@@ -61,7 +62,9 @@ import RotatingLogs from './RotatingLogs';
 import { NoteEntity } from './services/database/types';
 import { join } from 'path';
 import processStartFlags from './utils/processStartFlags';
+import { setupAutoDeletion } from './services/trash/permanentlyDeleteOldItems';
 import determineProfileAndBaseDir from './determineBaseAppDirs';
+import NavService from './services/NavService';
 
 const appLogger: LoggerWrapper = Logger.create('App');
 
@@ -79,8 +82,11 @@ export const safeModeFlagFilename = 'force-safe-mode-on-next-start';
 
 export default class BaseApplication {
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private eventEmitter_: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private scheduleAutoAddResourcesIID_: any = null;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private database_: any = null;
 	private profileConfig_: ProfileConfig = null;
 
@@ -90,9 +96,10 @@ export default class BaseApplication {
 	// Note: this is basically a cache of state.selectedFolderId. It should *only*
 	// be derived from the state and not set directly since that would make the
 	// state and UI out of sync.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	protected currentFolder_: any = null;
 
-	protected store_: Store<any> = null;
+	protected store_: Store<State> = null;
 
 	private rotatingLogs: RotatingLogs;
 
@@ -154,6 +161,7 @@ export default class BaseApplication {
 		this.switchCurrentFolder(newFolder);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public switchCurrentFolder(folder: any) {
 		if (!this.hasGui()) {
 			this.currentFolder_ = { ...folder };
@@ -198,6 +206,7 @@ export default class BaseApplication {
 		process.exit(code);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async refreshNotes(state: any, useSelectedNoteId = false, noteHash = '') {
 		let parentType = state.notesParentType;
 		let parentId = null;
@@ -231,7 +240,7 @@ export default class BaseApplication {
 		});
 
 		let notes: NoteEntity[] = [];
-		let highlightedWords: string[] = [];
+		let highlightedWords: (ComplexTerm | string)[] = [];
 		let searchResults: ProcessResultsRow[] = [];
 
 		if (parentId) {
@@ -302,6 +311,7 @@ export default class BaseApplication {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private resourceFetcher_downloadComplete(event: any) {
 		if (event.encrypted) {
 			void DecryptionWorker.instance().scheduleStart();
@@ -312,6 +322,7 @@ export default class BaseApplication {
 		ResourceFetcher.instance().scheduleAutoAddResources();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public reducerActionToString(action: any) {
 		const o = [action.type];
 		if ('id' in action) o.push(action.id);
@@ -333,6 +344,7 @@ export default class BaseApplication {
 	}
 
 	public generalMiddlewareFn() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const middleware = (store: any) => (next: any) => (action: any) => {
 			return this.generalMiddleware(store, next, action);
 		};
@@ -340,10 +352,15 @@ export default class BaseApplication {
 		return middleware;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	protected async applySettingsSideEffects(action: any = null) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const sideEffects: any = {
 			'dateFormat': async () => {
 				time.setLocale(Setting.value('locale'));
+				setTimeLocale(Setting.value('locale'));
+				setDateFormat(Setting.value('dateFormat'));
+				setTimeFormat(Setting.value('timeFormat'));
 				time.setDateFormat(Setting.value('dateFormat'));
 				time.setTimeFormat(Setting.value('timeFormat'));
 			},
@@ -415,6 +432,7 @@ export default class BaseApplication {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	protected async generalMiddleware(store: any, next: any, action: any) {
 		// appLogger.debug('Reducer action', this.reducerActionToString(action));
 
@@ -424,6 +442,7 @@ export default class BaseApplication {
 		let refreshNotesUseSelectedNoteId = false;
 		let refreshNotesHash = '';
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		await reduxSharedMiddleware(store, next, action, ((action: any) => { this.dispatch(action); }) as any);
 		const newState = store.getState() as State;
 
@@ -436,6 +455,14 @@ export default class BaseApplication {
 		// would cause the sidebar to refresh all the time.
 		if (this.hasGui() && ['FOLDER_UPDATE_ONE'].indexOf(action.type) >= 0) {
 			doRefreshFolders = true;
+		}
+
+		// If a note gets deleted to the trash or gets restored we refresh the folders so that the
+		// note count can be updated.
+		if (this.hasGui() && ['NOTE_UPDATE_ONE'].includes(action.type)) {
+			if (action.changedFields && action.changedFields.includes('deleted_time')) {
+				doRefreshFolders = true;
+			}
 		}
 
 		if (action.type === 'HISTORY_BACKWARD' || action.type === 'HISTORY_FORWARD') {
@@ -474,7 +501,20 @@ export default class BaseApplication {
 			refreshNotes = true;
 		}
 
+		if (action.type === 'SETTING_UPDATE_ONE' && action.key === 'locale') {
+			refreshNotes = true;
+			doRefreshFolders = 'now';
+		}
+
 		if (action.type === 'SMART_FILTER_SELECT') {
+			refreshNotes = true;
+			refreshNotesUseSelectedNoteId = true;
+		}
+
+		// Switching windows can also change which note(s) and which note parent type is selected.
+		// Refreshing notes after switching windows helps ensure that the selected note/tags/other state
+		// is correct for the current window.
+		if (action.type === 'WINDOW_FOCUS' && action.lastWindowId !== action.windowId) {
 			refreshNotes = true;
 			refreshNotesUseSelectedNoteId = true;
 		}
@@ -546,23 +586,28 @@ export default class BaseApplication {
 
 		if (doRefreshFolders) {
 			if (doRefreshFolders === 'now') {
-				await refreshFolders((action: any) => this.dispatch(action));
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+				await refreshFolders((action: any) => this.dispatch(action), newState.selectedFolderId);
 			} else {
-				await scheduleRefreshFolders((action: any) => this.dispatch(action));
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+				await scheduleRefreshFolders((action: any) => this.dispatch(action), newState.selectedFolderId);
 			}
 		}
 		return result;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public dispatch(action: any) {
 		if (this.store()) return this.store().dispatch(action);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public reducer(state: any = defaultState, action: any) {
 		return reducer(state, action);
 	}
 
 	public initRedux() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.store_ = createStore(this.reducer, applyMiddleware(this.generalMiddlewareFn() as any));
 		setStore(this.store_);
 
@@ -573,6 +618,7 @@ export default class BaseApplication {
 
 		BaseModel.dispatch = this.store().dispatch;
 		BaseSyncTarget.dispatch = this.store().dispatch;
+		NavService.dispatch = this.store().dispatch;
 		DecryptionWorker.instance().dispatch = this.store().dispatch;
 		ResourceFetcher.instance().dispatch = this.store().dispatch;
 		ShareService.instance().initialize(this.store(), EncryptionService.instance());
@@ -593,6 +639,7 @@ export default class BaseApplication {
 
 		flagContent = flagContent.trim();
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		let flags: any = splitCommandString(flagContent);
 		flags.splice(0, 0, 'cmd');
 		flags.splice(0, 0, 'node');
@@ -616,6 +663,7 @@ export default class BaseApplication {
 		shim.setInterval(() => { void processLogs(); }, 24 * 60 * 60 * 1000);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async start(argv: string[], options: StartOptions = null): Promise<any> {
 		options = {
 			keychainEnabled: true,
@@ -648,7 +696,7 @@ export default class BaseApplication {
 		const tempDir = `${profileDir}/tmp`;
 		const cacheDir = `${profileDir}/cache`;
 
-		Setting.setConstant('env', initArgs.env);
+		Setting.setConstant('env', initArgs.env as Env);
 		Setting.setConstant('resourceDirName', resourceDirName);
 		Setting.setConstant('resourceDir', resourceDir);
 		Setting.setConstant('tempDir', tempDir);
@@ -715,10 +763,13 @@ export default class BaseApplication {
 
 		reg.setDb(this.database_);
 		BaseModel.setDb(this.database_);
+		KvStore.instance().setDb(reg.db());
 
 		setRSA(RSA);
 
-		await loadKeychainServiceAndSettings(options.keychainEnabled ? KeychainServiceDriver : KeychainServiceDriverDummy);
+		await loadKeychainServiceAndSettings(
+			options.keychainEnabled ? [KeychainServiceDriverElectron, KeychainServiceDriverNode] : [],
+		);
 		await migrateMasterPassword();
 		await handleSyncStartupOperation();
 
@@ -738,17 +789,24 @@ export default class BaseApplication {
 		}
 
 		if (Setting.value('firstStart')) {
-			const locale = shim.detectAndSetLocale(Setting);
-			reg.logger().info(`First start: detected locale as ${locale}`);
+
+			// detectAndSetLocale sets the locale to the system default locale.
+			// Not calling it when a new profile is created ensures that the
+			// the language set by the user is not overridden by the system
+			// default language.
+			if (!Setting.value('isSubProfile')) {
+				const locale = shim.detectAndSetLocale(Setting);
+				reg.logger().info(`First start: detected locale as ${locale}`);
+			}
 			Setting.skipDefaultMigrations();
 
 			if (Setting.value('env') === 'dev') {
-				Setting.setValue('showTrayIcon', 0);
-				Setting.setValue('autoUpdateEnabled', 0);
+				Setting.setValue('showTrayIcon', false);
+				Setting.setValue('autoUpdateEnabled', false);
 				Setting.setValue('sync.interval', 3600);
 			}
 
-			Setting.setValue('firstStart', 0);
+			Setting.setValue('firstStart', false);
 		} else {
 			Setting.applyDefaultMigrations();
 			Setting.applyUserSettingMigration();
@@ -761,6 +819,7 @@ export default class BaseApplication {
 			// Setting.setValue('sync.10.userContentPath', 'https://joplinusercontent.com');
 			Setting.setValue('sync.10.path', 'http://api.joplincloud.local:22300');
 			Setting.setValue('sync.10.userContentPath', 'http://joplinusercontent.local:22300');
+			Setting.setValue('sync.10.website', 'http://joplincloud.local:22300');
 		}
 
 		// For now always disable fuzzy search due to performance issues:
@@ -794,7 +853,6 @@ export default class BaseApplication {
 
 		BaseItem.revisionService_ = RevisionService.instance();
 
-		KvStore.instance().setDb(reg.db());
 
 		BaseItem.encryptionService_ = EncryptionService.instance();
 		BaseItem.shareService_ = ShareService.instance();
@@ -821,6 +879,8 @@ export default class BaseApplication {
 		if (currentFolderId) currentFolder = await Folder.load(currentFolderId);
 		if (!currentFolder) currentFolder = await Folder.defaultFolder();
 		Setting.setValue('activeFolderId', currentFolder ? currentFolder.id : '');
+
+		await setupAutoDeletion();
 
 		await MigrationService.instance().run();
 

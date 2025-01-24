@@ -37,7 +37,7 @@ export interface SyncInfoValuePublicPrivateKeyPair {
 //
 // `appMinVersion_` should really just be a constant but for testing purposes it can be changed
 // using `setAppMinVersion()`
-let appMinVersion_ = '0.0.0';
+let appMinVersion_ = '3.0.0';
 
 export const setAppMinVersion = (v: string) => {
 	appMinVersion_ = v;
@@ -51,6 +51,7 @@ export async function migrateLocalSyncInfo(db: JoplinDatabase) {
 
 	const masterKeys = await db.selectAll('SELECT * FROM master_keys');
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const masterKeyMap: Record<string, any> = {};
 	for (const mk of masterKeys) masterKeyMap[mk.id] = mk;
 
@@ -85,6 +86,7 @@ export async function fetchSyncInfo(api: FileApi): Promise<SyncInfo> {
 	const syncTargetInfoText = await api.get('info.json');
 
 	// Returns version 0 if the sync target is empty
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	let output: any = { version: 0 };
 
 	if (syncTargetInfoText) {
@@ -229,6 +231,7 @@ export class SyncInfo {
 		if (serialized) this.load(serialized);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public toObject(): any {
 		return {
 			version: this.version,
@@ -240,12 +243,39 @@ export class SyncInfo {
 		};
 	}
 
+	public filterSyncInfo() {
+		const filtered = JSON.parse(JSON.stringify(this.toObject()));
+
+		// Filter content and checksum properties from master keys
+		if (filtered.masterKeys) {
+			filtered.masterKeys = filtered.masterKeys.map((mk: MasterKeyEntity) => {
+				delete mk.content;
+				delete mk.checksum;
+				return mk;
+			});
+		}
+
+		// Truncate the private key and public key
+		if (filtered.ppk.value) {
+			filtered.ppk.value.privateKey.ciphertext = `${filtered.ppk.value.privateKey.ciphertext.substr(0, 20)}...${filtered.ppk.value.privateKey.ciphertext.substr(-20)}`;
+			filtered.ppk.value.publicKey = `${filtered.ppk.value.publicKey.substr(0, 40)}...`;
+		}
+		return filtered;
+	}
+
 	public serialize(): string {
 		return JSON.stringify(this.toObject(), null, '\t');
 	}
 
 	public load(serialized: string) {
-		const s: any = JSON.parse(serialized);
+		// We probably should add validation after parsing at some point, but for now we are going to keep it simple
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		let s: any = {};
+		try {
+			s = JSON.parse(serialized);
+		} catch (error) {
+			logger.error(`Error parsing sync info, using default values. Sync info: ${JSON.stringify(serialized)}`, error);
+		}
 		this.version = 'version' in s ? s.version : 0;
 		this.e2ee_ = 'e2ee' in s ? s.e2ee : { value: false, updatedTime: 0 };
 		this.activeMasterKeyId_ = 'activeMasterKeyId' in s ? s.activeMasterKeyId : { value: '', updatedTime: 0 };
@@ -263,8 +293,10 @@ export class SyncInfo {
 	}
 
 	public setWithTimestamp(fromSyncInfo: SyncInfo, propName: string) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		if (!(propName in (this as any))) throw new Error(`Invalid prop name: ${propName}`);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		(this as any)[propName] = (fromSyncInfo as any)[propName];
 		this.setKeyTimestamp(propName, fromSyncInfo.keyTimestamp(propName));
 	}
@@ -328,15 +360,18 @@ export class SyncInfo {
 	}
 
 	public keyTimestamp(name: string): number {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		if (!(`${name}_` in (this as any))) throw new Error(`Invalid name: ${name}`);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		return (this as any)[`${name}_`].updatedTime;
 	}
 
 	public setKeyTimestamp(name: string, timestamp: number) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		if (!(`${name}_` in (this as any))) throw new Error(`Invalid name: ${name}`);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		(this as any)[`${name}_`].updatedTime = timestamp;
 	}
-
 }
 
 // ---------------------------------------------------------

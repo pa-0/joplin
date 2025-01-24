@@ -36,6 +36,7 @@ interface Context {
 	inHeader?: boolean;
 	listStack?: List[];
 	listStarting?: boolean;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	currentLinkAttrs?: any;
 	inFence?: boolean;
 	processedFiles?: string[];
@@ -77,6 +78,7 @@ const parseHtml = (html: string) => {
 
 	const parser = new htmlparser2.Parser({
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		onopentag: (name: string, attrs: Record<string, any>) => {
 			tagStack.push({ name });
 
@@ -128,6 +130,7 @@ const paragraphBreak = '///PARAGRAPH_BREAK///';
 const blockQuoteStart = '///BLOCK_QUOTE_START///';
 const blockQuoteEnd = '///BLOCK_QUOTE_END///';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const processToken = (token: any, output: string[], context: Context): void => {
 	if (!context.listStack) context.listStack = [];
 
@@ -156,13 +159,13 @@ const processToken = (token: any, output: string[], context: Context): void => {
 		context.inFence = true;
 		content.push(`\`\`\`${token.info || ''}\n`);
 	} else if (type === 'html_block') {
-		contentProcessed = true,
+		contentProcessed = true;
 		content.push(parseHtml(token.content.trim()));
 	} else if (type === 'html_inline') {
-		contentProcessed = true,
+		contentProcessed = true;
 		content.push(parseHtml(token.content.trim()));
 	} else if (type === 'code_inline') {
-		contentProcessed = true,
+		contentProcessed = true;
 		content.push(`\`${token.content}\``);
 	} else if (type === 'code_block') {
 		contentProcessed = true;
@@ -488,6 +491,7 @@ async function main() {
 		`${readmeDir}/privacy.md`,
 		`${readmeDir}/donate.md`,
 		`${readmeDir}/connection_check.md`,
+		`${readmeDir}/licenses.md`,
 		`${readmeDir}/welcome`,
 		`${readmeDir}/news`,
 	], mainContext);

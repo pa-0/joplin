@@ -2,7 +2,7 @@ import Setting from '../../models/Setting';
 import Tag from '../../models/Tag';
 import BaseModel from '../../BaseModel';
 import Note from '../../models/Note';
-import { reg } from '../../registry.js';
+import { reg } from '../../registry';
 import ResourceFetcher from '../../services/ResourceFetcher';
 import DecryptionWorker from '../../services/DecryptionWorker';
 import eventManager from '../../eventManager';
@@ -11,8 +11,10 @@ import shim from '../../shim';
 import { Dispatch } from 'redux';
 import { State } from '../../reducer';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 let sortNoteListTimeout: any = null;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export default async (store: any, _next: any, action: any, dispatch: Dispatch) => {
 	const newState: State = store.getState();
 
@@ -72,7 +74,7 @@ export default async (store: any, _next: any, action: any, dispatch: Dispatch) =
 		for (const noteId of noteIds) {
 			if (action.id === noteId) continue;
 			reg.logger().info('Provisional was not modified - deleting it');
-			await Note.delete(noteId);
+			await Note.delete(noteId, { sourceDescription: 'reduxSharedMiddleware: Delete provisional note' });
 		}
 	}
 
