@@ -4,12 +4,13 @@ import CodeMirror5Emulation from './CodeMirror5Emulation/CodeMirror5Emulation';
 import editorCommands from './editorCommands/editorCommands';
 import { Compartment, EditorSelection, Extension, StateEffect } from '@codemirror/state';
 import { updateLink } from './markdown/markdownCommands';
-import { SearchQuery, setSearchQuery } from '@codemirror/search';
+import { searchPanelOpen, SearchQuery, setSearchQuery } from '@codemirror/search';
 import PluginLoader from './pluginApi/PluginLoader';
 import customEditorCompletion, { editorCompletionSource, enableLanguageDataAutocomplete } from './pluginApi/customEditorCompletion';
 import { CompletionSource } from '@codemirror/autocomplete';
 import { RegionSpec } from './utils/formatting/RegionSpec';
 import toggleInlineSelectionFormat from './utils/formatting/toggleInlineSelectionFormat';
+import getSearchState from './utils/getSearchState';
 
 interface Callbacks {
 	onUndoRedo(): void;
@@ -21,6 +22,9 @@ interface Callbacks {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 type EditorUserCommand = (...args: any[])=> any;
+
+// Copied from CodeMirror source code since type is not exported
+export type ScrollStrategy = 'nearest' | 'start' | 'end' | 'center';
 
 export default class CodeMirrorControl extends CodeMirror5Emulation implements EditorControl {
 	private _pluginControl: PluginLoader;
@@ -153,7 +157,15 @@ export default class CodeMirrorControl extends CodeMirror5Emulation implements E
 		this._callbacks.onSettingsChange(newSettings);
 	}
 
+	public getSearchState(): SearchState {
+		return getSearchState(this.editor.state);
+	}
+
 	public setSearchState(newState: SearchState) {
+		if (newState.dialogVisible !== searchPanelOpen(this.editor.state)) {
+			this.execCommand(newState.dialogVisible ? EditorCommandType.ShowSearch : EditorCommandType.HideSearch);
+		}
+
 		const query = new SearchQuery({
 			search: newState.searchText,
 			caseSensitive: newState.caseSensitive,
@@ -161,8 +173,25 @@ export default class CodeMirrorControl extends CodeMirror5Emulation implements E
 			replace: newState.replaceText,
 		});
 		this.editor.dispatch({
-			effects: setSearchQuery.of(query),
+			effects: [
+				setSearchQuery.of(query),
+			],
 		});
+
+	}
+
+	public scrollToText(text: string, scrollStrategy: ScrollStrategy) {
+		const doc = this.editor.state.doc;
+		const index = doc.toString().indexOf(text);
+		const textFound = index >= 0;
+
+		if (textFound) {
+			this.editor.dispatch({
+				effects: EditorView.scrollIntoView(index, { y: scrollStrategy }),
+			});
+		}
+
+		return textFound;
 	}
 
 	public addStyles(...styles: Parameters<typeof EditorView.theme>) {
