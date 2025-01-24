@@ -7,13 +7,13 @@ import CreatableSelect from 'react-select/creatable';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { focus } from '@joplin/lib/utils/focusHandler';
+import Dialog from './Dialog';
+
 interface Props {
 	themeId: number;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	defaultValue: any;
 	visible: boolean;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	style: any;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	buttons: any[];
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
@@ -80,8 +80,8 @@ export default class PromptDialog extends React.Component<Props, any> {
 		this.focusInput_ = false;
 	}
 
-	public styles(themeId: number, width: number, height: number, visible: boolean) {
-		const styleKey = `${themeId}_${width}_${height}_${visible}`;
+	public styles(themeId: number, visible: boolean) {
+		const styleKey = `${themeId}_${visible}`;
 		if (styleKey === this.styleKey_) return this.styles_;
 
 		const theme = themeStyle(themeId);
@@ -89,31 +89,6 @@ export default class PromptDialog extends React.Component<Props, any> {
 		this.styleKey_ = styleKey;
 
 		this.styles_ = {};
-
-		const paddingTop = 20;
-
-		this.styles_.modalLayer = {
-			zIndex: 9999,
-			position: 'absolute',
-			top: 0,
-			left: 0,
-			width: width,
-			height: height,
-			boxSizing: 'border-box',
-			backgroundColor: 'rgba(0,0,0,0.6)',
-			display: visible ? 'flex' : 'none',
-			alignItems: 'flex-start',
-			justifyContent: 'center',
-			paddingTop: `${paddingTop}px`,
-		};
-
-		this.styles_.promptDialog = {
-			backgroundColor: theme.backgroundColor,
-			padding: 16,
-			display: 'inline-block',
-			maxWidth: width * 0.5,
-			boxShadow: '6px 6px 20px rgba(0,0,0,0.5)',
-		};
 
 		this.styles_.button = {
 			minWidth: theme.buttonMinWidth,
@@ -134,7 +109,7 @@ export default class PromptDialog extends React.Component<Props, any> {
 		};
 
 		this.styles_.input = {
-			width: 0.5 * width,
+			width: 'calc(0.5 * var(--prompt-width))',
 			maxWidth: 400,
 			color: theme.color,
 			backgroundColor: theme.backgroundColor,
@@ -146,8 +121,8 @@ export default class PromptDialog extends React.Component<Props, any> {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			control: (provided: any) => {
 				return { ...provided,
-					minWidth: width * 0.2,
-					maxWidth: width * 0.5,
+					minWidth: 'calc(var(--prompt-width) * 0.2)',
+					maxWidth: 'calc(var(--prompt-width) * 0.5)',
 					fontFamily: theme.fontFamily,
 				};
 			},
@@ -218,11 +193,12 @@ export default class PromptDialog extends React.Component<Props, any> {
 	}
 
 	public render() {
-		const style = this.props.style;
+		if (!this.state.visible) return null;
+
 		const theme = themeStyle(this.props.themeId);
 		const buttonTypes = this.props.buttons ? this.props.buttons : ['ok', 'cancel'];
 
-		const styles = this.styles(this.props.themeId, style.width, style.height, this.state.visible);
+		const styles = this.styles(this.props.themeId, this.state.visible);
 
 		const onClose = (accept: boolean, buttonType: string = null) => {
 			if (this.props.onClose) {
@@ -325,16 +301,14 @@ export default class PromptDialog extends React.Component<Props, any> {
 		}
 
 		return (
-			<div className="modal-layer" style={styles.modalLayer}>
-				<div className="modal-dialog" style={styles.promptDialog}>
-					<label style={styles.label}>{this.props.label ? this.props.label : ''}</label>
-					<div style={{ display: 'inline-block', color: 'black', backgroundColor: theme.backgroundColor }}>
-						{inputComp}
-						{descComp}
-					</div>
-					<div style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>
+			<Dialog className='prompt-dialog' contentStyle={styles.dialog}>
+				<label style={styles.label}>{this.props.label ? this.props.label : ''}</label>
+				<div style={{ display: 'inline-block', color: 'black', backgroundColor: theme.backgroundColor }}>
+					{inputComp}
+					{descComp}
 				</div>
-			</div>
+				<div style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>
+			</Dialog>
 		);
 	}
 }
