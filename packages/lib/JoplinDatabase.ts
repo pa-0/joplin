@@ -125,6 +125,7 @@ INSERT INTO version (version) VALUES (1);
 export interface TableField {
 	name: string;
 	type: number;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	default: any;
 	description?: string;
 }
@@ -139,8 +140,10 @@ export default class JoplinDatabase extends Database {
 	private tableFields_: Record<string, TableField[]> = null;
 	private version_: number = null;
 	private tableFieldNames_: Record<string, string[]> = {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private tableDescriptions_: any;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public constructor(driver: any) {
 		super(driver);
 	}
@@ -149,6 +152,7 @@ export default class JoplinDatabase extends Database {
 		return this.initialized_;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async open(options: any) {
 		await super.open(options);
 		return this.initialize();
@@ -167,6 +171,7 @@ export default class JoplinDatabase extends Database {
 		return output.slice();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public tableFields(tableName: string, options: any = null) {
 		if (options === null) options = {};
 
@@ -224,6 +229,7 @@ export default class JoplinDatabase extends Database {
 	}
 
 	public createDefaultRow(tableName: string) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const row: any = {};
 		const fields = this.tableFields(tableName);
 		for (let i = 0; i < fields.length; i++) {
@@ -306,7 +312,7 @@ export default class JoplinDatabase extends Database {
 			throw new Error(`\`notes_fts\` (${countFieldsNotesFts} fields) must have the same number of fields as \`items_fts\` (${countFieldsItemsFts} fields) for the search engine BM25 algorithm to work`);
 		}
 
-		const tableRows = await this.selectAll('SELECT name FROM sqlite_master WHERE type="table"');
+		const tableRows = await this.selectAll('SELECT name FROM sqlite_master WHERE type=\'table\'');
 
 		for (let i = 0; i < tableRows.length; i++) {
 			const tableName = tableRows[i].name;
@@ -410,7 +416,7 @@ export default class JoplinDatabase extends Database {
 
 			if (targetVersion === 4) {
 				queries.push('INSERT INTO settings (`key`, `value`) VALUES (\'sync.3.context\', (SELECT `value` FROM settings WHERE `key` = \'sync.context\'))');
-				queries.push('DELETE FROM settings WHERE `key` = "sync.context"');
+				queries.push('DELETE FROM settings WHERE `key` = \'sync.context\'');
 			}
 
 			if (targetVersion === 5) {

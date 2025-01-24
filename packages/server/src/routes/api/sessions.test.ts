@@ -44,8 +44,10 @@ describe('api/sessions', () => {
 
 		const context = await postSession(user.email, password);
 		expect(context.response.status).toBe(200);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		expect(!!(context.response.body as any).id).toBe(true);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const session: Session = await models().session().load((context.response.body as any).id);
 		expect(session.user_id).toBe(user.id);
 	});
@@ -84,6 +86,7 @@ describe('api/sessions', () => {
 			baseDN: '',
 			bindDN: '',
 			bindPW: '',
+			tlsCaFile: '',
 		};
 
 		{
@@ -121,14 +124,17 @@ describe('api/sessions', () => {
 			baseDN: '',
 			bindDN: '',
 			bindPW: '',
+			tlsCaFile: '',
 		};
 
 		const context = await postSession(user.email, password);
 
 		expect(ldapLogin).toHaveBeenCalled();
 		expect(context.response.status).toBe(200);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		expect(!!(context.response.body as any).id).toBe(true);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const session: Session = await models().session().load((context.response.body as any).id);
 		expect(session.user_id).toBe(user.id);
 
@@ -147,6 +153,7 @@ describe('api/sessions', () => {
 			baseDN: '',
 			bindDN: '',
 			bindPW: '',
+			tlsCaFile: '',
 		};
 
 		(ldapLogin as jest.Mock).mockResolvedValue(user);
@@ -155,8 +162,10 @@ describe('api/sessions', () => {
 
 		expect(ldapLogin).toHaveBeenCalled();
 		expect(context.response.status).toBe(200);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		expect(!!(context.response.body as any).id).toBe(true);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const session: Session = await models().session().load((context.response.body as any).id);
 		expect(session.user_id).toBe(user.id);
 
@@ -173,6 +182,7 @@ describe('api/sessions', () => {
 			baseDN: '',
 			bindDN: '',
 			bindPW: '',
+			tlsCaFile: '',
 		};
 
 		(ldapLogin as jest.Mock).mockImplementationOnce(() => {
@@ -197,6 +207,7 @@ describe('api/sessions', () => {
 			baseDN: '',
 			bindDN: '',
 			bindPW: '',
+			tlsCaFile: '',
 		};
 
 		(ldapLogin as jest.Mock).mockImplementationOnce(() => {

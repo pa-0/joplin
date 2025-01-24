@@ -1,5 +1,296 @@
 # Joplin Android Changelog
 
+## [android-v3.2.7](https://github.com/laurent22/joplin/releases/tag/android-v3.2.7) (Pre-release) - 2025-01-13T17:03:36Z
+
+- Fixed: Clicking on an external note link from within a note logs an error (#11619) (#11455 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix clicking "Draw picture" results in blank screen with very old WebView versions (#11604 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.2.5](https://github.com/laurent22/joplin/releases/tag/android-v3.2.5) (Pre-release) - 2025-01-07T23:35:43Z
+
+- Improved: Allow re-downloading voice typing models on URL change and error (#11557 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Upgrade js-draw to 1.26.0 (#11589 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.2.4](https://github.com/laurent22/joplin/releases/tag/android-v3.2.4) (Pre-release) - 2025-01-06T12:50:23Z
+
+- New: Plugin API: Add support for the renderMarkup command (#11494 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve sidemenu notebook list accessibility (#11556 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Add an accordion for disabled master keys on encryption screen (#11529) (#11486 by [@pedr](https://github.com/pedr))
+- Improved: Add more options when long pressing the icon on mobile (#11517) (#10374)
+- Improved: Display html notes using white theme (#11510) (#10609)
+- Improved: Plugin API: Implement the `toggleVisiblePanes` command (#11496 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Removed old hack that was making the note body move up and down (#11511)
+- Improved: Updated packages @react-native-clipboard/clipboard (v1.14.2), @react-native-community/netinfo (v11.3.3), @react-native-community/slider (v4.5.3), @rollup/plugin-node-resolve (v15.2.4), adm-zip (v0.5.16)
+- Improved: Use real timers for sync operations (#11081)
+- Fixed: Fix editor shows nothing when there are no selected note IDs (#11514) (#11264 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix missing "Insert Time" button (#11542) (#11539 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Locked out of mobile app due to broken fingerprint scanner (#10926)
+
+## [android-v3.2.3](https://github.com/laurent22/joplin/releases/tag/android-v3.2.3) (Pre-release) - 2024-12-11T13:58:14Z
+
+- New: Accessibility: Add checked/unchecked accessibility information to the "sort notes by" dialog (#11411 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Translation: Add sk_SK.po (Slovak) (#11433 by [@dodog](https://github.com/dodog))
+- Improved: Accessibility: Describe the notebook dropdown for accessibility tools (#11430 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve note list accessibility (#11419 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve note selection screen reader accessibility (#11424 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve screen reader accessibility of the tag list (#11420 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve side menu and heading screen reader accessibility (#11427 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve tag dialog screen reader accessibility (#11421 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve voice typing dialog screen reader accessibility (#11428 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Mark note properties buttons as buttons (#11432 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Search screen: Hide the progress bar from accessibility tools when invisible (#11431 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Close voice typing session when closing the editor (#11466 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Editor: Switch to a scrolling toolbar, allow adding/removing toolbar items (#11472 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Reactivate pCloud synchronisation (23032b9)
+- Improved: Removed deprecation notice on OneDrive sync method (ceea0bc)
+- Fixed: Accessibility: Fix screen reader is unable to scroll settings tab list (#11429 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix switching notes then unloading app causes blank screen (#11396) (#11384 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix the error caused by undefined isCodeBlock_ (turndown-plugin-gfm) (#11471 by Manabu Nakazawa)
+- Fixed: Upgrade CodeMirror packages (#11440) (#11318 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.2.2](https://github.com/laurent22/joplin/releases/tag/android-v3.2.2) (Pre-release) - 2024-11-19T01:12:43Z
+
+- Improved: Accessibility: Improve dialog accessibility (#11395 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Deprecated OneDrive sync method (e36f377)
+- Improved: Remove the need for sync locks (#11377)
+- Fixed: Fix `undefined` errors in translations (#11407 by Self Not Found)
+- Fixed: Fix race condition which may cause data loss, particularly before or after pasting text in the note editor (#11334) (#11317 by [@mrjo118](https://github.com/mrjo118))
+- Fixed: Fix vertical alignment of checkboxes when text wraps over multiple lines (226a8b3)
+
+## [android-v3.2.1](https://github.com/laurent22/joplin/releases/tag/android-v3.2.1) (Pre-release) - 2024-11-10T14:23:47Z
+
+- New: Add new encryption methods based on native crypto libraries (#10696 by Self Not Found)
+- New: Add setting to disable markup autocompletion (#11222 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add support for overwrite mode in the Markdown editor (#11262 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve setting control accessibility (#11358 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow switching the voice typing library to Whisper (#11158 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow user to generate deletion logs (#11083) (#10664 by [@pedr](https://github.com/pedr))
+- Improved: Camera screen: Support scanning QR codes (#11245 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Center sidebar icons (#11299 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @adobe/css-tools (v4.4.0), @react-native-community/datetimepicker (v8.2.0), @react-native-community/geolocation (v3.3.0), @react-native/babel-preset (v0.74.86), @react-native/metro-config (v0.74.87), compare-versions (v6.1.1), dayjs (v1.11.12), expo (v51.0.26), highlight.js (v11.10.0), jsdom (v24.1.1), react-native-localize (v3.2.1), react-native-paper (v5.12.5), react-native-quick-crypto (v0.7.2), react-native-safe-area-context (v4.10.8), react-native-webview (v13.10.5), sass (v1.77.8), url (v0.11.4)
+- Improved: Upgrade CodeMirror packages (#11221 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Use a FontAwesome icon for the trash folder (#11357) (#11202 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix list renumbering in the Markdown editor resets the first list item number to 1 (#11220 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed vertical alignment of checkboxes (49e86d1)
+- Fixed: Handle callback url triggered app launch (#11280) (#9204 by [@tiberiusteng](https://github.com/tiberiusteng))
+- Fixed: Upgrade react-native-quick-crypto to v0.7.5 (#11294 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.8](https://github.com/laurent22/joplin/releases/tag/android-v3.1.8) (Pre-release) - 2024-11-09T13:02:33Z
+
+- Fixed: Fix error on creating new notes if the user is a share recipient (#11326) (#11325 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix new note button is pushed off-screen on certain Android devices (#11323) (#11276 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix sharing to Joplin causes back navigation to get stuck (#11355) (#11324 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.7](https://github.com/laurent22/joplin/releases/tag/android-v3.1.7) (Pre-release) - 2024-11-04T20:27:52Z
+
+- Fixed: Fix search result note hidden after powering on device (#11297) (#11197 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.6](https://github.com/laurent22/joplin/releases/tag/android-v3.1.6) (Pre-release) - 2024-10-17T22:13:06Z
+
+- Improved: Downgrade CodeMirror packages to fix various Android regressions (#11170 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Name webview root attribute so that it can be styled (75b8caf)
+- Improved: Updated packages @react-native/babel-preset (v0.74.85), @react-native/metro-config (v0.74.85), glob (v10.4.5), katex (v0.16.11), react-native-document-picker (v9.3.0), react-native-safe-area-context (v4.10.7), stream (v0.0.3)
+- Fixed: Fix automatic resource download mode (#11144) (#11134 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix incorrect list switching behavior (#11137) (#11135 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix new note/edit buttons only work if pressed quickly (#11185) (#11183 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix regression: Search screen not hidden when cached for search result navigation (#11131) (#11130 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.5](https://github.com/laurent22/joplin/releases/tag/android-v3.1.5) (Pre-release) - 2024-10-11T22:11:20Z
+
+- Improved: Downgrade CodeMirror packages to fix various Android regressions (#11170 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Name webview root attribute so that it can be styled (75b8caf)
+- Improved: Updated packages @react-native/babel-preset (v0.74.85), @react-native/metro-config (v0.74.85), glob (v10.4.5), katex (v0.16.11), react-native-document-picker (v9.3.0), react-native-safe-area-context (v4.10.7), stream (v0.0.3)
+- Fixed: Fix automatic resource download mode (#11144) (#11134 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix incorrect list switching behavior (#11137) (#11135 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix new note/edit buttons only work if pressed quickly (#11185) (#11183 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix regression: Search screen not hidden when cached for search result navigation (#11131) (#11130 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.4](https://github.com/laurent22/joplin/releases/tag/android-v3.1.4) (Pre-release) - 2024-09-24T14:21:42Z
+
+- Improved: Automatically detect and use operating system theme by default (5beb80b)
+- Improved: Make pressing "back" navigate to the previous note after following a link (#11086) (#11082 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Scroll dropdown to selected value when first opened (#11091 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Show loading indicator while loading search results (#11104 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support permanent note deletion on mobile  (#10786) (#10763 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @js-draw/material-icons (v1.20.3), @react-native/babel-preset (v0.74.84), @react-native/metro-config (v0.74.84), @rollup/plugin-replace (v5.0.7), glob (v10.4.2), js-draw (v1.20.3), jsdom (v24.1.0), markdown-it-ins (v4), markdown-it-sup (v2), react-native-device-info (v10.14.0), react-native-document-picker (v9.2.0), react-native-localize (v3.1.0), react-native-safe-area-context (v4.10.5), react-native-share (v10.2.1), react-native-webview (v13.10.4), sass (v1.77.6), tesseract.js (v5.1.0), turndown (v7.2.0)
+- Improved: Upgrade CodeMirror packages (#11034 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Use fade animation for edit link dialog (#11090 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Accessibility: Fix sidebar broken in right-to-left mode, improve screen reader accessibility (#11056) (#11028 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Decrypt master keys only as needed (#10990) (#10856 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Delete revisions on the sync target when deleted locally (#11035) (#11017 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Drawing: Fix clicking "cancel" after starting a new drawing in editing mode creates an empty resource (#10986 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix scroll issues and incorrect main content height (#11071 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix unable to change incorrect decryption password if the same as the master password (#11026 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Improve performance when there are many selected items (#11067) (#11065 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Move accessibility focus to the first note action menu item on open (#11031) (#10253 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: WebDAV synchronisation not working because of URL encoding differences (#11076) (#10608 by [@pedr](https://github.com/pedr))
+
+## [android-v3.1.3](https://github.com/laurent22/joplin/releases/tag/android-v3.1.3) (Pre-release) - 2024-09-02T12:16:46Z
+
+- Improved: Added feature flag to disable sync lock support (#10925) (#10407)
+- Improved: Make feature flags advanced settings by default (700ffa2)
+- Improved: Updated packages @bam.tech/react-native-image-resizer (v3.0.10), @js-draw/material-icons (v1.20.2), @react-native-clipboard/clipboard (v1.14.1), @react-native-community/datetimepicker (v8.0.1), @react-native-community/netinfo (v11.3.2), @rollup/plugin-commonjs (v25.0.8), async-mutex (v0.5.0), dayjs (v1.11.11), glob (v10.3.16), react, react-native-device-info (v10.13.2), react-native-safe-area-context (v4.10.3), react-native-webview (v13.8.7), react-native-zip-archive (v6.1.2), sass (v1.76.0), sharp (v0.33.4)
+- Fixed: Fix "Enable auto-updates" enabled by default and visible on unsupported platforms (#10897) (#10896 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix BMP image rendering in the Markdown viewer (#10915) (#10914 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix crash on opening settings on old versions of Android (#10793 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix toolbar overflow menu is invisible (#10871) (#10867 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed italic support in Fountain documents (5fdd088)
+- Fixed: Markdown editor: Fix toggling bulleted lists when items start with asterisks (#10902) (#10891 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.1.2](https://github.com/laurent22/joplin/releases/tag/android-v3.1.2) (Pre-release) - 2024-08-10T11:44:30Z
+
+- Fixed: Fix WebDAV sync on mobile (#10849) (#10848 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve RTL support in the Markdown editor (#10810 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Include commit information in version information screen (#10829 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support building for web (#10650 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support pasting images (#10751) (#9017 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @react-native-community/geolocation (v3.2.1), @react-native-community/slider (v4.5.2), glob (v10.3.12), jsdom (v23.2.0), react-native-device-info (v10.13.1), react-native-get-random-values (v1.11.0), react-native-webview (v13.8.4), sharp (v0.33.3), style-to-js (v1.1.12), tar (v6.2.1)
+- Improved: Upgrade react-native-webview to 13.8.6 to fix CI (#10761 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix Dropbox sync for certain device languages (#10759) (#10681 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix dayjs-related startup error (#10652 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix math is invisible in certain mermaid diagrams (#10820) (#10785 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix pasting PNG and JPEG images from the clipboard (#10777 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugins: Fix incorrect Node exports emulation (#10776 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Remove search bar from plugins screen (#10648) (#10596 by Siddhant Paritosh Rao)
+- Fixed: Show notification in case Joplin Cloud credential is not valid anymore (#10649) (#10645 by [@pedr](https://github.com/pedr))
+
+## [android-v3.0.9](https://github.com/laurent22/joplin/releases/tag/android-v3.0.9) (Pre-release) - 2024-07-28T14:00:59Z
+
+- Fixed: #10677: Following a link to a previously open note wouldn't work (#10750) (#10677 by [@pedr](https://github.com/pedr))
+- Fixed: Fix manual resource download mode (#10748 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.8](https://github.com/laurent22/joplin/releases/tag/android-v3.0.8) (Pre-release) - 2024-07-06T10:26:06Z
+
+- Fixed: Fix sidebar performance regression with many nested notebooks (#10676) (#10674 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.7](https://github.com/laurent22/joplin/releases/tag/android-v3.0.7) (Pre-release) - 2024-07-01T15:47:15Z
+
+- Improved: Set min version for synchronising to 3.0.0 (e4b8976)
+- Fixed: Show notification in case Joplin Cloud credential is not valid anymore (#10649) (#10645 by [@pedr](https://github.com/pedr))
+
+## [android-v3.0.6](https://github.com/laurent22/joplin/releases/tag/android-v3.0.6) (Pre-release) - 2024-06-29T09:41:10Z
+
+- Updated Chinese and German translation (#10660 by [@cedecode](https://github.com/cedecode))
+- Fixed: Fix refocusing the note editor (#10644) (#10637 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.5](https://github.com/laurent22/joplin/releases/tag/android-v3.0.5) (Pre-release) - 2024-06-19T12:02:12Z
+
+- Improved: Don't render empty title page for Fountain (#10631 by [@XPhyro](https://github.com/XPhyro))
+- Improved: Don't show an "expand" arrow by "Installed plugins" when no plugins are installed (#10583 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Implement callback url (#9803) (#8639 by [@tiberiusteng](https://github.com/tiberiusteng))
+- Improved: Make mobile plugin settings screen UI closer to desktop (#10598) (#10592 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Mark plugin support as in beta (#10585 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Move mobile plugin setting tabs under a separate section (#10600) (#10594 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Start synchronisation just after login is complete (#10574 by [@pedr](https://github.com/pedr))
+- Improved: Update farsi/persian translation fa.po (#10634 by [@mimeyn](https://github.com/mimeyn))
+- Improved: Updated packages @react-native-community/netinfo (v11.3.1), chokidar (v3.6.0), follow-redirects (v1.15.6), jsdom (v23), react-native-image-picker (v7.1.1), react-native-webview (v13.8.1), sass (v1.71.0), style-to-js (v1.1.11), turndown (v7.1.3)
+- Fixed: English: Use the plural form of a localization for negative and zero items (#10582) (#10581 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix cmd-i no longer italicizes text (#10604 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugin list not cached in config screen (#10599) (#10593 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix selected note changes on moving to a different folder (#10630) (#10589 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Not able to change notebook when using 'New Note' quick action (#10252) (#10588 by [@pedr](https://github.com/pedr))
+- Fixed: Plugin settings screen: Fix plugin states not set correctly when installing multiple plugins at once (#10580 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin settings: Fix plugins without settings can't be disabled without reinstall (#10579 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.4](https://github.com/laurent22/joplin/releases/tag/android-v3.0.4) (Pre-release) - 2024-06-12T20:38:44Z
+
+- New: Add Joplin Cloud account information to configuration screen (#10553 by [@pedr](https://github.com/pedr))
+- New: Add button on Synchronization to Joplin Cloud login screen (#10569 by [@pedr](https://github.com/pedr))
+- Improved: Dismiss dialogs on background tap (#10557 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Hide links to login after process is successful (#10571 by [@pedr](https://github.com/pedr))
+- Improved: Implement plugin screen redesign (#10465 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve dialog styling on large and notched screens (#10470 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improves formatting of log statements (aac8d58)
+- Improved: Plugin API: Implement the `newNote` command (#10524 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Make panel opening/closing more consistent with desktop (#10385 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Show information page before enabling plugin support (#10348 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Settings screen: Show touch feedback when pressing a tab (#10544 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Share screen: Update headings and labels for consistency with desktop (#10395 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Show WebView version in settings (#10518 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Simplify Dropbox sync workaround (#10415 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Update Mermaid to v10.9.1 (#10475 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Update js-draw to version 1.20.2 (#10438 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages react, react-native-device-info (v10.12.1), react-native-document-picker (v9.1.1), react-native-paper (v5.12.3), sass (v1.70.0), tesseract.js (v5.0.5)
+- Improved: Upgrade KaTeX to v0.16.10 (#10570 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Upgrade to React Native 0.74.1 (#10401 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Automatically set focus on title or body when creating a new note (#10237)
+- Fixed: Fix Dropbox sync (#10400) (#10396 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix accepting encrypted shared notebooks (#10429) (#10409 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix logger tests by adding time (#10433 by [@pedr](https://github.com/pedr))
+- Fixed: Fix nonbreaking spaces and CRLF break search for adjacent words (#10417 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugins aren't visible after switching to a new profile (#10386 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugins not reloaded when the plugin runner reloads (#10540 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Maintain cursor position when changing list indentation (#10441) (#10439 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.3](https://github.com/laurent22/joplin/releases/tag/android-v3.0.3) (Pre-release) - 2024-04-27T11:21:48Z
+
+- Improved: Display a message when Joplin Cloud user don't have access to email to note feature (#10322 by [@pedr](https://github.com/pedr))
+- Improved: Make editor styles closer to desktop (#10377 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Make most plugins default to being desktop-only (#10376) (#10360 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugin support: Simplify reporting plugin issues (#10319 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support copying app information (#10336 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @adobe/css-tools (v4.3.3)
+- Fixed: After deleting the last note from the conflicts folder, the application state is invalid (#10189)
+- Fixed: Do not invite user to create new notes in the trash folder (#10356) (#10191 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix cursor jumps before end of word while typing -- update `@codemirror/view` to v6.26.3 (#10353) (#10352 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix quickly enabling/disabling multiple plugins can lead to errors and missing plugins (#10380 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix sync icon off-center (#10350) (#10351 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugins: Fix API incompatibility in arguments to `onMessage` listeners in panels (#10375 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.2](https://github.com/laurent22/joplin/releases/tag/android-v3.0.2) (Pre-release) - 2024-04-15T18:06:46Z
+
+- Improved: Allow marking a plugin as mobile-only or desktop-only (#10229) (#10206 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow marking items as "ignored" in sync status  (#10261) (#10245 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Avoid unnecessary requests if Joplin Cloud credentials are empty (#10256 by [@pedr](https://github.com/pedr))
+- Improved: Bump @codemirror/view version. (#10174 by [@itzTheMeow](https://github.com/itzTheMeow))
+- Improved: Default to tab indentation for consistency with desktop platforms (#10242 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Display recommended plugin alert (#10281) (#10207 by [@DarkFalc0n](https://github.com/DarkFalc0n))
+- Improved: Do not repeat failed requests with ENOTFOUND error (#6173)
+- Improved: Improve focus handling (00084c5)
+- Improved: Make tables horizontally scrollable (#10161 by [@wljince007](https://github.com/wljince007))
+- Improved: Plugin API: Improve support for the Kanban and similar plugins (#10247 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugin API: Support `clipboard.availableFormats` (#10209 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Autohide the plugin panel toggle in toolbar to increase size for notebook dropdown (#10212 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Show plugin versions in settings (#10289) (#10288 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Show sync version and client id in More Info (#10254 by Self Not Found)
+- Improved: Support accepting Joplin Cloud shares (#10300 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support description banners on plugin-registered settings screens (#10286 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support importing from JEX files (#10269 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Toggle plugin panels using a button in the toolbar (#10180 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Update farsi/persian translation fa.po (#10181 by [@mimeyn](https://github.com/mimeyn))
+- Fixed: Email to note address not presented in configuration screen before synchronisation (#10293) (#10292 by [@pedr](https://github.com/pedr))
+- Fixed: Fix "new note" button is shown in the trash notebook (#10227) (#10188 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix dropdowns invisible when opening settings by clicking "synchronize" (#10271) (#10270 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix error on retry or ignore attachment too large error (#10314) (#10313 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugin card titles are clipped (#10296 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin API: Fix crash when a plugin registers an enum setting with no default (#10263 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin API: Fix error when calling `plugins.dataDir` (#10262 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin API: Fix unable to require `@codemirror/search`  (#10205 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugins: Fix event listener memory leak when disabling/uninstalling plugins (#10280 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [android-v3.0.1](https://github.com/laurent22/joplin/releases/tag/android-v3.0.1) (Pre-release) - 2024-03-21T18:27:47Z
+
+- New: Add support for Markdown editor plugins (#10086 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add support for plugin panels and dialogs (#10121 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add support for renderer plugins (#10135 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add trash folder (#9671) (#483)
+- Improved: Added empty trash option on long pressing the trash folder (#10120) (#10092 by [@Sidd-R](https://github.com/Sidd-R))
+- Improved: Allow debugging plugins (#10156 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Change Joplin Cloud login process to allow MFA via browser (#9776 by [@pedr](https://github.com/pedr))
+- Improved: Fix conflicts notebook doesn't work with the trash feature (#10104) (#10073 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Log user actions (deletions) (#9585) (#9465 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Upgrade CodeMirror 6 packages (#10032) (#10031 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix broken plugin API: editor.execCommand (#10153) (#10152 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix clicking on a link results in a blank screen (#10168) (#10166 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix note editor's settings and plugins updated on every keystroke (#10116 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugin API memory leak (#10115 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix screen reader touch-to-focus broken on note list and note viewer pages (#10123) (#10122 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix shared data lost if Joplin is closed immediately after receiving a share (#10171) (#10170 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix trash folder sometimes has wrong icon (#10173) (#10172 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Improve note editor performance when quickly entering text (#10134) (#10130 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: New note button crashes app when there are no notebooks (#10087) (#10065 by [@Sidd-R](https://github.com/Sidd-R))
+- Fixed: Plugins: Fix warning after reloading plugins (#10165 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Shows only the real folders in the dropdown of parent folders. (#10147) (#10143 by [@Sidd-R](https://github.com/Sidd-R))
+
 ## [android-v2.14.9](https://github.com/laurent22/joplin/releases/tag/android-v2.14.9) (Pre-release) - 2024-02-26T19:56:11Z
 
 - Fixed: Note editor: Support older WebView versions (#9986) (#9521 by Henry Heino)

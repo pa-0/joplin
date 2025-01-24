@@ -2,7 +2,9 @@ import { Models } from '../models/factory';
 import { TaskId } from '../services/database/types';
 import TaskService, { Task, taskIdToLabel } from '../services/TaskService';
 import { Services } from '../services/types';
+import { logHeartbeat as logHeartbeatMessage } from './metrics';
 import { Config, Env } from './types';
+import { Day } from './time';
 
 export default async function(env: Env, models: Models, config: Config, services: Services): Promise<TaskService> {
 	const taskService = new TaskService(env, models, config, services);
@@ -74,6 +76,13 @@ export default async function(env: Env, models: Models, config: Config, services
 			schedule: '* * * * *',
 			run: (_models: Models, services: Services) => services.email.runMaintenance(),
 		},
+
+		{
+			id: TaskId.LogHeartbeatMessage,
+			description: taskIdToLabel(TaskId.LogHeartbeatMessage),
+			schedule: config.HEARTBEAT_MESSAGE_SCHEDULE,
+			run: (_models: Models, _services: Services) => logHeartbeatMessage(),
+		},
 	];
 
 	if (config.USER_DATA_AUTO_DELETE_ENABLED) {
@@ -82,6 +91,15 @@ export default async function(env: Env, models: Models, config: Config, services
 			description: taskIdToLabel(TaskId.AutoAddDisabledAccountsForDeletion),
 			schedule: '0 14 * * *',
 			run: (_models: Models, services: Services) => services.userDeletion.autoAddForDeletion(),
+		});
+	}
+
+	if (config.EVENTS_AUTO_DELETE_ENABLED) {
+		tasks.push({
+			id: TaskId.DeleteOldEvents,
+			description: taskIdToLabel(TaskId.DeleteOldEvents),
+			schedule: '0 0 * * *',
+			run: (models: Models) => models.event().deleteOldEvents(config.EVENTS_AUTO_DELETE_AFTER_DAYS * Day),
 		});
 	}
 

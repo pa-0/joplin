@@ -25,6 +25,7 @@ export interface NotificationView {
 interface AppContextJoplin {
 	env: Env;
 	db: DbConnection;
+	dbSlave: DbConnection;
 	models: Models;
 	appLogger(): LoggerWrapper;
 	notifications: NotificationView[];
@@ -140,6 +141,7 @@ export interface LdapConfig {
 	baseDN: string;
 	bindDN: string;
 	bindPW: string;
+	tlsCaFile: string;
 }
 
 export interface Config extends EnvVariables {
@@ -165,6 +167,7 @@ export interface Config extends EnvVariables {
 	accountTypesEnabled: boolean;
 	showErrorStackTraces: boolean;
 	database: DatabaseConfig;
+	databaseSlave: DatabaseConfig;
 	mailer: MailerConfig;
 	stripe: StripeConfig;
 	supportEmail: string;

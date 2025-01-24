@@ -1,5 +1,436 @@
 # Joplin Desktop Changelog
 
+## [v3.2.11](https://github.com/laurent22/joplin/releases/tag/v3.2.11) - 2025-01-13T17:48:21Z
+
+- New: Accessibility: Add setting to increase scrollbar sizes ([#11627](https://github.com/laurent22/joplin/issues/11627) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix double-click to collapse notebooks ([#11625](https://github.com/laurent22/joplin/issues/11625)) ([#11624](https://github.com/laurent22/joplin/issues/11624) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.2.10](https://github.com/laurent22/joplin/releases/tag/v3.2.10) (Pre-release) - 2025-01-10T10:17:28Z
+
+- Improved: Allow installer to skip uninstallation step after repeated failures ([#11612](https://github.com/laurent22/joplin/issues/11612)) ([#11508](https://github.com/laurent22/joplin/issues/11508) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Drawing: Fix "insert drawing" button is not disabled in read-only notes (Upgrade Freehand Drawing to v2.14.0) ([#11613](https://github.com/laurent22/joplin/issues/11613) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix syncLockGoneError on sync with certain share configs ([#11611](https://github.com/laurent22/joplin/issues/11611)) ([#11594](https://github.com/laurent22/joplin/issues/11594) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.2.9](https://github.com/laurent22/joplin/releases/tag/v3.2.9) (Pre-release) - 2025-01-09T22:58:42Z
+
+- Improved: Remove "URI malformed" alert ([#11576](https://github.com/laurent22/joplin/issues/11576)) ([#11575](https://github.com/laurent22/joplin/issues/11575) by Self Not Found)
+- Fixed: Fix keyboard can't add text after certain error/info dialogs are shown ([#11603](https://github.com/laurent22/joplin/issues/11603) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Links from imported notes from OneNote were being wrongly rendered ([#11618](https://github.com/laurent22/joplin/issues/11618)) ([#11617](https://github.com/laurent22/joplin/issues/11617) by [@pedr](https://github.com/pedr))
+- Fixed: OneNote Importer should only use text on fallback title ([#11598](https://github.com/laurent22/joplin/issues/11598)) ([#11597](https://github.com/laurent22/joplin/issues/11597) by [@pedr](https://github.com/pedr))
+- Fixed: OneNote imported notes have broken links when there are chineses characters on link ([#11602](https://github.com/laurent22/joplin/issues/11602)) ([#11600](https://github.com/laurent22/joplin/issues/11600) by [@pedr](https://github.com/pedr))
+
+## [v3.2.7](https://github.com/laurent22/joplin/releases/tag/v3.2.7) (Pre-release) - 2025-01-06T16:35:41Z
+
+- Improved: Plugins: Add Toast plugin API ([#11583](https://github.com/laurent22/joplin/issues/11583)) ([#11579](https://github.com/laurent22/joplin/issues/11579))
+- Updated translations
+
+## [v3.2.6](https://github.com/laurent22/joplin/releases/tag/v3.2.6) (Pre-release) - 2024-12-23T21:54:40Z
+
+- Improved: Keep comments when rendering Markdown to allow rendered note metadata ([#11530](https://github.com/laurent22/joplin/issues/11530))
+- Improved: Updated packages @rollup/plugin-node-resolve (v15.2.4)
+- Fixed: Rich Text Editor: Fix resized images in lists break sub-list items ([#11532](https://github.com/laurent22/joplin/issues/11532)) ([#11382](https://github.com/laurent22/joplin/issues/11382) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixes [#11508](https://github.com/laurent22/joplin/issues/11508): Prevent installer from recognizing itself as a running instance of Joplin and switch back to electron-builder v24 ([#11541](https://github.com/laurent22/joplin/issues/11541))
+
+## [v3.2.5](https://github.com/laurent22/joplin/releases/tag/v3.2.5) (Pre-release) - 2024-12-18T10:41:13Z
+
+- Improved: Generate .deb package ([#11526](https://github.com/laurent22/joplin/issues/11526) by [@pedr](https://github.com/pedr))
+- Improved: Make js-draw a default plugin ([#11516](https://github.com/laurent22/joplin/issues/11516)) ([#11314](https://github.com/laurent22/joplin/issues/11314))
+- Improved: Make table in HTML format horizontally scrollable ([#11198](https://github.com/laurent22/joplin/issues/11198) by [@wljince007](https://github.com/wljince007))
+- Improved: Reduce application size ([#11505](https://github.com/laurent22/joplin/issues/11505) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages adm-zip (v0.5.16)
+- Fixed: Fix pressing enter during composition in the title input moves focus ([#11491](https://github.com/laurent22/joplin/issues/11491)) ([#11485](https://github.com/laurent22/joplin/issues/11485) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed tags with same special unicode characters not matching ([#11513](https://github.com/laurent22/joplin/issues/11513)) ([#11179](https://github.com/laurent22/joplin/issues/11179) by [@pedr](https://github.com/pedr))
+- Fixed: Upgrade `electron-builder` and `@electron/rebuild` ([#11512](https://github.com/laurent22/joplin/issues/11512)) ([#11508](https://github.com/laurent22/joplin/issues/11508) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.2.4](https://github.com/laurent22/joplin/releases/tag/v3.2.4) (Pre-release) - 2024-12-12T17:59:52Z
+
+- New: Added support for rendered note metadata, in particular the joplin-metadata-print-title tag ([5d84f80](https://github.com/laurent22/joplin/commit/5d84f80))
+- New: Translation: Add sk_SK.po (Slovak) ([#11433](https://github.com/laurent22/joplin/issues/11433) by [@dodog](https://github.com/dodog))
+- Improved: Accessibility: Prevent overwrite mode toggle shortcut from conflicting with screen reader shortcuts ([#11447](https://github.com/laurent22/joplin/issues/11447) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Prevent PDF and HTML export from failing when a plugin references a non-existent file ([d1fc69f](https://github.com/laurent22/joplin/commit/d1fc69f))
+- Improved: Reactivate pCloud synchronisation ([23032b9](https://github.com/laurent22/joplin/commit/23032b9))
+- Improved: Remove Better Code Blocks from the list of plugins incompatible with the new editor ([#11474](https://github.com/laurent22/joplin/issues/11474) by [@ckant](https://github.com/ckant))
+- Improved: Removed deprecation notice on OneDrive sync method ([ceea0bc](https://github.com/laurent22/joplin/commit/ceea0bc))
+- Fixed: Accessibility: Do not override focus order when pressing tab/shift-tab on the note list ([#11446](https://github.com/laurent22/joplin/issues/11446)) ([#11443](https://github.com/laurent22/joplin/issues/11443) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Allow zooming in/out in secondary windows ([#11467](https://github.com/laurent22/joplin/issues/11467)) ([#11444](https://github.com/laurent22/joplin/issues/11444) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Correct file path of OneNote converter on release build ([#11410](https://github.com/laurent22/joplin/issues/11410)) ([#11408](https://github.com/laurent22/joplin/issues/11408) by [@pedr](https://github.com/pedr))
+- Fixed: Ensure spell-check toggle works on macOS ([#11388](https://github.com/laurent22/joplin/issues/11388)) ([#11261](https://github.com/laurent22/joplin/issues/11261) by [@dhakarRaghu](https://github.com/dhakarRaghu))
+- Fixed: Fix `undefined` errors in translations ([#11407](https://github.com/laurent22/joplin/issues/11407) by Self Not Found)
+- Fixed: Fix crash on startup if old read-only items are in the trash ([#11458](https://github.com/laurent22/joplin/issues/11458)) ([#11457](https://github.com/laurent22/joplin/issues/11457) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix the error caused by undefined isCodeBlock_ (turndown-plugin-gfm) ([#11471](https://github.com/laurent22/joplin/issues/11471) by Manabu Nakazawa)
+- Fixed: Fixed checkboxes alignment in note viewer ([#11425](https://github.com/laurent22/joplin/issues/11425))
+- Fixed: Fixed fallback icon size on HTML notes ([#11448](https://github.com/laurent22/joplin/issues/11448) by [@pedr](https://github.com/pedr))
+- Fixed: Goto Anything fails for long strings ([#11436](https://github.com/laurent22/joplin/issues/11436)) ([#11409](https://github.com/laurent22/joplin/issues/11409))
+- Fixed: Reduce application size by removing unnecessary Rust files ([#11412](https://github.com/laurent22/joplin/issues/11412)) ([#11405](https://github.com/laurent22/joplin/issues/11405) by [@pedr](https://github.com/pedr))
+- Fixed: Upgrade CodeMirror packages ([#11440](https://github.com/laurent22/joplin/issues/11440)) ([#11318](https://github.com/laurent22/joplin/issues/11318) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.2.3](https://github.com/laurent22/joplin/releases/tag/v3.2.3) (Pre-release) - 2024-11-18T00:09:05Z
+
+- New: Add OneNote Importer ([#11392](https://github.com/laurent22/joplin/issues/11392) by [@pedr](https://github.com/pedr))
+- New: Plugins: Add support for editor.scrollToText on desktop ([6eac8d9](https://github.com/laurent22/joplin/commit/6eac8d9))
+- Improved: Deprecated OneDrive sync method ([e36f377](https://github.com/laurent22/joplin/commit/e36f377))
+- Improved: Trying to fix issue with permission errors when installing a plugin ([fb6a807](https://github.com/laurent22/joplin/commit/fb6a807))
+- Improved: Mermaid version update ([#11367](https://github.com/laurent22/joplin/issues/11367) by [@LEVIII007](https://github.com/LEVIII007))
+- Improved: Plugins: Allow specifying render options on renderMarkup command ([8e3c817](https://github.com/laurent22/joplin/commit/8e3c817))
+- Improved: Remove the need for sync locks ([#11377](https://github.com/laurent22/joplin/issues/11377))
+- Fixed: Fix PDF export fails with error ([#11390](https://github.com/laurent22/joplin/issues/11390) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix dropping files into the editor ([#11380](https://github.com/laurent22/joplin/issues/11380) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix race condition which may cause data loss, particularly before or after pasting text in the note editor ([#11334](https://github.com/laurent22/joplin/issues/11334)) ([#11317](https://github.com/laurent22/joplin/issues/11317) by [@mrjo118](https://github.com/mrjo118))
+- Fixed: Fix vertical alignment of checkboxes when text wraps over multiple lines ([226a8b3](https://github.com/laurent22/joplin/commit/226a8b3))
+
+## [v3.2.1](https://github.com/laurent22/joplin/releases/tag/v3.2.1) (Pre-release) - 2024-11-10T16:16:27Z
+
+- New: Accessibility: Add ARIA information to the sidebar's notebook and tag list ([#11196](https://github.com/laurent22/joplin/issues/11196) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Accessibility: Add accessible label to the "remove from share" button ([#11233](https://github.com/laurent22/joplin/issues/11233) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Accessibility: Add missing labels to the note attachments screen and master password dialog ([#11231](https://github.com/laurent22/joplin/issues/11231) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add new encryption methods based on native crypto libraries ([#10696](https://github.com/laurent22/joplin/issues/10696) by Self Not Found)
+- New: Add setting to disable markup autocompletion ([#11222](https://github.com/laurent22/joplin/issues/11222) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Add support for overwrite mode in the Markdown editor ([#11262](https://github.com/laurent22/joplin/issues/11262) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Plugins: Add support for editor plugins ([#11296](https://github.com/laurent22/joplin/issues/11296))
+- New: Plugins: Added a renderMarkup command to render MD or HTML markup to HTML ([ff09937](https://github.com/laurent22/joplin/commit/ff09937))
+- Improved: Accessibility: Declare app locale with the HTML lang attribute ([#11218](https://github.com/laurent22/joplin/issues/11218) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Make keyboard focus visible for dropdowns ([#11177](https://github.com/laurent22/joplin/issues/11177) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessiblity: Make keyboard shortcuts settings screen keyboard-navigable ([#11232](https://github.com/laurent22/joplin/issues/11232) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow Markdown editor search dialog to be localised ([#11219](https://github.com/laurent22/joplin/issues/11219) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow user to generate deletion logs ([#11083](https://github.com/laurent22/joplin/issues/11083)) ([#10664](https://github.com/laurent22/joplin/issues/10664) by [@pedr](https://github.com/pedr))
+- Improved: By default disable pasting colors in RTE, and added option to enable it ([e16f452](https://github.com/laurent22/joplin/commit/e16f452))
+- Improved: Multiple window support ([#11181](https://github.com/laurent22/joplin/issues/11181) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @adobe/css-tools (v4.4.0), @playwright/test (v1.45.3), compare-versions (v6.1.1), dayjs (v1.11.12), highlight.js (v11.10.0), jsdom (v24.1.1), sass (v1.77.8)
+- Improved: Upgrade CodeMirror packages ([#11221](https://github.com/laurent22/joplin/issues/11221) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Upgrade to Electron 32.2.0 ([#11200](https://github.com/laurent22/joplin/issues/11200) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Change Resource filetype detecting strategy ([#10907](https://github.com/laurent22/joplin/issues/10907)) ([#10653](https://github.com/laurent22/joplin/issues/10653) by [@pedr](https://github.com/pedr))
+- Fixed: Fix drop cursor styling issue ([#11336](https://github.com/laurent22/joplin/issues/11336)) ([#11345](https://github.com/laurent22/joplin/issues/11345) by [@LEVIII007](https://github.com/LEVIII007))
+- Fixed: Fix errors found by automated accessibility testing ([#11246](https://github.com/laurent22/joplin/issues/11246) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix list renumbering in the Markdown editor resets the first list item number to 1 ([#11220](https://github.com/laurent22/joplin/issues/11220) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed vertical alignment of checkboxes ([49e86d1](https://github.com/laurent22/joplin/commit/49e86d1))
+- Fixed: Prevent disabling of textbox inputs after entering an incorrect password ([#11241](https://github.com/laurent22/joplin/issues/11241)) ([#10887](https://github.com/laurent22/joplin/issues/10887) by [@mrjo118](https://github.com/mrjo118))
+
+## [v3.1.24](https://github.com/laurent22/joplin/releases/tag/v3.1.24) - 2024-11-09T15:08:29Z
+
+- Security: Fix title rendering in GotoAnything search results ([#11356](https://github.com/laurent22/joplin/issues/11356) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Markdown editor: Auto-close backticks ([#11351](https://github.com/laurent22/joplin/issues/11351)) ([#11335](https://github.com/laurent22/joplin/issues/11335) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.23](https://github.com/laurent22/joplin/releases/tag/v3.1.23) - 2024-11-07T10:56:45Z
+
+- Fixed: Fix Markdown editor cursor is invisible on empty lines ([#11316](https://github.com/laurent22/joplin/issues/11316)) ([#11313](https://github.com/laurent22/joplin/issues/11313) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.22](https://github.com/laurent22/joplin/releases/tag/v3.1.22) - 2024-11-05T08:59:32Z
+
+- New: Custom CSS: Add cm-listItem class to lines with list items, don't add region start/end markers for items that are always single-line ([#11291](https://github.com/laurent22/joplin/issues/11291) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Re-enable media with local file URLs in the note viewer ([#11244](https://github.com/laurent22/joplin/issues/11244) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Remove left/right edge margin around editor content when disabled in settings ([#11290](https://github.com/laurent22/joplin/issues/11290)) ([#11279](https://github.com/laurent22/joplin/issues/11279) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix content dropped into the Markdown editor is missing a cursor preview or dropped at the wrong location ([#11289](https://github.com/laurent22/joplin/issues/11289)) ([#11274](https://github.com/laurent22/joplin/issues/11274) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.20](https://github.com/laurent22/joplin/releases/tag/v3.1.20) - 2024-10-22T12:21:32Z
+
+- Fixed: Fix error screen shown on opening settings when an incompatible plugin is installed ([#11223](https://github.com/laurent22/joplin/issues/11223) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Improve KaTeX error handling ([#11207](https://github.com/laurent22/joplin/issues/11207) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Improve Markdown viewer link handling ([#11201](https://github.com/laurent22/joplin/issues/11201) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator)) (CVE-2024-49362 - Thank you @jackfromeast for reporting this issue)
+- Security: Open more target="_blank" links in a browser ([#11212](https://github.com/laurent22/joplin/issues/11212) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.18](https://github.com/laurent22/joplin/releases/tag/v3.1.18) (Pre-release) - 2024-10-11T23:27:10Z
+
+- New: Plugins: Add support for joplin.settings.values and deprecate joplin.settings.value ([715abcc](https://github.com/laurent22/joplin/commit/715abcc))
+- Improved: Downgrade CodeMirror packages to fix various Android regressions ([#11170](https://github.com/laurent22/joplin/issues/11170) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Name webview root attribute so that it can be styled ([75b8caf](https://github.com/laurent22/joplin/commit/75b8caf))
+- Improved: Remove Math Mode from the list of plugins incompatible with the new editor ([#11143](https://github.com/laurent22/joplin/issues/11143) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages glob (v10.4.5), katex (v0.16.11), types
+- Fixed: Accessibility: Fix context menu button doesn't open the note list context menu (regression) ([#11175](https://github.com/laurent22/joplin/issues/11175) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix incorrect list switching behavior ([#11137](https://github.com/laurent22/joplin/issues/11137)) ([#11135](https://github.com/laurent22/joplin/issues/11135) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Improve performance by allowing note list background timers to be cancelled ([#11133](https://github.com/laurent22/joplin/issues/11133)) ([#11129](https://github.com/laurent22/joplin/issues/11129) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.17](https://github.com/laurent22/joplin/releases/tag/v3.1.17) (Pre-release) - 2024-09-26T11:57:54Z
+
+- Improved: Enable again auto-updates ([058a559](https://github.com/laurent22/joplin/commit/058a559))
+- New: Fix horizontal rule button when cursor is not on a new line ([#11085](https://github.com/laurent22/joplin/issues/11085) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Automatically detect and use operating system theme by default ([5beb80b](https://github.com/laurent22/joplin/commit/5beb80b))
+- Improved: Updated packages glob (v10.4.2), jsdom (v24.1.0), sass (v1.77.6), turndown (v7.2.0)
+- Fixed: Delete revisions on the sync target when deleted locally ([#11035](https://github.com/laurent22/joplin/issues/11035)) ([#11017](https://github.com/laurent22/joplin/issues/11017) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix ctrl/cmd-n can create new notes while the trash folder is selected ([#11092](https://github.com/laurent22/joplin/issues/11092) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Improve performance when there are many selected items ([#11067](https://github.com/laurent22/joplin/issues/11067)) ([#11065](https://github.com/laurent22/joplin/issues/11065) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin API: Save changes made with `editor.setText` ([#11117](https://github.com/laurent22/joplin/issues/11117)) ([#11105](https://github.com/laurent22/joplin/issues/11105) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: WebDAV synchronisation not working because of URL encoding differences ([#11076](https://github.com/laurent22/joplin/issues/11076)) ([#10608](https://github.com/laurent22/joplin/issues/10608) by [@pedr](https://github.com/pedr))
+
+## [v3.1.15](https://github.com/laurent22/joplin/releases/tag/v3.1.15) (Pre-release) - 2024-09-17T09:15:10Z
+
+- New: Accessibility: Add "Move to" context menu action for notebooks ([#11039](https://github.com/laurent22/joplin/issues/11039) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve text read by screen readers when focusing the note viewer ([#11030](https://github.com/laurent22/joplin/issues/11030) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve the performance of GoToAnything ([#11064](https://github.com/laurent22/joplin/issues/11064)) ([#11063](https://github.com/laurent22/joplin/issues/11063) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Seamless-Updates: generated and uploaded latest-mac-arm64.yml to GitHub Releases ([#11042](https://github.com/laurent22/joplin/issues/11042) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Update plugin compatibility layer to allow more legacy plugins (e.g. Markdown Prettier) to run ([#11033](https://github.com/laurent22/joplin/issues/11033) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages jsdom (v24), markdown-it-ins (v4), markdown-it-sup (v2), sass (v1.77.5)
+- Improved: Upgrade CodeMirror packages ([#11034](https://github.com/laurent22/joplin/issues/11034) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Accessibility: Fix multi-note selection menu not tab-focusable ([#11018](https://github.com/laurent22/joplin/issues/11018) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Encryption screen: Fix "invalid password" border shown for some correct passwords ([#11027](https://github.com/laurent22/joplin/issues/11027) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix clicking on most non-media resource links opens them inline ([#11022](https://github.com/laurent22/joplin/issues/11022)) ([#11020](https://github.com/laurent22/joplin/issues/11020) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix editor/viewer loses focus when visible panels are changed with ctrl-l ([#11029](https://github.com/laurent22/joplin/issues/11029) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix table column and rows not being resizable on RTE ([#11037](https://github.com/laurent22/joplin/issues/11037)) ([#10560](https://github.com/laurent22/joplin/issues/10560) by [@pedr](https://github.com/pedr))
+- Fixed: Fix unable to change incorrect decryption password if the same as the master password ([#11026](https://github.com/laurent22/joplin/issues/11026) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: MacOS: Fixed shortcut for permanent note deletion ([41b03f9](https://github.com/laurent22/joplin/commit/41b03f9))
+- Fixed: Table options not visible on dark theme ([#11036](https://github.com/laurent22/joplin/issues/11036)) ([#10561](https://github.com/laurent22/joplin/issues/10561) by [@pedr](https://github.com/pedr))
+
+## [v3.1.8](https://github.com/laurent22/joplin/releases/tag/v3.1.8) (Pre-release) - 2024-09-08T20:32:44Z
+
+- Improved: Seamless-Updates - rename latest-mac.yml to latest-mac-arm64.yml ([#10985](https://github.com/laurent22/joplin/issues/10985) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Updated packages @playwright/test (v1.44.1), sass (v1.77.4), tesseract.js (v5.1.0)
+- Fixed: Decrypt master keys only as needed ([#10990](https://github.com/laurent22/joplin/issues/10990)) ([#10856](https://github.com/laurent22/joplin/issues/10856) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Removed unneeded electron-log dependency ([#10865](https://github.com/laurent22/joplin/issues/10865))
+
+## [v3.1.6](https://github.com/laurent22/joplin/releases/tag/v3.1.6) (Pre-release) - 2024-09-02T13:19:40Z
+
+- New: Add left/right arrow keys as expand/collapse shortcuts for notebooks ([#10944](https://github.com/laurent22/joplin/issues/10944) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Seamless-Updates: added latest-mac-arm64.yml ([#10941](https://github.com/laurent22/joplin/issues/10941) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Accessibility: Improve note list keyboard and screen reader accessibility ([#10940](https://github.com/laurent22/joplin/issues/10940) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Seamless-Updates - added tests for autoUpdaterService ([#10935](https://github.com/laurent22/joplin/issues/10935) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Updated packages @playwright/test (v1.43.1), async-mutex (v0.5.0), dayjs (v1.11.11), glob (v10.3.16), re-resizable (v6.9.17), react, sass (v1.76.0), sharp (v0.33.4)
+- Fixed: Windows portable: Fix keychain-backed storage incorrectly enabled ([#10942](https://github.com/laurent22/joplin/issues/10942) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.4](https://github.com/laurent22/joplin/releases/tag/v3.1.4) (Pre-release) - 2024-08-27T17:46:38Z
+
+- Improved: Accessibility: Improve note title focus handling ([#10932](https://github.com/laurent22/joplin/issues/10932) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Added feature flag to disable sync lock support ([#10925](https://github.com/laurent22/joplin/issues/10925)) ([#10407](https://github.com/laurent22/joplin/issues/10407))
+- Improved: Make feature flags advanced settings by default ([700ffa2](https://github.com/laurent22/joplin/commit/700ffa2))
+- Improved: Seamless-Updates: implemented flow for prereleases ([#10892](https://github.com/laurent22/joplin/issues/10892) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Updated packages @fortawesome/react-fontawesome (v0.2.2), @rollup/plugin-commonjs (v25.0.8)
+- Fixed: Fix "Enable auto-updates" enabled by default and visible on unsupported platforms ([#10897](https://github.com/laurent22/joplin/issues/10897)) ([#10896](https://github.com/laurent22/joplin/issues/10896) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix BMP image rendering in the Markdown viewer ([#10915](https://github.com/laurent22/joplin/issues/10915)) ([#10914](https://github.com/laurent22/joplin/issues/10914) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix Fix editing notes in "Conflicts" causes them to temporarily vanish ([#10913](https://github.com/laurent22/joplin/issues/10913)) ([#10737](https://github.com/laurent22/joplin/issues/10737) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix alt+up/alt+down fails to re-order multiple lines ([#10899](https://github.com/laurent22/joplin/issues/10899)) ([#10895](https://github.com/laurent22/joplin/issues/10895) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix viewer and panel plugins that check for the presence of `exports` fail to load ([#10900](https://github.com/laurent22/joplin/issues/10900) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed italic support in Fountain documents ([5fdd088](https://github.com/laurent22/joplin/commit/5fdd088))
+- Fixed: Markdown editor: Fix toggling bulleted lists when items start with asterisks ([#10902](https://github.com/laurent22/joplin/issues/10902)) ([#10891](https://github.com/laurent22/joplin/issues/10891) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Fix HTML parsing bug ([#10876](https://github.com/laurent22/joplin/issues/10876)) (reported by [@febou92](https://github.com/febou92))
+
+## [v3.0.15](https://github.com/laurent22/joplin/releases/tag/v3.0.15) - 2024-08-21T09:19:58Z
+
+- Fixed: Improve the reliability of fetching resources ([#10826](https://github.com/laurent22/joplin/issues/10826)) ([#10740](https://github.com/laurent22/joplin/issues/10740) by [@pedr](https://github.com/pedr))
+- Security: Fix HTML parsing bug ([#10876](https://github.com/laurent22/joplin/issues/10876)) (reported by [@febou92](https://github.com/febou92))
+
+## [v3.1.3](https://github.com/laurent22/joplin/releases/tag/v3.1.3) (Pre-release) - 2024-08-17T13:08:21Z
+
+- Improved: Rich Text Editor: Add eight spaces when pressing tab ([#10880](https://github.com/laurent22/joplin/issues/10880)) ([#5762](https://github.com/laurent22/joplin/issues/5762) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Seamless-Updates: added flow for automatic updates for releases ([#10857](https://github.com/laurent22/joplin/issues/10857) by [@AliceHincu](https://github.com/AliceHincu))
+- Fixed: Improve the reliability of fetching resources ([#10826](https://github.com/laurent22/joplin/issues/10826)) ([#10740](https://github.com/laurent22/joplin/issues/10740) by [@pedr](https://github.com/pedr))
+
+## [v3.1.2](https://github.com/laurent22/joplin/releases/tag/v3.1.2) (Pre-release) - 2024-08-16T09:00:59Z
+
+- Improved: Allow searching when only the note viewer is visible and sync search with editor ([#10866](https://github.com/laurent22/joplin/issues/10866) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Seamless-Updates: generate latest-mac.yml file ([#10869](https://github.com/laurent22/joplin/issues/10869) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Updated packages @fortawesome/react-fontawesome (v0.2.1)
+- Improved: Upgrade electron to v29.4.5 ([#10847](https://github.com/laurent22/joplin/issues/10847) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.1](https://github.com/laurent22/joplin/releases/tag/v3.1.1) (Pre-release) - 2024-08-10T11:36:02Z
+
+- New: Accessibility: Add missing labels and role information to several controls ([#10788](https://github.com/laurent22/joplin/issues/10788) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve focus handling for plugin and prompt dialogs ([#10801](https://github.com/laurent22/joplin/issues/10801) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve keyboard navigation in the Markdown and note toolbar ([#10819](https://github.com/laurent22/joplin/issues/10819) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve settings screen keyboard navigation and screen reader accessibility ([#10812](https://github.com/laurent22/joplin/issues/10812) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Restore keyboard focus when closing a dialog ([#10817](https://github.com/laurent22/joplin/issues/10817) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow specifying custom language data URLs ([#10846](https://github.com/laurent22/joplin/issues/10846)) ([#10835](https://github.com/laurent22/joplin/issues/10835) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Fix "View OCR text" not present in context menu when right-clicking an image ([#10842](https://github.com/laurent22/joplin/issues/10842)) ([#10746](https://github.com/laurent22/joplin/issues/10746) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve RTL support in the Markdown editor ([#10810](https://github.com/laurent22/joplin/issues/10810) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve focus handling for notebook edit, share, and sync dialogs ([#10779](https://github.com/laurent22/joplin/issues/10779) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Make the beta markdown editor the default ([#10796](https://github.com/laurent22/joplin/issues/10796)) ([#9450](https://github.com/laurent22/joplin/issues/9450) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Move the note viewer to a separate process ([#10678](https://github.com/laurent22/joplin/issues/10678)) ([#10424](https://github.com/laurent22/joplin/issues/10424) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Rich Text Editor: Preserve cursor location when updating editor content ([#10781](https://github.com/laurent22/joplin/issues/10781) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Seamless-Updates - creation of update notification ([#10791](https://github.com/laurent22/joplin/issues/10791) by [@AliceHincu](https://github.com/AliceHincu))
+- Improved: Set min version for synchronising to 3.0.0 ([a1f9c9c](https://github.com/laurent22/joplin/commit/a1f9c9c))
+- Improved: Update bundled Backup plugin to v1.4.2 ([#10760](https://github.com/laurent22/joplin/issues/10760) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages glob (v10.3.12), jsdom (v23.2.0), sharp (v0.33.3), style-to-js (v1.1.12), tar (v6.2.1)
+- Improved: Use Electron `safeStorage` for keychain support ([#10535](https://github.com/laurent22/joplin/issues/10535) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Use relative time in note list for today and yesterday ([1437dd5](https://github.com/laurent22/joplin/commit/1437dd5))
+- Fixed: Accessibility: Fix screen reader doesn't read Goto Anything search results or help button label ([#10816](https://github.com/laurent22/joplin/issues/10816) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: External editing: Fix notes often not updated when saved from Vim ([#10780](https://github.com/laurent22/joplin/issues/10780)) ([#10672](https://github.com/laurent22/joplin/issues/10672) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix Enter key submits dialogs even if a button has focus ([#10814](https://github.com/laurent22/joplin/issues/10814)) ([#10815](https://github.com/laurent22/joplin/issues/10815) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix crash on opening certain plugin dialogs ([#10838](https://github.com/laurent22/joplin/issues/10838) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix error in plugin content scripts generated with Webpack ([#10680](https://github.com/laurent22/joplin/issues/10680) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix error when canceling bulk PDF export ([#10839](https://github.com/laurent22/joplin/issues/10839)) ([#10828](https://github.com/laurent22/joplin/issues/10828) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix images fail to render in the preview pane for HTML notes ([#10806](https://github.com/laurent22/joplin/issues/10806) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix joplin install fails because ldconfig not found libfuse2 but it is indeed installed. ([#10717](https://github.com/laurent22/joplin/issues/10717)) ([#10716](https://github.com/laurent22/joplin/issues/10716) by [@sysescool](https://github.com/sysescool))
+- Fixed: Fix math is invisible in certain mermaid diagrams ([#10820](https://github.com/laurent22/joplin/issues/10820)) ([#10785](https://github.com/laurent22/joplin/issues/10785) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix not-yet-created images lost while editing with the Rich Text Editor ([#10734](https://github.com/laurent22/joplin/issues/10734)) ([#10733](https://github.com/laurent22/joplin/issues/10733) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix prompt tag dialog input can be wider than its container ([#10818](https://github.com/laurent22/joplin/issues/10818) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Make `:w` trigger sync in the beta editor's Vim mode ([#10778](https://github.com/laurent22/joplin/issues/10778)) ([#10768](https://github.com/laurent22/joplin/issues/10768) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Show notification in case Joplin Cloud credential is not valid anymore ([#10649](https://github.com/laurent22/joplin/issues/10649)) ([#10645](https://github.com/laurent22/joplin/issues/10645) by [@pedr](https://github.com/pedr))
+- Fixed: Tags and Delete note not being available on Search and on All Notes list ([#10729](https://github.com/laurent22/joplin/issues/10729)) ([#10668](https://github.com/laurent22/joplin/issues/10668) by [@pedr](https://github.com/pedr))
+
+## [v2.14.23](https://github.com/laurent22/joplin/releases/tag/v2.14.23) - 2024-08-07T11:15:25Z
+
+- Improved: Disable sync version check to allow compatibility between 2.14 and 3.0 for users who cannot upgrade ([a6cc5bd](https://github.com/laurent22/joplin/commit/a6cc5bd))
+
+## [v3.0.14](https://github.com/laurent22/joplin/releases/tag/v3.0.14) - 2024-07-28T13:55:50Z
+
+- Improved: Api: Do not return deleted notes in folders/: id/notes call ([3e0fb48](https://github.com/laurent22/joplin/commit/3e0fb48))
+- Fixed: Fix incorrect text rendering on MacOS by changing the default font to `Avenir Next` ([#10686](https://github.com/laurent22/joplin/issues/10686)) ([#10679](https://github.com/laurent22/joplin/issues/10679) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix shift-delete asks to permanently delete the current note, rather than cut text, when the editor is selected. ([#10687](https://github.com/laurent22/joplin/issues/10687)) ([#10685](https://github.com/laurent22/joplin/issues/10685) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix sidebar performance regression with many nested notebooks ([#10676](https://github.com/laurent22/joplin/issues/10676)) ([#10674](https://github.com/laurent22/joplin/issues/10674) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.0.12](https://github.com/laurent22/joplin/releases/tag/v3.0.12) - 2024-07-02T17:11:14Z
+
+- Improved: Set min version for synchronising to 3.0.0 ([e4b8976](https://github.com/laurent22/joplin/commit/e4b8976))
+- Fixed: Show notification in case Joplin Cloud credential is not valid anymore ([#10649](https://github.com/laurent22/joplin/issues/10649)) ([#10645](https://github.com/laurent22/joplin/issues/10645) by [@pedr](https://github.com/pedr))
+
+## [v3.0.11](https://github.com/laurent22/joplin/releases/tag/v3.0.11) (Pre-release) - 2024-06-29T10:20:02Z
+
+- Updated Chinese and German translation
+
+## [v3.0.10](https://github.com/laurent22/joplin/releases/tag/v3.0.10) (Pre-release) - 2024-06-19T15:24:07Z
+
+- Improved: Don't render empty title page for Fountain ([#10631](https://github.com/laurent22/joplin/issues/10631) by [@XPhyro](https://github.com/XPhyro))
+- Improved: Start synchronisation just after login is complete ([#10574](https://github.com/laurent22/joplin/issues/10574) by [@pedr](https://github.com/pedr))
+- Improved: Updated packages chokidar (v3.6.0), css-loader (v6.10.0), follow-redirects (v1.15.6), jsdom (v23), sass (v1.71.0), style-to-js (v1.1.11), turndown (v7.1.3)
+- Fixed: Prevent application from crashing when the syncInfoCache is corrupted ([#10546](https://github.com/laurent22/joplin/issues/10546)) ([#10030](https://github.com/laurent22/joplin/issues/10030) by [@pedr](https://github.com/pedr))
+- Fixed: Don't re-order the note list when in search ([#10587](https://github.com/laurent22/joplin/issues/10587)) ([#10586](https://github.com/laurent22/joplin/issues/10586) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: English: Use the plural form of a localization for negative and zero items ([#10582](https://github.com/laurent22/joplin/issues/10582)) ([#10581](https://github.com/laurent22/joplin/issues/10581) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix paste adds newlines in the Rich Text Editor when certain plugins are enabled ([#10635](https://github.com/laurent22/joplin/issues/10635)) ([#10061](https://github.com/laurent22/joplin/issues/10061) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixes error when Joplin Cloud login is finished before the settings are saved ([#10575](https://github.com/laurent22/joplin/issues/10575) by [@pedr](https://github.com/pedr))
+
+## [v3.0.9](https://github.com/laurent22/joplin/releases/tag/v3.0.9) (Pre-release) - 2024-06-12T19:07:50Z
+
+- New: Add Joplin Cloud account information to configuration screen ([#10553](https://github.com/laurent22/joplin/issues/10553) by [@pedr](https://github.com/pedr))
+- New: Add button on Synchronization to Joplin Cloud login screen ([#10569](https://github.com/laurent22/joplin/issues/10569) by [@pedr](https://github.com/pedr))
+- Improved: Display description for settings field in the plugin customization screen ([#10469](https://github.com/laurent22/joplin/issues/10469)) ([#9959](https://github.com/laurent22/joplin/issues/9959) by [@pedr](https://github.com/pedr))
+- Improved: Hide links to login after process is successful ([#10571](https://github.com/laurent22/joplin/issues/10571) by [@pedr](https://github.com/pedr))
+- Improved: Re-render note when resources are changed ([#10459](https://github.com/laurent22/joplin/issues/10459) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Rich Text Editor: Allow toggling bulleted and numbered lists from the command palette ([#10559](https://github.com/laurent22/joplin/issues/10559) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Significantly reduces size of exported HTML files in most cases ([32710e4](https://github.com/laurent22/joplin/commit/32710e4))
+- Improved: Update Mermaid to v10.9.1 ([#10475](https://github.com/laurent22/joplin/issues/10475) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages css-loader (v6.9.1), js-sha512 (v0.9.0), react, sass (v1.70.0), tesseract.js (v5.0.5)
+- Improved: Upgrade KaTeX to v0.16.10 ([#10570](https://github.com/laurent22/joplin/issues/10570) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Beta editor: Fix crash when switching between notes that use CRLF line endings ([#10531](https://github.com/laurent22/joplin/issues/10531) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix focusing the note list doesn't work when the selected note is off screen ([#10515](https://github.com/laurent22/joplin/issues/10515)) ([#10514](https://github.com/laurent22/joplin/issues/10514) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix importing completed tasks ([#10528](https://github.com/laurent22/joplin/issues/10528) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix new note and to-do buttons greyed when initial selection is "all notes" or a tag ([#10434](https://github.com/laurent22/joplin/issues/10434)) ([#10230](https://github.com/laurent22/joplin/issues/10230) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix note disappears while editing during search ([#10568](https://github.com/laurent22/joplin/issues/10568)) ([#10236](https://github.com/laurent22/joplin/issues/10236) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix plugin settings stored in `settings.json` are lost on startup ([#10458](https://github.com/laurent22/joplin/issues/10458)) ([#10381](https://github.com/laurent22/joplin/issues/10381) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix tables missing source map attributes ([#10516](https://github.com/laurent22/joplin/issues/10516)) ([#10466](https://github.com/laurent22/joplin/issues/10466) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix wrong text selected when adding a link in the beta editor ([#10542](https://github.com/laurent22/joplin/issues/10542)) ([#10538](https://github.com/laurent22/joplin/issues/10538) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Images from behind a login cannot be pasted in RTE ([#10224](https://github.com/laurent22/joplin/issues/10224))
+- Fixed: Rich text editor: Include "ctrl-click to open" in link tooltips ([#10547](https://github.com/laurent22/joplin/issues/10547)) ([#10199](https://github.com/laurent22/joplin/issues/10199) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Sort the note list soon after changing a note's title ([#10512](https://github.com/laurent22/joplin/issues/10512)) ([#10284](https://github.com/laurent22/joplin/issues/10284) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Watch resources for changes when opened from the Rich Text Editor ([#10554](https://github.com/laurent22/joplin/issues/10554)) ([#10551](https://github.com/laurent22/joplin/issues/10551) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Work around checkbox toggle broken when editor is hidden ([#10534](https://github.com/laurent22/joplin/issues/10534)) ([#10416](https://github.com/laurent22/joplin/issues/10416) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.0.8](https://github.com/laurent22/joplin/releases/tag/v3.0.8) (Pre-release) - 2024-05-22T14:20:45Z
+
+- New: Api: Add support for note.source property ([a747828](https://github.com/laurent22/joplin/commit/a747828))
+- Improved: Added capability to toggle visibility of the Menu Bar from the View menu ([#10324](https://github.com/laurent22/joplin/issues/10324)) ([#1752](https://github.com/laurent22/joplin/issues/1752) by [@LightTreasure](https://github.com/LightTreasure))
+- Improved: Api: Exclude deleted and conflicted notes when calling /notes ([57c316a](https://github.com/laurent22/joplin/commit/57c316a))
+- Improved: Improves formatting of log statements ([aac8d58](https://github.com/laurent22/joplin/commit/aac8d58))
+- Improved: Note attachments screen: Allow searching for attachments ([#10442](https://github.com/laurent22/joplin/issues/10442) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Sidebar: Remove redundant focus indicator ([#10443](https://github.com/laurent22/joplin/issues/10443) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix cursor jumps to the top of the note editor on sync ([#10456](https://github.com/laurent22/joplin/issues/10456)) ([#8960](https://github.com/laurent22/joplin/issues/8960) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix default values for plugin settings stored in `settings.json` not applied ([#10383](https://github.com/laurent22/joplin/issues/10383)) ([#10382](https://github.com/laurent22/joplin/issues/10382) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix logger tests by adding time ([#10433](https://github.com/laurent22/joplin/issues/10433) by [@pedr](https://github.com/pedr))
+- Fixed: Fix nonbreaking spaces and CRLF break search for adjacent words ([#10417](https://github.com/laurent22/joplin/issues/10417) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed an issue that could cause certain notes not to render when they contain an empty STYLE tag ([0a766d7](https://github.com/laurent22/joplin/commit/0a766d7))
+- Fixed: Maintain cursor position when changing list indentation ([#10441](https://github.com/laurent22/joplin/issues/10441)) ([#10439](https://github.com/laurent22/joplin/issues/10439) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Arbitrary JavaScript execution in PDF.js (CVE-2024-4367) ([#10450](https://github.com/laurent22/joplin/issues/10450) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v2.14.22](https://github.com/laurent22/joplin/releases/tag/v2.14.22) - 2024-05-22T19:19:02Z
+
+- Security: Arbitrary JavaScript execution in PDF.js (CVE-2024-4367) ([#10450](https://github.com/laurent22/joplin/issues/10450) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.0.6](https://github.com/laurent22/joplin/releases/tag/v3.0.6) (Pre-release) - 2024-04-27T13:16:04Z
+
+- New: Add context menu item to view OCR text of an attachment ([8bdec4c](https://github.com/laurent22/joplin/commit/8bdec4c))
+- New: Added search list for configuration font input fields ([#10248](https://github.com/laurent22/joplin/issues/10248) by [@ab-elhaddad](https://github.com/ab-elhaddad))
+- Improved: Attach log to crash dump when the application crashes ([c5dfa4c](https://github.com/laurent22/joplin/commit/c5dfa4c))
+- Improved: Display a message when Joplin Cloud user don't have access to email to note feature ([#10322](https://github.com/laurent22/joplin/issues/10322) by [@pedr](https://github.com/pedr))
+- Improved: Do not trim markdown upon saving in rich text ([#10321](https://github.com/laurent22/joplin/issues/10321)) ([#10315](https://github.com/laurent22/joplin/issues/10315) by [@chaNcharge](https://github.com/chaNcharge))
+- Improved: Improved log formatting and allow saving last lines of log to memory ([74bc9b3](https://github.com/laurent22/joplin/commit/74bc9b3))
+- Improved: Refactor sidebar to better handle thousands of tags and notebooks ([#10331](https://github.com/laurent22/joplin/issues/10331)) ([#4251](https://github.com/laurent22/joplin/issues/4251) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support URLs in plugin API imaging.createFromPath ([#10334](https://github.com/laurent22/joplin/issues/10334))
+- Improved: Ubuntu 24.04: Work around unprivileged user namespace restrictions by adding the --no-sandbox flag to the launcher ([#10338](https://github.com/laurent22/joplin/issues/10338)) ([#10332](https://github.com/laurent22/joplin/issues/10332) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @adobe/css-tools (v4.3.3)
+- Fixed: After deleting the last note from the conflicts folder, the application state is invalid ([#10189](https://github.com/laurent22/joplin/issues/10189))
+- Fixed: Display correct sorting icon ([#10283](https://github.com/laurent22/joplin/issues/10283))
+- Fixed: Do not invite user to create new notes in the trash folder ([#10356](https://github.com/laurent22/joplin/issues/10356)) ([#10191](https://github.com/laurent22/joplin/issues/10191) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix "new notebook" shown in context menu when right-clicking on the "Tags" header ([#10378](https://github.com/laurent22/joplin/issues/10378) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix note disappears while editing ([#10370](https://github.com/laurent22/joplin/issues/10370)) ([#10194](https://github.com/laurent22/joplin/issues/10194) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed error when processing certain PDF files for OCR ([#10056](https://github.com/laurent22/joplin/issues/10056))
+- Fixed: Linux: Allow passing `--enable-wayland-ime` flag to fix input method issues on startup ([#10349](https://github.com/laurent22/joplin/issues/10349)) ([#10345](https://github.com/laurent22/joplin/issues/10345) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Old.reddit pages are not saved correctly as HTML by the Web Clipper ([#10274](https://github.com/laurent22/joplin/issues/10274))
+- Fixed: Search results from API change when fields param is used ([#10088](https://github.com/laurent22/joplin/issues/10088))
+- Fixed: When web clipper clipping code blocks, keep code in multiline and delete code number lines ([#10126](https://github.com/laurent22/joplin/issues/10126)) ([#5626](https://github.com/laurent22/joplin/issues/5626) by [@wljince007](https://github.com/wljince007))
+
+## [v3.0.3](https://github.com/laurent22/joplin/releases/tag/v3.0.3) (Pre-release) - 2024-04-18T15:41:38Z
+
+- Improved: Allow creating plugins that process pasted text in the beta editor ([#10310](https://github.com/laurent22/joplin/issues/10310) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow marking a plugin as mobile-only or desktop-only ([#10229](https://github.com/laurent22/joplin/issues/10229)) ([#10206](https://github.com/laurent22/joplin/issues/10206) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow marking sync errors as ignored in "sync status" ([#10290](https://github.com/laurent22/joplin/issues/10290) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow sorting by due date and completion date in detailed note list ([#5819](https://github.com/laurent22/joplin/issues/5819))
+- Improved: Avoid unnecessary requests if Joplin Cloud credentials are empty ([#10256](https://github.com/laurent22/joplin/issues/10256) by [@pedr](https://github.com/pedr))
+- Improved: Bump @codemirror/view version. ([#10174](https://github.com/laurent22/joplin/issues/10174) by [@itzTheMeow](https://github.com/itzTheMeow))
+- Improved: Improve focus handling ([00084c5](https://github.com/laurent22/joplin/commit/00084c5))
+- Improved: Make tables horizontally scrollable ([#10161](https://github.com/laurent22/joplin/issues/10161) by [@wljince007](https://github.com/wljince007))
+- Improved: Plugin API: Add support for loading PDFs with the imaging API ([#10177](https://github.com/laurent22/joplin/issues/10177)) ([#9794](https://github.com/laurent22/joplin/issues/9794) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Update farsi/persian translation fa.po ([#10181](https://github.com/laurent22/joplin/issues/10181) by [@mimeyn](https://github.com/mimeyn))
+- Improved: Upgrade the built-in Backup plugin to version 1.4.1 ([#10197](https://github.com/laurent22/joplin/issues/10197) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Added hover effect to detailed renderer ([#10213](https://github.com/laurent22/joplin/issues/10213)) ([#10196](https://github.com/laurent22/joplin/issues/10196) by [@Mohamad-Shiro](https://github.com/Mohamad-Shiro))
+- Fixed: Detailed note list doesn't follow preferred date and time formats ([#10204](https://github.com/laurent22/joplin/issues/10204)) ([#10182](https://github.com/laurent22/joplin/issues/10182) by [@cagnusmarlsen](https://github.com/cagnusmarlsen))
+- Fixed: Email to note address not presented in configuration screen before synchronisation ([#10293](https://github.com/laurent22/joplin/issues/10293)) ([#10292](https://github.com/laurent22/joplin/issues/10292) by [@pedr](https://github.com/pedr))
+- Fixed: Fix "open profile directory" shows a warning message ([#10294](https://github.com/laurent22/joplin/issues/10294) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix dragging notebooks to the toplevel notebook ([#10302](https://github.com/laurent22/joplin/issues/10302)) ([#10067](https://github.com/laurent22/joplin/issues/10067) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed auto scrolling with moving a note ([#10193](https://github.com/laurent22/joplin/issues/10193)) ([#10078](https://github.com/laurent22/joplin/issues/10078) by [@Mohamad-Shiro](https://github.com/Mohamad-Shiro))
+- Fixed: Fixed error when exporting certain notes that contain plugin content ([f85db14](https://github.com/laurent22/joplin/commit/f85db14))
+- Fixed: Fixed rendering of alarm time in detailed note list ([5b4477f](https://github.com/laurent22/joplin/commit/5b4477f))
+- Fixed: Fixed sorting labels ([42900bc](https://github.com/laurent22/joplin/commit/42900bc))
+- Fixed: Focus is lost when the hyperlink modal is cancelled ([#10258](https://github.com/laurent22/joplin/issues/10258)) ([#9970](https://github.com/laurent22/joplin/issues/9970) by Fabio Neto)
+- Fixed: Link pased in RTE editor is not underlined until switch to another note ([#10202](https://github.com/laurent22/joplin/issues/10202)) ([#9950](https://github.com/laurent22/joplin/issues/9950) by [@danimnunes](https://github.com/danimnunes))
+- Fixed: Plugin API: Fix unable to require `@codemirror/search`  ([#10205](https://github.com/laurent22/joplin/issues/10205) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Toggle external editing button overlaps with bold button. ([#10069](https://github.com/laurent22/joplin/issues/10069)) ([#10025](https://github.com/laurent22/joplin/issues/10025) by [@JanhaviAlekar](https://github.com/JanhaviAlekar))
+- Fixed: When creating a note or to-do, focus is not set correctly ([#10108](https://github.com/laurent22/joplin/issues/10108))
+- Security: Make attachment and file links safer ([#10250](https://github.com/laurent22/joplin/issues/10250) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.0.2](https://github.com/laurent22/joplin/releases/tag/v3.0.2) (Pre-release) - 2024-03-21T18:18:49Z
+
+- New: Add support for multiple columns note list ([#9924](https://github.com/laurent22/joplin/issues/9924))
+- New: Api: Add capability of limiting downloads ([#9788](https://github.com/laurent22/joplin/issues/9788) by [@pedr](https://github.com/pedr))
+- New: Add trash folder ([#9671](https://github.com/laurent22/joplin/issues/9671)) ([#483](https://github.com/laurent22/joplin/issues/483))
+- Improved: Allow 'All Notes' to have 'Toggle own sort order' ([#10021](https://github.com/laurent22/joplin/issues/10021)) ([#9984](https://github.com/laurent22/joplin/issues/9984) by [@HahaBill](https://github.com/HahaBill))
+- Improved: Beta editor: Fix search results not highlighted ([#9928](https://github.com/laurent22/joplin/issues/9928)) ([#9927](https://github.com/laurent22/joplin/issues/9927) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Change Joplin Cloud login process to allow MFA via browser ([#9445](https://github.com/laurent22/joplin/issues/9445) by [@pedr](https://github.com/pedr))
+- Improved: Configure RTE to handle the first table row as header ([#10059](https://github.com/laurent22/joplin/issues/10059) by [@Marph](https://github.com/Marph))
+- Improved: Fix Vim keymap error with beta editor ([#10049](https://github.com/laurent22/joplin/issues/10049)) ([#9981](https://github.com/laurent22/joplin/issues/9981) by [@RadCod3](https://github.com/RadCod3))
+- Improved: Fix conflicts notebook doesn't work with the trash feature ([#10104](https://github.com/laurent22/joplin/issues/10104)) ([#10073](https://github.com/laurent22/joplin/issues/10073) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Fix hiding the note preview pane is very slow for large notes ([#10006](https://github.com/laurent22/joplin/issues/10006)) ([#9890](https://github.com/laurent22/joplin/issues/9890) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Fixed text wrapping in Spellcheck button ([#10005](https://github.com/laurent22/joplin/issues/10005)) ([#9998](https://github.com/laurent22/joplin/issues/9998) by [@RadCod3](https://github.com/RadCod3))
+- Improved: Improve beta editor support for the Rich Markdown plugin ([#9935](https://github.com/laurent22/joplin/issues/9935) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve support for plugins in the Rich Text Editor (implement `webviewApi.postMesage`) ([#10158](https://github.com/laurent22/joplin/issues/10158)) ([#8931](https://github.com/laurent22/joplin/issues/8931) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Link "browse all plugins" to joplinapp.org/plugins ([#10113](https://github.com/laurent22/joplin/issues/10113) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Log user actions (deletions) ([#9585](https://github.com/laurent22/joplin/issues/9585)) ([#9465](https://github.com/laurent22/joplin/issues/9465) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Prevent race condition when download limit is reached ([#10124](https://github.com/laurent22/joplin/issues/10124) by [@pedr](https://github.com/pedr))
+- Improved: Support Ctrl+Enter keyboard shortcut (Cmd+Enter on MacOS) ([#10003](https://github.com/laurent22/joplin/issues/10003)) ([#9980](https://github.com/laurent22/joplin/issues/9980) by [@cagnusmarlsen](https://github.com/cagnusmarlsen))
+- Improved: Upgrade CodeMirror 6 packages ([#10032](https://github.com/laurent22/joplin/issues/10032)) ([#10031](https://github.com/laurent22/joplin/issues/10031) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Upgrade to Electron 29 ([#10110](https://github.com/laurent22/joplin/issues/10110) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Beta editor plugins: Fix opening and closing settings can break some plugins with legacy code ([#10024](https://github.com/laurent22/joplin/issues/10024)) ([#10023](https://github.com/laurent22/joplin/issues/10023) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Beta markdown editor: Support overriding built-in keyboard shortcuts ([#10022](https://github.com/laurent22/joplin/issues/10022)) ([#10020](https://github.com/laurent22/joplin/issues/10020) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Command palette not showing note title ([#9961](https://github.com/laurent22/joplin/issues/9961)) ([#9919](https://github.com/laurent22/joplin/issues/9919) by [@pedr](https://github.com/pedr))
+- Fixed: Creating a profile changes the language of Joplin ([#10038](https://github.com/laurent22/joplin/issues/10038)) ([#9960](https://github.com/laurent22/joplin/issues/9960) by [@cagnusmarlsen](https://github.com/cagnusmarlsen))
+- Fixed: Filter Sync Target Info Logs ([#10014](https://github.com/laurent22/joplin/issues/10014)) ([#9985](https://github.com/laurent22/joplin/issues/9985) by Sagnik Mandal)
+- Fixed: Fix "New note" button rendering when startup with Trash can selected. ([#10076](https://github.com/laurent22/joplin/issues/10076)) ([#10060](https://github.com/laurent22/joplin/issues/10060) by [@khuongduy354](https://github.com/khuongduy354))
+- Fixed: Fix text not shown in plugin message boxes ([#10084](https://github.com/laurent22/joplin/issues/10084)) ([#10082](https://github.com/laurent22/joplin/issues/10082) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixed Toggle Comment & Delete/Duplicate/Sort Line Options in Beta Editor ([#10016](https://github.com/laurent22/joplin/issues/10016)) ([#10007](https://github.com/laurent22/joplin/issues/10007) by Sagnik Mandal)
+- Fixed: Fixed sizing of new note buttons ([9acbac6](https://github.com/laurent22/joplin/commit/9acbac6))
+- Fixed: Improve visibility of selected note in OLED dark theme ([#10026](https://github.com/laurent22/joplin/issues/10026)) ([#9453](https://github.com/laurent22/joplin/issues/9453) by [@Mr-Kanister](https://github.com/Mr-Kanister))
+- Fixed: Preserve indentation from plain text when pasting on Rich Text Editor ([#9828](https://github.com/laurent22/joplin/issues/9828)) ([#9264](https://github.com/laurent22/joplin/issues/9264) by [@pedr](https://github.com/pedr))
+- Fixed: Show focus indicator when navigating with keyboard ([#9989](https://github.com/laurent22/joplin/issues/9989)) ([#9982](https://github.com/laurent22/joplin/issues/9982) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Special characters in notebooks and tags are not sorted alphabetically ([#10085](https://github.com/laurent22/joplin/issues/10085)) ([#10077](https://github.com/laurent22/joplin/issues/10077) by [@cagnusmarlsen](https://github.com/cagnusmarlsen))
+
+## [v2.14.20](https://github.com/laurent22/joplin/releases/tag/v2.14.20) - 2024-03-18T17:05:17Z
+
+- Fixed: Fix OCR not working for certain languages ([#10097](https://github.com/laurent22/joplin/issues/10097))
+- Fixed: ENEX does not import correctly when title of note matches the name of the attachment ([#10125](https://github.com/laurent22/joplin/issues/10125))
+
+## [v2.14.19](https://github.com/laurent22/joplin/releases/tag/v2.14.19) - 2024-03-08T10:45:16Z
+
+- Fixed: Re-enable UNC links ([#10071](https://github.com/laurent22/joplin/issues/10071) by Henry Heino)
+- Fixed: Certain RTE menu items are not visible in dark mode ([#10044](https://github.com/laurent22/joplin/issues/10044))
+- Fixed: Fix pasting images from the rich text editor into the rich text editor ([#10064](https://github.com/laurent22/joplin/issues/10064)) ([#10062](https://github.com/laurent22/joplin/issues/10062) by Henry Heino)
+- Fixed: Fixed OCR memory leak when processing PDF documents ([#10050](https://github.com/laurent22/joplin/issues/10050))
+- Fixed: OCR does not start when German language is selected ([#10058](https://github.com/laurent22/joplin/issues/10058))
+
 ## [v2.14.17](https://github.com/laurent22/joplin/releases/tag/v2.14.17) - 2024-03-01T18:10:26Z
 
 - Fixed: Merged shorthand variants of spellcheck languages ([#9983](https://github.com/laurent22/joplin/issues/9983)) ([#7834](https://github.com/laurent22/joplin/issues/7834) by Ton Hoang Nguyen (Bill))
@@ -839,6 +1270,52 @@ Important: If you use custom notebook icons and sync with the mobile app, make s
 - Fixed: Sharing multiple notebooks via Joplin Server with the same user results in an error ([#5721](https://github.com/laurent22/joplin/issues/5721))
 - Fixed: Text was unreadable in dark mode when dropping a note on Rich Text editor ([#5710](https://github.com/laurent22/joplin/issues/5710))
 
+## [v2.5.12](https://github.com/laurent22/joplin/releases/tag/v2.5.12) - 2021-11-08T11:07:11Z
+
+- Fixed regression: Long resource filenames were being incorrectly cut when exporting as Markdown ([#5653](https://github.com/laurent22/joplin/issues/5653))
+
+## [v2.5.10](https://github.com/laurent22/joplin/releases/tag/v2.5.10) - 2021-11-01T08:22:42Z
+
+- Fixed: Fixed crash on certain Linux distributions when importing or exporting a file ([6012783](https://github.com/laurent22/joplin/commit/6012783))
+- Fixed: Fixed potential infinite loop when Joplin Server session is invalid ([c5569ef](https://github.com/laurent22/joplin/commit/c5569ef))
+
+## [v2.5.8](https://github.com/laurent22/joplin/releases/tag/v2.5.8) - 2021-10-31T11:38:03Z
+
+- Improved: Enable safe mode for Markdown editor too ([#5593](https://github.com/laurent22/joplin/issues/5593))
+- Fixed: Do not render very large code blocks to prevent app from freezing ([#5593](https://github.com/laurent22/joplin/issues/5593))
+
+## [v2.5.7](https://github.com/laurent22/joplin/releases/tag/v2.5.7) (Pre-release) - 2021-10-29T14:47:33Z
+
+- Improved: Upgrade to Electron 15.1.3 ([9704b29](https://github.com/laurent22/joplin/commit/9704b29))
+
+## [v2.5.6](https://github.com/laurent22/joplin/releases/tag/v2.5.6) (Pre-release) - 2021-10-28T22:03:09Z
+
+- New: Added mechanism to migrate default settings to new values ([72db8e4](https://github.com/laurent22/joplin/commit/72db8e4))
+- Improved: Improved Joplin Server configuration check to better handle disabled accounts ([72c1235](https://github.com/laurent22/joplin/commit/72c1235))
+- Improved: Improved handling of expired sessions when using Joplin Server ([ace1118](https://github.com/laurent22/joplin/commit/ace1118))
+- Improved: Improved master password state handling in Encryption screen ([7d62df8](https://github.com/laurent22/joplin/commit/7d62df8))
+- Fixed: Fixed Goto Anything scrolling for long lists ([22e5c3a](https://github.com/laurent22/joplin/commit/22e5c3a))
+
+## [v2.5.4](https://github.com/laurent22/joplin/releases/tag/v2.5.4) (Pre-release) - 2021-10-19T10:10:54Z
+
+- New: Add support for public-private key pairs and improved master password support ([#5438](https://github.com/laurent22/joplin/issues/5438))
+- New: Add Markdown + Front Matter exporter/importer ([#5465](https://github.com/laurent22/joplin/issues/5465)) ([#5224](https://github.com/laurent22/joplin/issues/5224) by [@CalebJohn](https://github.com/CalebJohn))
+- New: Add support for callback URLs ([#5416](https://github.com/laurent22/joplin/issues/5416)) ([#5168](https://github.com/laurent22/joplin/issues/5168) by Roman Musin)
+- Improved: Allows a shared notebook recipient to leave the notebook ([7354548](https://github.com/laurent22/joplin/commit/7354548))
+- Improved: Ensure that shared notebook children are not deleted when shared, unshared and shared again, and a conflict happens ([ccf9882](https://github.com/laurent22/joplin/commit/ccf9882))
+- Improved: Improved share error handling ([9bff2d1](https://github.com/laurent22/joplin/commit/9bff2d1))
+- Improved: Laggy scrolling in Markdown viewer ([#5496](https://github.com/laurent22/joplin/issues/5496)) ([#4827](https://github.com/laurent22/joplin/issues/4827) by Kenichi Kobayashi)
+- Improved: Mentioned on share dialog that it may take a few minutes for all notes to appear on the recipient device ([852c6f2](https://github.com/laurent22/joplin/commit/852c6f2))
+- Fixed: Bright background around code block insertion dialog in dark mode ([#5491](https://github.com/laurent22/joplin/issues/5491)) ([#5310](https://github.com/laurent22/joplin/issues/5310) by [@Rishabhraghwendra18](https://github.com/Rishabhraghwendra18))
+- Fixed: Certain attachments were not being automatically deleted ([#932](https://github.com/laurent22/joplin/issues/932))
+- Fixed: Exclude disabled commands from Goto Anything ([#5421](https://github.com/laurent22/joplin/issues/5421))
+- Fixed: Fixed running out of memory when importing large ENEX files ([#5543](https://github.com/laurent22/joplin/issues/5543))
+- Fixed: Fixed share dialog button sizes ([1fee83d](https://github.com/laurent22/joplin/commit/1fee83d))
+
+## [v2.4.12](https://github.com/laurent22/joplin/releases/tag/v2.4.12) - 2021-10-13T17:24:34Z
+
+- Fixed: Fixed running out of memory when importing large ENEX files ([#5543](https://github.com/laurent22/joplin/issues/5543))
+
 ## [v2.5.1](https://github.com/laurent22/joplin/releases/tag/v2.5.1) (Pre-release) - 2021-10-02T09:51:58Z
 
 - Improved: Upgrade Electron from v10 to v14 ([4a7746b](https://github.com/laurent22/joplin/commit/4a7746b))
@@ -1023,74 +1500,6 @@ Attention: The default font size has been changed in the Markdown editor. You ca
 - Improved: Added feature flags to disable Joplin Server sync optimisations by default, so that it still work with server 2.0 ([326fef4](https://github.com/laurent22/joplin/commit/326fef4))
 - Improved: Update Mermaid: 8.8.4 -&gt; 8.10.2 ([#5092](https://github.com/laurent22/joplin/issues/5092) by Helmut K. C. Tessarek)
 - Fixed: Plugins: Fixed saving secure settings to the keychain, and added way to store plugin settings to settings.json ([ab9bbcb](https://github.com/laurent22/joplin/commit/ab9bbcb))
-
-## [v2.0.11](https://github.com/laurent22/joplin/releases/tag/v2.0.11) - 2021-06-16T17:55:49Z
-
-- Improved: Prevent sync process from being stuck when the download state of a resource is invalid ([5c6fd93](https://github.com/laurent22/joplin/commit/5c6fd93))
-- Fixed: Prevent app from crashing when loading a setting value that has been removed ([#5086](https://github.com/laurent22/joplin/issues/5086))
-
-## [v2.0.10](https://github.com/laurent22/joplin/releases/tag/v2.0.10) - 2021-06-16T07:58:29Z
-
-- Fixed: Ensure resources are decrypted when sharing a notebook with Joplin Server ([#5080](https://github.com/laurent22/joplin/issues/5080))
-- Fixed: Fixed user content URLs when sharing note via Joplin Server ([2cf7067](https://github.com/laurent22/joplin/commit/2cf7067))
-
-## [v2.0.9](https://github.com/laurent22/joplin/releases/tag/v2.0.9) (Pre-release) - 2021-06-12T09:30:30Z
-
-- Improved: Conflict notes will now populate a new field with the ID of the conflict note. ([#5049](https://github.com/laurent22/joplin/issues/5049) by [@Ahmad45123](https://github.com/Ahmad45123))
-- Improved: Expose prompt to plugins as a command ([#5058](https://github.com/laurent22/joplin/issues/5058) by Nishant Mittal)
-- Improved: Filter out form elements from note body to prevent potential XSS (thanks to [@chinskiy](https://github.com/chinskiy) for the PoC) ([feaecf7](https://github.com/laurent22/joplin/commit/feaecf7))
-- Fixed: Wrong field removed in API search ([#5066](https://github.com/laurent22/joplin/issues/5066) by [@JackGruber](https://github.com/JackGruber))
-
-## [v2.0.8](https://github.com/laurent22/joplin/releases/tag/v2.0.8) (Pre-release) - 2021-06-10T16:15:08Z
-
-- New: Add "Retry all" button to sync status screen for items that could not be uploaded ([ca487ad](https://github.com/laurent22/joplin/commit/ca487ad))
-- New: Add Joplin Cloud sync target ([21ea325](https://github.com/laurent22/joplin/commit/21ea325))
-- New: MacOS: add 'Hide Others' and 'Show All' menu items ([#5024](https://github.com/laurent22/joplin/issues/5024) by Helmut K. C. Tessarek)
-- Improved: Allow passing arguments to commands in command palette ([00dc1d8](https://github.com/laurent22/joplin/commit/00dc1d8))
-- Improved: Allow restoring a deleted note from note history using command palette ([5fd6571](https://github.com/laurent22/joplin/commit/5fd6571))
-- Improved: Improve search with Asian scripts ([#5018](https://github.com/laurent22/joplin/issues/5018)) ([#4613](https://github.com/laurent22/joplin/issues/4613) by [@mablin7](https://github.com/mablin7))
-- Improved: Improved Joplin Server error handling ([95d7ccc](https://github.com/laurent22/joplin/commit/95d7ccc))
-- Improved: Plugins: Support executing CodeMirror commands from plugins when using execCommand ([#5012](https://github.com/laurent22/joplin/issues/5012) by [@CalebJohn](https://github.com/CalebJohn))
-- Improved: Recreate http agent when the protocol changes ([#5016](https://github.com/laurent22/joplin/issues/5016) by Roman Musin)
-- Fixed: Certain resource paths could be corrupted when saved from the Rich Text editor ([#5034](https://github.com/laurent22/joplin/issues/5034))
-- Fixed: Ctrl+Clicking links in Rich Text editor was broken (regression) ([e8a02c2](https://github.com/laurent22/joplin/commit/e8a02c2))
-- Fixed: Incorrect list renumbering ([#4914](https://github.com/laurent22/joplin/issues/4914)) ([#4877](https://github.com/laurent22/joplin/issues/4877) by Austin Doupnik)
-- Fixed: Inline Katex gets broken when editing in Rich Text editor ([#5052](https://github.com/laurent22/joplin/issues/5052)) ([#5025](https://github.com/laurent22/joplin/issues/5025) by [@Subhra264](https://github.com/Subhra264))
-- Fixed: Items are filtered in the API search ([#5017](https://github.com/laurent22/joplin/issues/5017)) ([#5007](https://github.com/laurent22/joplin/issues/5007) by [@JackGruber](https://github.com/JackGruber))
-
-## [v2.0.4](https://github.com/laurent22/joplin/releases/tag/v2.0.4) (Pre-release) - 2021-06-02T12:54:17Z
-
-- Improved: Download plugins from GitHub release ([8f6a475](https://github.com/laurent22/joplin/commit/8f6a475))
-- Fixed: Count tags based on showCompletedTodos setting ([#4957](https://github.com/laurent22/joplin/issues/4957)) ([#4411](https://github.com/laurent22/joplin/issues/4411) by [@JackGruber](https://github.com/JackGruber))
-- Fixed: Fixes panels overflowing window ([#4991](https://github.com/laurent22/joplin/issues/4991)) ([#4864](https://github.com/laurent22/joplin/issues/4864) by [@mablin7](https://github.com/mablin7))
-
-## [v2.0.2](https://github.com/laurent22/joplin/releases/tag/v2.0.2) (Pre-release) - 2021-05-21T18:07:48Z
-
-- New: Add Share Notebook menu item ([6f2f241](https://github.com/laurent22/joplin/commit/6f2f241))
-- New: Add classnames to DOM elements for theming purposes ([#4933](https://github.com/laurent22/joplin/issues/4933) by [@ajilderda](https://github.com/ajilderda))
-- Improved: Allow unsharing a note ([f7d164b](https://github.com/laurent22/joplin/commit/f7d164b))
-- Improved: Displays error info when Joplin Server fails ([3f0586e](https://github.com/laurent22/joplin/commit/3f0586e))
-- Improved: Handle too large items for Joplin Server ([d29624c](https://github.com/laurent22/joplin/commit/d29624c))
-- Improved: Import SVG as images when importing ENEX files ([#4968](https://github.com/laurent22/joplin/issues/4968))
-- Improved: Import linked local files when importing Markdown files ([#4966](https://github.com/laurent22/joplin/issues/4966)) ([#4433](https://github.com/laurent22/joplin/issues/4433) by [@JackGruber](https://github.com/JackGruber))
-- Improved: Improved usability when plugin repository cannot be connected to ([#4462](https://github.com/laurent22/joplin/issues/4462))
-- Improved: Made sync more reliable by making it skip items that time out, and improved sync status screen ([15fe119](https://github.com/laurent22/joplin/commit/15fe119))
-- Improved: Pass custom CSS property to all export handlers and renderers ([bd08041](https://github.com/laurent22/joplin/commit/bd08041))
-- Improved: Regression: It was no longer possible to add list items in an empty note ([6577f4f](https://github.com/laurent22/joplin/commit/6577f4f))
-- Improved: Regression: Pasting plain text in Rich Text editor was broken ([9e9bf63](https://github.com/laurent22/joplin/commit/9e9bf63))
-- Fixed: Fixed issue with empty panels being created by plugins ([#4926](https://github.com/laurent22/joplin/issues/4926))
-- Fixed: Fixed pasting HTML in Rich Text editor, and improved pasting plain text ([2226b79](https://github.com/laurent22/joplin/commit/2226b79))
-- Fixed: Improved importing Evernote notes that contain codeblocks ([#4965](https://github.com/laurent22/joplin/issues/4965))
-- Fixed: Prevent cursor from jumping to top of page when pasting image ([#4591](https://github.com/laurent22/joplin/issues/4591))
-
-## [v2.0.1](https://github.com/laurent22/joplin/releases/tag/v2.0.1) (Pre-release) - 2021-05-15T13:22:58Z
-
-- New: Add support for sharing notebooks with Joplin Server ([#4772](https://github.com/laurent22/joplin/issues/4772))
-- New: Add new date format YYMMDD ([#4954](https://github.com/laurent22/joplin/issues/4954) by Helmut K. C. Tessarek)
-- New: Added button to skip an application update ([a31b402](https://github.com/laurent22/joplin/commit/a31b402))
-- Fixed: Display proper error message when JEX file is corrupted ([#4958](https://github.com/laurent22/joplin/issues/4958))
-- Fixed: Show or hide completed todos in search results based on user settings ([#4951](https://github.com/laurent22/joplin/issues/4951)) ([#4581](https://github.com/laurent22/joplin/issues/4581) by [@JackGruber](https://github.com/JackGruber))
-- Fixed: Solve "Resource Id not provided" error ([#4943](https://github.com/laurent22/joplin/issues/4943)) ([#4891](https://github.com/laurent22/joplin/issues/4891) by [@Subhra264](https://github.com/Subhra264))
 
 ## [v2.0.11](https://github.com/laurent22/joplin/releases/tag/v2.0.11) - 2021-06-16T17:55:49Z
 
