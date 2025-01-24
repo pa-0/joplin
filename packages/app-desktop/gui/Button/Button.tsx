@@ -36,6 +36,10 @@ interface Props {
 	isSquare?: boolean;
 	iconOnly?: boolean;
 	fontSize?: number;
+
+	'aria-controls'?: string;
+	'aria-describedby'?: string;
+	'aria-expanded'?: string;
 }
 
 const StyledTitle = styled.span`
@@ -220,7 +224,15 @@ const Button = React.forwardRef((props: Props, ref: any) => {
 
 	function renderIcon() {
 		if (!props.iconName) return null;
-		return <StyledIcon aria-label={props.iconLabel} animation={props.iconAnimation} mr={iconOnly ? '0' : '6px'} color={props.color} className={props.iconName}/>;
+		return <StyledIcon
+			aria-label={props.iconLabel ?? undefined}
+			aria-hidden={!props.iconLabel}
+			animation={props.iconAnimation}
+			mr={iconOnly ? '0' : '6px'}
+			color={props.color}
+			className={props.iconName}
+			role='img'
+		/>;
 	}
 
 	function renderTitle() {
@@ -234,7 +246,26 @@ const Button = React.forwardRef((props: Props, ref: any) => {
 	}
 
 	return (
-		<StyledButton ref={ref} fontSize={props.fontSize} isSquare={props.isSquare} size={props.size} style={props.style} disabled={props.disabled} title={props.tooltip} className={props.className} iconOnly={iconOnly} onClick={onClick}>
+		<StyledButton
+			ref={ref}
+			fontSize={props.fontSize}
+			isSquare={props.isSquare}
+			size={props.size}
+			style={props.style}
+			disabled={props.disabled}
+			title={props.tooltip}
+			className={props.className}
+			iconOnly={iconOnly}
+			onClick={onClick}
+
+			// When there's no title, the button needs a label. In this case, fall back
+			// to the tooltip.
+			aria-label={props.title ? undefined : props.tooltip}
+			aria-disabled={props.disabled}
+			aria-expanded={props['aria-expanded']}
+			aria-controls={props['aria-controls']}
+			aria-describedby={props['aria-describedby']}
+		>
 			{renderIcon()}
 			{renderTitle()}
 		</StyledButton>
