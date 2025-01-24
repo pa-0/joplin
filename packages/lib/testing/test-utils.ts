@@ -2,7 +2,7 @@
 import BaseApplication from '../BaseApplication';
 import BaseModel from '../BaseModel';
 import Logger, { TargetType, LoggerWrapper, LogLevel } from '@joplin/utils/Logger';
-import Setting from '../models/Setting';
+import Setting, { AppType, Env } from '../models/Setting';
 import BaseService from '../services/BaseService';
 import FsDriverNode from '../fs-driver-node';
 import time from '../time';
@@ -11,7 +11,7 @@ import uuid from '../uuid';
 import ResourceService from '../services/ResourceService';
 import KeymapService from '../services/KeymapService';
 import KvStore from '../services/KvStore';
-import KeychainServiceDriver from '../services/keychain/KeychainServiceDriver.node';
+import KeychainServiceDriverNode from '../services/keychain/KeychainServiceDriver.node';
 import KeychainServiceDriverDummy from '../services/keychain/KeychainServiceDriver.dummy';
 import FileApiDriverJoplinServer from '../file-api-driver-joplinServer';
 import OneDriveApi from '../onedrive-api';
@@ -30,13 +30,13 @@ import MasterKey from '../models/MasterKey';
 import BaseItem from '../models/BaseItem';
 import { FileApi } from '../file-api';
 const FileApiDriverMemory = require('../file-api-driver-memory').default;
-const { FileApiDriverLocal } = require('../file-api-driver-local');
+import FileApiDriverLocal from '../file-api-driver-local';
 const { FileApiDriverWebDav } = require('../file-api-driver-webdav.js');
 const { FileApiDriverDropbox } = require('../file-api-driver-dropbox.js');
 const { FileApiDriverOneDrive } = require('../file-api-driver-onedrive.js');
 import SyncTargetRegistry from '../SyncTargetRegistry';
 const SyncTargetMemory = require('../SyncTargetMemory.js');
-const SyncTargetFilesystem = require('../SyncTargetFilesystem.js');
+import SyncTargetFilesystem from '../SyncTargetFilesystem';
 const SyncTargetNextcloud = require('../SyncTargetNextcloud.js');
 const SyncTargetDropbox = require('../SyncTargetDropbox.js');
 const SyncTargetAmazonS3 = require('../SyncTargetAmazonS3.js');
@@ -66,6 +66,8 @@ import initLib from '../initLib';
 import OcrDriverTesseract from '../services/ocr/drivers/OcrDriverTesseract';
 import OcrService from '../services/ocr/OcrService';
 import { createWorker } from 'tesseract.js';
+import { reg } from '../registry';
+import { Store } from 'redux';
 
 // Each suite has its own separate data and temp directory so that multiple
 // suites can be run at the same time. suiteName is what is used to
@@ -189,13 +191,14 @@ BaseItem.loadClass('MasterKey', MasterKey);
 BaseItem.loadClass('Revision', Revision);
 
 Setting.setConstant('appId', 'net.cozic.joplintest-cli');
-Setting.setConstant('appType', 'cli');
+Setting.setConstant('appType', AppType.Cli);
 Setting.setConstant('tempDir', baseTempDir);
 Setting.setConstant('cacheDir', baseTempDir);
+Setting.setConstant('resourceDir', baseTempDir);
 Setting.setConstant('pluginDataDir', `${profileDir}/profile/plugin-data`);
 Setting.setConstant('profileDir', profileDir);
 Setting.setConstant('rootProfileDir', rootProfileDir);
-Setting.setConstant('env', 'dev');
+Setting.setConstant('env', Env.Dev);
 
 BaseService.logger_ = logger;
 
@@ -267,6 +270,7 @@ const settingFilename = (id: number): string => {
 	return `settings-${id}.json`;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function switchClient(id: number, options: any = null) {
 	options = { keychainEnabled: false, ...options };
 
@@ -277,10 +281,12 @@ async function switchClient(id: number, options: any = null) {
 
 	currentClient_ = id;
 	BaseModel.setDb(databases_[id]);
+	KvStore.instance().setDb(databases_[id]);
 
 	BaseItem.encryptionService_ = encryptionServices_[id];
 	Resource.encryptionService_ = encryptionServices_[id];
 	BaseItem.revisionService_ = revisionServices_[id];
+	ResourceFetcher.instance_ = resourceFetchers_[id];
 
 	await Setting.reset();
 	Setting.settingFilename = settingFilename(id);
@@ -292,7 +298,7 @@ async function switchClient(id: number, options: any = null) {
 	Setting.setConstant('pluginDir', pluginDir(id));
 	Setting.setConstant('isSubProfile', false);
 
-	await loadKeychainServiceAndSettings(options.keychainEnabled ? KeychainServiceDriver : KeychainServiceDriverDummy);
+	await loadKeychainServiceAndSettings(options.keychainEnabled ? [KeychainServiceDriverNode] : []);
 
 	Setting.setValue('sync.target', syncTargetId());
 	Setting.setValue('sync.wipeOutFailSafe', false); // To keep things simple, always disable fail-safe unless explicitly set in the test itself
@@ -334,6 +340,7 @@ async function clearDatabase(id: number = null) {
 	await databases_[id].transactionExecBatch(queries);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function setupDatabase(id: number = null, options: any = null) {
 	options = { keychainEnabled: false, ...options };
 
@@ -355,7 +362,7 @@ async function setupDatabase(id: number = null, options: any = null) {
 	if (databases_[id]) {
 		BaseModel.setDb(databases_[id]);
 		await clearDatabase(id);
-		await loadKeychainServiceAndSettings(options.keychainEnabled ? KeychainServiceDriver : KeychainServiceDriverDummy);
+		await loadKeychainServiceAndSettings(options.keychainEnabled ? [KeychainServiceDriverNode] : []);
 		Setting.setValue('sync.target', syncTargetId());
 		return;
 	}
@@ -374,8 +381,9 @@ async function setupDatabase(id: number = null, options: any = null) {
 
 	BaseModel.setDb(databases_[id]);
 	await clearSettingFile(id);
-	await loadKeychainServiceAndSettings(options.keychainEnabled ? KeychainServiceDriver : KeychainServiceDriverDummy);
+	await loadKeychainServiceAndSettings([options.keychainEnabled ? KeychainServiceDriverNode : KeychainServiceDriverDummy]);
 
+	reg.setDb(databases_[id]);
 	Setting.setValue('sync.target', syncTargetId());
 }
 
@@ -384,6 +392,7 @@ async function clearSettingFile(id: number) {
 	await fs.remove(Setting.settingFilePath);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export async function createFolderTree(parentId: string, tree: any[], num = 0): Promise<FolderEntity> {
 	let rootFolder: FolderEntity = null;
 
@@ -444,6 +453,7 @@ const createNoteAndResource = async (options: CreateNoteAndResourceOptions = nul
 	return { note, resource };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function setupDatabaseAndSynchronizer(id: number, options: any = null) {
 	if (id === null) id = currentClient_;
 
@@ -502,6 +512,7 @@ function synchronizer(id: number = null) {
 // This is like calling synchronizer.start() but it handles the
 // complexity of passing around the sync context depending on
 // the client.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function synchronizerStart(id: number = null, extraOptions: any = null) {
 	if (id === null) id = currentClient_;
 
@@ -632,7 +643,7 @@ async function initFileApi() {
 		mustRunInBand();
 
 		const { parameters, setEnvOverride } = require('../parameters.js');
-		Setting.setConstant('env', 'dev');
+		Setting.setConstant('env', Env.Dev);
 		setEnvOverride('test');
 		const config = parameters().oneDriveTest;
 		const api = new OneDriveApi(config.id, config.secret, false);
@@ -702,6 +713,7 @@ function fileApi() {
 	return fileApis_[syncTargetId_];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function objectsEqual(o1: any, o2: any) {
 	if (Object.getOwnPropertyNames(o1).length !== Object.getOwnPropertyNames(o2).length) return false;
 	for (const n in o1) {
@@ -722,7 +734,7 @@ async function checkThrowAsync(asyncFn: Function) {
 	return hasThrown;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
+// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any -- Old code before rule was applied, Old code before rule was applied
 async function expectThrow(asyncFn: Function, errorCode: any = undefined, errorMessage: string = undefined) {
 	let hasThrown = false;
 	let thrownError = null;
@@ -816,18 +828,22 @@ async function allSyncTargetItemsEncrypted() {
 	return totalCount === encryptedCount;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function id(a: any) {
 	return a.id;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function ids(a: any[]) {
 	return a.map(n => n.id);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function sortedIds(a: any[]) {
 	return ids(a).sort();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function at(a: any[], indexes: any[]) {
 	const out = [];
 	for (let i = 0; i < indexes.length; i++) {
@@ -846,11 +862,12 @@ async function createNTestFolders(n: number) {
 	return folders;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function createNTestNotes(n: number, folder: any, tagIds: string[] = null, title = 'note') {
 	const notes = [];
 	for (let i = 0; i < n; i++) {
 		const title_ = n > 1 ? `${title}${i}` : title;
-		const note = await Note.save({ title: title_, parent_id: folder.id, is_conflict: 0 });
+		const note = await Note.save({ title: title_, parent_id: folder.id, is_conflict: 0, deleted_time: 0 });
 		notes.push(note);
 		await time.msleep(10);
 	}
@@ -931,6 +948,7 @@ export async function naughtyStrings() {
 class TestApp extends BaseApplication {
 
 	private hasGui_: boolean;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private middlewareCalls_: any[];
 	private logger_: LoggerWrapper;
 
@@ -947,6 +965,7 @@ class TestApp extends BaseApplication {
 		return this.hasGui_;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async start(argv: any[]) {
 		this.logger_.info('Test app starting...');
 
@@ -968,6 +987,7 @@ class TestApp extends BaseApplication {
 		this.logger_.info('Test app started...');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async generalMiddleware(store: any, next: any, action: any) {
 		this.middlewareCalls_.push(true);
 		try {
@@ -1026,10 +1046,26 @@ const createTestShareData = (shareId: string): ShareState => {
 	};
 };
 
-const simulateReadOnlyShareEnv = (shareId: string) => {
+const simulateReadOnlyShareEnv = (shareId: string, store?: Store) => {
 	Setting.setValue('sync.target', 10);
 	Setting.setValue('sync.userId', 'abcd');
-	BaseItem.syncShareCache = createTestShareData(shareId);
+	const shareData = createTestShareData(shareId);
+	BaseItem.syncShareCache = shareData;
+
+	if (store) {
+		store.dispatch({
+			type: 'SHARE_SET',
+			shares: shareData.shares,
+		});
+		store.dispatch({
+			type: 'SHARE_INVITATION_SET',
+			shareInvitations: shareData.shareInvitations,
+		});
+		store.dispatch({
+			type: 'SHARE_USER_SET',
+			shareUsers: shareData.shareUsers,
+		});
+	}
 
 	return () => {
 		BaseItem.syncShareCache = null;
@@ -1038,8 +1074,82 @@ const simulateReadOnlyShareEnv = (shareId: string) => {
 };
 
 export const newOcrService = () => {
-	const driver = new OcrDriverTesseract({ createWorker });
+	const driver = new OcrDriverTesseract({ createWorker }, { workerPath: null, corePath: null, languageDataPath: null });
 	return new OcrService(driver);
+};
+
+export const mockMobilePlatform = (platform: string) => {
+	const originalMobilePlatform = shim.mobilePlatform;
+	const originalIsNode = shim.isNode;
+
+	shim.mobilePlatform = () => platform;
+	shim.isNode = () => false;
+
+	return {
+		reset: () => {
+			shim.mobilePlatform = originalMobilePlatform;
+			shim.isNode = originalIsNode;
+		},
+	};
+};
+
+// Waits for callback to not throw. Similar to react-native-testing-library's waitFor, but works better
+// with Joplin's mix of real and fake Jest timers.
+const realSetTimeout = setTimeout;
+export const waitFor = async (callback: ()=> Promise<void>) => {
+	const timeout = 10_000;
+	const startTime = performance.now();
+	let passed = false;
+	let lastError: Error|null = null;
+
+	while (!passed && performance.now() - startTime < timeout) {
+		try {
+			await callback();
+			passed = true;
+			lastError = null;
+		} catch (error) {
+			lastError = error;
+
+			await new Promise<void>(resolve => {
+				realSetTimeout(() => resolve(), 10);
+			});
+		}
+	}
+
+	if (lastError) {
+		throw lastError;
+	}
+};
+
+export const runWithFakeTimers = async (callback: ()=> Promise<void>) => {
+	if (typeof jest === 'undefined') {
+		throw new Error('Fake timers are only supported in jest.');
+	}
+
+	// advanceTimers: Needed by Joplin's database driver
+	jest.useFakeTimers({ advanceTimers: true });
+
+	// The shim.setTimeout and similar functions need to be changed to
+	// use fake timers.
+	const originalSetTimeout = shim.setTimeout;
+	const originalSetInterval = shim.setInterval;
+	const originalClearTimeout = shim.clearTimeout;
+	const originalClearInterval = shim.clearInterval;
+	shim.setTimeout = setTimeout;
+	shim.setInterval = setInterval;
+	shim.clearInterval = clearInterval;
+	shim.clearTimeout = clearTimeout;
+
+	try {
+		return await callback();
+	} finally {
+		jest.runOnlyPendingTimers();
+		shim.setTimeout = originalSetTimeout;
+		shim.setInterval = originalSetInterval;
+		shim.clearTimeout = originalClearTimeout;
+		shim.clearInterval = originalClearInterval;
+		jest.useRealTimers();
+	}
 };
 
 export { supportDir, createNoteAndResource, createTempFile, createTestShareData, simulateReadOnlyShareEnv, waitForFolderCount, afterAllCleanUp, exportDir, synchronizerStart, afterEachCleanUp, syncTargetName, setSyncTargetName, syncDir, createTempDir, isNetworkSyncTarget, kvStore, expectThrow, logger, expectNotThrow, resourceService, resourceFetcher, tempFilePath, allSyncTargetItemsEncrypted, msleep, setupDatabase, revisionService, setupDatabaseAndSynchronizer, db, synchronizer, fileApi, sleep, clearDatabase, switchClient, syncTargetId, objectsEqual, checkThrowAsync, checkThrow, encryptionService, loadEncryptionMasterKey, fileContentEqual, decryptionWorker, currentClientId, id, ids, sortedIds, at, createNTestNotes, createNTestFolders, createNTestTags, TestApp };

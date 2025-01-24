@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, useMemo, ForwardedRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, ForwardedRef, useContext } from 'react';
 
 // eslint-disable-next-line no-unused-vars
-import { EditorCommand, MarkupToHtmlOptions, NoteBodyEditorProps, NoteBodyEditorRef } from '../../../utils/types';
+import { EditorCommand, NoteBodyEditorProps, NoteBodyEditorRef } from '../../../utils/types';
 import { commandAttachFileToBody, getResourcesFromPasteEvent } from '../../../utils/resourceHandling';
 import { ScrollOptions, ScrollOptionTypes } from '../../../utils/types';
 import { CommandValue } from '../../../utils/types';
-import { usePrevious, cursorPositionToTextOffset } from '../utils';
+import { cursorPositionToTextOffset } from '../utils';
 import useScrollHandler from '../utils/useScrollHandler';
 import useElementSize from '@joplin/lib/hooks/useElementSize';
 import Toolbar from '../Toolbar';
@@ -25,13 +25,16 @@ import { ThemeAppearance } from '@joplin/lib/themes/type';
 import dialogs from '../../../../dialogs';
 import { MarkupToHtml } from '@joplin/renderer';
 const { clipboard } = require('electron');
-const debounce = require('debounce');
 
 import { reg } from '@joplin/lib/registry';
 import ErrorBoundary from '../../../../ErrorBoundary';
 import useStyles from '../utils/useStyles';
 import useContextMenu from '../utils/useContextMenu';
 import useWebviewIpcMessage from '../utils/useWebviewIpcMessage';
+import useEditorSearchHandler from '../utils/useEditorSearchHandler';
+import { focus } from '@joplin/lib/utils/focusHandler';
+import { WindowIdContext } from '../../../../NewWindowOrIFrame';
+import { MarkupToHtmlOptions } from '../../../../hooks/useMarkupToHtml';
 
 function markupRenderOptions(override: MarkupToHtmlOptions = null): MarkupToHtmlOptions {
 	return { ...override };
@@ -45,12 +48,11 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 	const [webviewReady, setWebviewReady] = useState(false);
 
-	const previousContent = usePrevious(props.content);
-	const previousRenderedBody = usePrevious(renderedBody);
-	const previousSearchMarkers = usePrevious(props.searchMarkers);
-
 	const editorRef = useRef(null);
-	const rootRef = useRef(null);
+	const [editorRoot, setEditorRoot] = useState<HTMLDivElement|null>(null);
+	const rootRef = useRef<HTMLDivElement|null>(null);
+	rootRef.current = editorRoot;
+
 	const webviewRef = useRef(null);
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	const props_onChangeRef = useRef<Function>(null);
@@ -146,7 +148,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 					}
 				} else if (cmd.name === 'editor.focus') {
 					if (props.visiblePanes.indexOf('editor') >= 0) {
-						editorRef.current.focus();
+						focus('v5/CodeMirror::editor.focus', editorRef.current);
 					} else {
 						// If we just call focus() then the iframe is focused,
 						// but not its content, such that scrolling up / down
@@ -166,6 +168,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 						return selections.length ? selections[0] : '';
 					};
 
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					const commands: any = {
 						selectedText: () => {
 							return selectedText();
@@ -173,6 +176,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 						selectedHtml: () => {
 							return selectedText();
 						},
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 						replaceSelection: (value: any) => {
 							return editorRef.current.replaceSelection(value);
 						},
@@ -192,7 +196,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 						textItalic: () => wrapSelectionWithStrings('*', '*', _('emphasised text')),
 						textLink: async () => {
 							const url = await dialogs.prompt(_('Insert Hyperlink'));
-							editorRef.current.focus();
+							focus('v5/CodeMirror::textLink', editorRef.current);
 							if (url) wrapSelectionWithStrings('[', `](${url})`);
 						},
 						textCode: () => {
@@ -212,6 +216,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 								}
 							}
 						},
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 						insertText: (value: any) => editorRef.current.insertAtCursor(value),
 						attachFile: async () => {
 							const cursor = editorRef.current.getCursor();
@@ -243,11 +248,15 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 								reg.logger().warn('CodeMirror execCommand: unsupported command: ', value.name);
 							}
 						},
+						'editor.scrollToText': (_text: string) => {
+							reg.logger().warn('"editor.scrollToText" is unsupported in legacy editor - please use the new editor');
+							return false;
+						},
 					};
 
 					if (commands[cmd.name]) {
 						commandOutput = commands[cmd.name](cmd.value);
-					} else if (editorRef.current.supportsCommand(cmd)) {
+					} else if (await editorRef.current.supportsCommand(cmd)) {
 						commandOutput = editorRef.current.execCommandFromJoplin(cmd);
 					} else {
 						reg.logger().warn('CodeMirror: unsupported Joplin command: ', cmd);
@@ -260,6 +269,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
 	}, [props.content, props.visiblePanes, props.contentMarkupLanguage, addListItem, wrapSelectionWithStrings, setEditorPercentScroll, setViewerPercentScroll, resetScroll]);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const onEditorPaste = useCallback(async (event: any = null) => {
 		const resourceMds = await getResourcesFromPasteEvent(event);
 		if (!resourceMds.length) return;
@@ -327,8 +337,10 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		}
 	}, [editorPasteText, onEditorPaste]);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const loadScript = async (script: any) => {
 		return new Promise((resolve) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			let element: any = document.createElement('script');
 			if (script.src.indexOf('.css') >= 0) {
 				element = document.createElement('link');
@@ -402,6 +414,8 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 	}, [styles.editor.codeMirrorTheme]);
 
 	useEffect(() => {
+		if (!editorRoot) return () => {};
+
 		const theme = themeStyle(props.themeId);
 
 		// Selection in dark mode is hard to see so make it brighter.
@@ -423,10 +437,11 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 			max-width: ${props.contentMaxWidth}px !important;
 		` : '';
 
-		const element = document.createElement('style');
+		const ownerDoc = editorRoot.ownerDocument;
+		const element = ownerDoc.createElement('style');
 		element.setAttribute('id', 'codemirrorStyle');
-		document.head.appendChild(element);
-		element.appendChild(document.createTextNode(`
+		ownerDoc.head.appendChild(element);
+		element.appendChild(ownerDoc.createTextNode(`
 			/* These must be important to prevent the codemirror defaults from taking over*/
 			.CodeMirror {
 				font-family: monospace;
@@ -439,6 +454,11 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 				/* Some themes add a box shadow for some reason */
 				-webkit-box-shadow: none !important;
 				line-height: ${theme.lineHeight} !important;
+			}
+
+			.CodeMirror-code:focus-visible {
+				/* Avoid showing additional focus-visible decoration */
+				outline: none;
 			}
 
 			.CodeMirror-lines {
@@ -583,10 +603,9 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		`));
 
 		return () => {
-			document.head.removeChild(element);
+			ownerDoc.head.removeChild(element);
 		};
-		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [props.themeId, props.contentMaxWidth]);
+	}, [props.themeId, props.contentMaxWidth, props.fontSize, editorRoot]);
 
 	const webview_domReady = useCallback(() => {
 		setWebviewReady(true);
@@ -652,6 +671,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 	useEffect(() => {
 		if (!webviewReady) return;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const options: any = {
 			pluginAssets: renderedBody.pluginAssets,
 			downloadResources: Setting.value('sync.resourceDownloadMode'),
@@ -668,91 +688,22 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 			const percent = getLineScrollPercent();
 			setEditorPercentScroll(percent);
 			options.percent = percent;
-			webviewRef.current.send('setHtml', renderedBody.html, options);
+			webviewRef.current.setHtml(renderedBody.html, options);
 		} else {
 			console.error('Trying to set HTML on an undefined webview ref');
 		}
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
 	}, [renderedBody, webviewReady]);
 
-	useEffect(() => {
-		if (!props.searchMarkers) return () => {};
-
-		// If there is a currently active search, it's important to re-search the text as the user
-		// types. However this is slow for performance so we ONLY want it to happen when there is
-		// a search
-
-		// Note that since the CodeMirror component also needs to handle the viewer pane, we need
-		// to check if the rendered body has changed too (it will be changed with a delay after
-		// props.content has been updated).
-		const textChanged = props.searchMarkers.keywords.length > 0 && (props.content !== previousContent || renderedBody !== previousRenderedBody);
-
-		if (webviewRef.current && (props.searchMarkers !== previousSearchMarkers || textChanged)) {
-			webviewRef.current.send('setMarkers', props.searchMarkers.keywords, props.searchMarkers.options);
-
-			if (editorRef.current) {
-				// Fixes https://github.com/laurent22/joplin/issues/7565
-				const debouncedMarkers = debounce(() => {
-					const matches = editorRef.current.setMarkers(props.searchMarkers.keywords, props.searchMarkers.options);
-
-					props.setLocalSearchResultCount(matches);
-				}, 50);
-				debouncedMarkers();
-				return () => {
-					debouncedMarkers.clear();
-				};
-			}
-		}
-		return () => {};
-		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [props.searchMarkers, previousSearchMarkers, props.setLocalSearchResultCount, props.content, previousContent, renderedBody, previousRenderedBody, renderedBody]);
-
-	const cellEditorStyle = useMemo(() => {
-		const output = { ...styles.cellEditor };
-		if (!props.visiblePanes.includes('editor')) {
-			output.display = 'none'; // Seems to work fine since the refactoring
-		}
-
-		return output;
-	}, [styles.cellEditor, props.visiblePanes]);
-
-	const cellViewerStyle = useMemo(() => {
-		const output = { ...styles.cellViewer };
-		if (!props.visiblePanes.includes('viewer')) {
-			// Note: setting webview.display to "none" is currently not supported due
-			// to this bug: https://github.com/electron/electron/issues/8277
-			// So instead setting the width 0.
-			output.width = 1;
-			output.maxWidth = 1;
-		} else if (!props.visiblePanes.includes('editor')) {
-			output.borderLeftStyle = 'none';
-		}
-		return output;
-	}, [styles.cellViewer, props.visiblePanes]);
-
-	// Disable this effect to fix this:
-	//
-	// https://github.com/laurent22/joplin/issues/6514 It doesn't seem essential
-	// to automatically focus the editor when the layout changes. The workaround
-	// is to toggle the layout Cmd+L, then manually focus the editor Cmd+Shift+B.
-	//
-	// On the other hand, if we automatically focus the editor, and the user
-	// does not want this, there's no workaround, so it's better to have this
-	// disabled.
-
-	// const editorPaneVisible = props.visiblePanes.indexOf('editor') >= 0;
-
-	// useEffect(() => {
-	// 	if (!editorRef.current) return;
-
-	// 	// Anytime the user toggles the visible panes AND the editor is visible as a result
-	// 	// we should focus the editor
-	// 	// The intuition is that a panel toggle (with editor in view) is the equivalent of
-	// 	// an editor interaction so users should expect the editor to be focused
-	// 	if (editorPaneVisible) {
-	// 		editorRef.current.focus();
-	// 	}
-	// }, [editorPaneVisible]);
+	useEditorSearchHandler({
+		setLocalSearchResultCount: props.setLocalSearchResultCount,
+		searchMarkers: props.searchMarkers,
+		webviewRef,
+		editorRef,
+		noteContent: props.content,
+		renderedBody,
+		showEditorMarkers: true,
+	});
 
 	useEffect(() => {
 		if (!editorRef.current) return;
@@ -774,6 +725,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		editorCutText, editorCopyText, editorPaste,
 		editorRef,
 		editorClassName: 'codeMirrorEditor',
+		containerRef: rootRef,
 	});
 
 	function renderEditor() {
@@ -781,7 +733,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		const matchBracesOptions = Setting.value('editor.autoMatchingBraces') ? { override: true, pairs: '``()[]{}\'\'""‘’“”（）《》「」『』【】〔〕〖〗〘〙〚〛' } : false;
 
 		return (
-			<div style={cellEditorStyle}>
+			<div className='editor'>
 				<Editor
 					value={props.content}
 					searchMarkers={props.searchMarkers}
@@ -806,7 +758,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 	function renderViewer() {
 		return (
-			<div style={cellViewerStyle}>
+			<div className='viewer'>
 				<NoteTextViewer
 					ref={webviewRef}
 					themeId={props.themeId}
@@ -819,17 +771,26 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		);
 	}
 
+	const editorViewerRow = (
+		<div className={[
+			'note-editor-viewer-row',
+			props.visiblePanes.includes('editor') ? '-show-editor' : '',
+			props.visiblePanes.includes('viewer') ? '-show-viewer' : '',
+		].join(' ')}>
+			{renderEditor()}
+			{renderViewer()}
+		</div>
+	);
+
+	const windowId = useContext(WindowIdContext);
 	return (
 		<ErrorBoundary message="The text editor encountered a fatal error and could not continue. The error might be due to a plugin, so please try to disable some of them and try again.">
-			<div style={styles.root} ref={rootRef}>
+			<div style={styles.root} ref={setEditorRoot}>
 				<div style={styles.rowToolbar}>
-					<Toolbar themeId={props.themeId}/>
+					<Toolbar themeId={props.themeId} windowId={windowId}/>
 					{props.noteToolbar}
 				</div>
-				<div style={styles.rowEditorViewer}>
-					{renderEditor()}
-					{renderViewer()}
-				</div>
+				{editorViewerRow}
 			</div>
 		</ErrorBoundary>
 	);

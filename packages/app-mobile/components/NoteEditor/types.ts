@@ -1,5 +1,6 @@
 // Types related to the NoteEditor
 
+import { EditorEvent } from '@joplin/editor/events';
 import { EditorControl as EditorBodyControl, EditorSettings as EditorBodySettings, SearchState } from '@joplin/editor/types';
 
 export interface SearchControl {
@@ -34,6 +35,7 @@ export interface EditorControl extends EditorBodyControl {
 	toggleUnorderedList(): void;
 	toggleTaskList(): void;
 	toggleHeaderLevel(level: number): void;
+	focus(): void;
 
 	scrollSelectionIntoView(): void;
 	showLinkDialog(): void;
@@ -50,4 +52,10 @@ export interface EditorSettings extends EditorBodySettings {
 export interface SelectionRange {
 	start: number;
 	end: number;
+}
+
+export interface WebViewToEditorApi {
+	onEditorEvent(event: EditorEvent): Promise<void>;
+	logMessage(message: string): Promise<void>;
+	onPasteFile(type: string, dataBase64: string): Promise<void>;
 }

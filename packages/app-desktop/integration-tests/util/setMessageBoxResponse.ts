@@ -1,9 +1,9 @@
 import { ElectronApplication } from '@playwright/test';
-import { BrowserWindow, MessageBoxOptions } from 'electron';
+import { BaseWindow, MessageBoxOptions } from 'electron';
 
 const setMessageBoxResponse = (electronApp: ElectronApplication, responseMatch: RegExp) => {
 	return electronApp.evaluate(async ({ dialog }, responseMatch) => {
-		type DialogArgsType = [ BrowserWindow, MessageBoxOptions ]|[MessageBoxOptions];
+		type DialogArgsType = [ BaseWindow, MessageBoxOptions ]|[MessageBoxOptions];
 
 		const getMatchingButton = (dialogArgs: DialogArgsType) => {
 			const matchingButton = (options: MessageBoxOptions) => {
@@ -30,6 +30,7 @@ const setMessageBoxResponse = (electronApp: ElectronApplication, responseMatch: 
 			checkboxChecked: false,
 		// We're mocking, so include "as any" to prevent this from breaking when we upgrade
 		// Electron.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		} as any);
 	}, responseMatch);
 };
