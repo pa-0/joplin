@@ -27,8 +27,11 @@ export default class InteropService {
 
 	private defaultModules_: Module[];
 	private userModules_: Module[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private eventEmitter_: any = null;
 	private static instance_: InteropService;
+	private document_: Document;
+	private xmlSerializer_: XMLSerializer;
 
 	public static instance(): InteropService {
 		if (!this.instance_) this.instance_ = new InteropService();
@@ -85,6 +88,23 @@ export default class InteropService {
 				}, dynamicRequireModuleFactory('./InteropService_Importer_EnexToMd')),
 
 				makeImportModule({
+					format: 'enex',
+					fileExtensions: ['enex'],
+					sources: [FileSystemItem.Directory],
+					description: _('Evernote Export Files (Directory, as HTML)'),
+					supportsMobile: false,
+					outputFormat: ImportModuleOutputFormat.Html,
+				}, dynamicRequireModuleFactory('./InteropService_Importer_EnexToHtml')),
+
+				makeImportModule({
+					format: 'enex',
+					fileExtensions: ['enex'],
+					sources: [FileSystemItem.Directory],
+					description: _('Evernote Export Files (Directory, as Markdown)'),
+					supportsMobile: false,
+				}, dynamicRequireModuleFactory('./InteropService_Importer_EnexToMd')),
+
+				makeImportModule({
 					format: 'html',
 					fileExtensions: ['html'],
 					sources: [FileSystemItem.File, FileSystemItem.Directory],
@@ -115,6 +135,14 @@ export default class InteropService {
 					isNoteArchive: false, // Tells whether the file can contain multiple notes (eg. Enex or Jex format)
 					description: _('Text document'),
 				}, () => new InteropService_Importer_Md()),
+
+				makeImportModule({
+					format: 'zip',
+					fileExtensions: ['zip'],
+					sources: [FileSystemItem.File],
+					isNoteArchive: false, // Tells whether the file can contain multiple notes (eg. Enex or Jex format)
+					description: _('OneNote Notebook'),
+				}, dynamicRequireModuleFactory('./InteropService_Importer_OneNote')),
 			];
 
 			const exportModules = [
@@ -171,8 +199,24 @@ export default class InteropService {
 		this.eventEmitter_.emit('modulesChanged');
 	}
 
+	public set xmlSerializer(xmlSerializer: XMLSerializer) {
+		this.xmlSerializer_ = xmlSerializer;
+	}
+
+	public get xmlSerializer() {
+		return this.xmlSerializer_;
+	}
+
+	public set document(document: Document) {
+		this.document_ = document;
+	}
+
+	public get document() {
+		return this.document_;
+	}
+
 	// Find the module that matches the given type ("importer" or "exporter")
-	// and the given format. Some formats can have multiple assocated importers
+	// and the given format. Some formats can have multiple associated importers
 	// or exporters, such as ENEX. In this case, the one marked as "isDefault"
 	// is returned. This is useful to auto-detect the module based on the format.
 	// For more precise matching, newModuleFromPath_ should be used.
@@ -255,6 +299,8 @@ export default class InteropService {
 			format: 'auto',
 			destinationFolderId: null,
 			destinationFolder: null,
+			xmlSerializer: this.xmlSerializer,
+			document: this.document,
 			...options,
 		};
 
@@ -284,7 +330,9 @@ export default class InteropService {
 		return result;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private normalizeItemForExport(_itemType: ModelType, item: any): any {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const override: any = {};
 		if ('is_shared' in item) override.is_shared = 0;
 		if ('share_id' in item) override.share_id = '';
@@ -309,11 +357,13 @@ export default class InteropService {
 		let sourceFolderIds = options.sourceFolderIds ? options.sourceFolderIds : [];
 		const sourceNoteIds = options.sourceNoteIds ? options.sourceNoteIds : [];
 		const result: ImportExportResult = { warnings: [] };
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const itemsToExport: any[] = [];
 
 		options.onProgress?.(ExportProgressState.QueuingItems, null);
 		let totalItemsToProcess = 0;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const queueExportItem = (itemType: number, itemOrId: any) => {
 			totalItemsToProcess ++;
 			itemsToExport.push({
@@ -387,6 +437,7 @@ export default class InteropService {
 		await exporter.init(exportPath, options);
 
 		const typeOrder = [BaseModel.TYPE_FOLDER, BaseModel.TYPE_RESOURCE, BaseModel.TYPE_NOTE, BaseModel.TYPE_TAG, BaseModel.TYPE_NOTE_TAG];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const context: any = {
 			resourcePaths: {},
 		};

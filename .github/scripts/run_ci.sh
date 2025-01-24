@@ -67,6 +67,7 @@ echo "IS_MACOS=$IS_MACOS"
 echo "Node $( node -v )"
 echo "Npm $( npm -v )"
 echo "Yarn $( yarn -v )"
+echo "Rust $( rustc --version )"
 
 # =============================================================================
 # Install packages
@@ -90,7 +91,7 @@ if [ "$RUN_TESTS" == "1" ]; then
 	# On Linux, we run the Joplin Server tests using PostgreSQL
 	if [ "$IS_LINUX" == "1" ]; then
 		echo "Running Joplin Server tests using PostgreSQL..."
-		sudo docker-compose --file docker-compose.db-dev.yml up -d
+		sudo docker compose --file docker-compose.db-dev.yml up -d
 		cmdResult=$?
 		if [ $cmdResult -ne 0 ]; then
 			exit $cmdResult
@@ -107,7 +108,7 @@ if [ "$RUN_TESTS" == "1" ]; then
 	#
 	# https://stackoverflow.com/questions/38558989
 	export NODE_OPTIONS="--max-old-space-size=32768"
-	yarn run test-ci
+	yarn test-ci
 	testResult=$?
 	if [ $testResult -ne 0 ]; then
 		exit $testResult
@@ -122,13 +123,13 @@ fi
 if [ "$RUN_TESTS" == "1" ]; then
 	echo "Step: Running linter..."
 
-	yarn run linter-ci ./
+	yarn linter-ci ./
 	testResult=$?
 	if [ $testResult -ne 0 ]; then
 		exit $testResult
 	fi
 
-	yarn run packageJsonLint
+	yarn packageJsonLint
 	testResult=$?
 	if [ $testResult -ne 0 ]; then
 		exit $testResult
@@ -141,15 +142,13 @@ fi
 # for Linux only is sufficient.
 # =============================================================================
 
-if [ "$IS_PULL_REQUEST" == "1" ]; then
-	if [ "$IS_LINUX" == "1" ]; then
-		echo "Step: Validating translations..."
+if [ "$IS_LINUX" == "1" ]; then
+	echo "Step: Validating translations..."
 
-		node packages/tools/validate-translation.js
-		testResult=$?
-		if [ $testResult -ne 0 ]; then
-			exit $testResult
-		fi
+	node packages/tools/validate-translation.js
+	testResult=$?
+	if [ $testResult -ne 0 ]; then
+		exit $testResult
 	fi
 fi
 
@@ -175,19 +174,21 @@ fi
 
 # =============================================================================
 # Check .gitignore and .eslintignore files - they should be updated when
-# new TypeScript files are added by running `yarn run updateIgnored`.
+# new TypeScript files are added by running `yarn updateIgnored`.
 # See coding_style.md
 # =============================================================================
 
-if [ "$IS_PULL_REQUEST" == "1" ]; then
-	if [ "$IS_LINUX" == "1" ]; then
-		echo "Step: Checking for files that should have been ignored..."
+if [ "$IS_LINUX" == "1" ]; then
+	echo "Step: Checking for files that should have been ignored..."
 
-		node packages/tools/checkIgnoredFiles.js 
-		testResult=$?
-		if [ $testResult -ne 0 ]; then
-			exit $testResult
-		fi
+	# .gitignore and .eslintignore can be modified during yarn install. Reset them
+	# so that checkIgnoredFiles works.
+	git restore .gitignore .eslintignore
+
+	node packages/tools/checkIgnoredFiles.js 
+	testResult=$?
+	if [ $testResult -ne 0 ]; then
+		exit $testResult
 	fi
 fi
 
@@ -196,11 +197,27 @@ fi
 # =============================================================================
 
 if [ "$RUN_TESTS" == "1" ]; then
-	echo "Step: Check that the website still builds..."
+	if [ "$IS_LINUX" == "1" ]; then
+		echo "Step: Check that the website still builds..."
 
-	mkdir -p ../joplin-website/docs
-	ll ../joplin-website/docs/api/references/plugin_api
-	SKIP_SPONSOR_PROCESSING=1 yarn run buildWebsite
+		mkdir -p ../joplin-website/docs
+		CROWDIN_PERSONAL_TOKEN="$CROWDIN_PERSONAL_TOKEN" yarn crowdinDownload
+		SKIP_SPONSOR_PROCESSING=1 yarn buildWebsite
+		testResult=$?
+		if [ $testResult -ne 0 ]; then
+			exit $testResult
+		fi
+	fi
+fi
+
+# =============================================================================
+# Spellchecking
+# =============================================================================
+
+if [ "$IS_LINUX" == "1" ]; then
+	echo "Step: Spellchecking..."
+
+	yarn spellcheck --all
 	testResult=$?
 	if [ $testResult -ne 0 ]; then
 		exit $testResult
@@ -253,14 +270,14 @@ if [ "$IS_DESKTOP_RELEASE" == "1" ]; then
 		# "python" and seems to no longer respect the PYTHON_PATH environment variable.
 		# We work around this by aliasing python.
 		alias python=$(which python3)
-		USE_HARD_LINKS=false yarn run dist
+		USE_HARD_LINKS=false yarn dist
 	else
-		USE_HARD_LINKS=false yarn run dist
+		USE_HARD_LINKS=false yarn dist
 	fi	
 elif [[ $IS_LINUX = 1 ]] && [ "$IS_SERVER_RELEASE" == "1" ]; then
 	echo "Step: Building Docker Image..."
 	cd "$ROOT_DIR"
-	yarn run buildServerDocker --tag-name $GIT_TAG_NAME --push-images --repository $SERVER_REPOSITORY
+	yarn buildServerDocker --tag-name $GIT_TAG_NAME --push-images --repository $SERVER_REPOSITORY
 else
 	echo "Step: Building but *not* publishing desktop application..."
 	
@@ -274,8 +291,8 @@ else
 		export CSC_IDENTITY_AUTO_DISCOVERY=false
 		npm pkg set 'build.mac.identity'=null --json
 		
-		USE_HARD_LINKS=false yarn run dist --publish=never
+		USE_HARD_LINKS=false yarn dist --publish=never
 	else
-		USE_HARD_LINKS=false yarn run dist --publish=never
+		USE_HARD_LINKS=false yarn dist --publish=never
 	fi
 fi

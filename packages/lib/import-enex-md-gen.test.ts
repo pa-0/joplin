@@ -6,16 +6,16 @@ const os = require('os');
 const { filename } = require('./path-utils');
 import { setupDatabaseAndSynchronizer, switchClient, expectNotThrow, supportDir, expectThrow } from './testing/test-utils';
 const { enexXmlToMd } = require('./import-enex-md-gen.js');
-import importEnex from './import-enex';
+import importEnex, { ImportOptions } from './import-enex';
 import Note from './models/Note';
 import Tag from './models/Tag';
 import Resource from './models/Resource';
 
 const enexSampleBaseDir = `${supportDir}/../enex_to_md`;
 
-const importEnexFile = async (filename: string) => {
+const importEnexFile = async (filename: string, options: ImportOptions = null) => {
 	const filePath = `${enexSampleBaseDir}/${filename}`;
-	await importEnex('', filePath);
+	await importEnex('', filePath, options);
 };
 
 const readExpectedFile = async (filename: string) => {
@@ -221,16 +221,18 @@ describe('import-enex-md-gen', () => {
 	});
 
 	it('should resolve note links', async () => {
-		await importEnexFile('linked_notes.enex');
+		await importEnexFile('linked_notes.enex', { batchSize: 1 });
 		const notes: NoteEntity[] = await Note.all();
 
 		const note1 = notes.find(n => n.title === 'Note 1');
 		const note2 = notes.find(n => n.title === 'Note 2');
 		const note3 = notes.find(n => n.title === 'Note 3');
+		const note4 = notes.find(n => n.title === 'Note 4');
 
-		expect(notes.length).toBe(5);
+		expect(notes.length).toBe(7);
 		expect(note1.body).toBe(`[Note 2](:/${note2.id})[Note 3](:/${note3.id})`);
 		expect(note3.body).toBe('[Ambiguous note](evernote:///view/5223870/s49/9cd5e810-fa03-429a-8194-ab847f2f1ab2/c99d9e01-ca35-4c75-ba63-f0c0ef97787d/)');
+		expect(note4.body).toBe('[Note 5](https://joplinapp.org)');
 	});
 
 });

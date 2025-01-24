@@ -5,7 +5,9 @@ import Logger from '@joplin/utils/Logger';
 import { defaultProfileConfig } from '../services/profileConfig/types';
 import { createNewProfile, saveProfileConfig } from '../services/profileConfig';
 import initProfile from '../services/profileConfig/initProfile';
+import { defaultPluginSetting } from '../services/plugins/PluginService';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function loadSettingsFromFile(): Promise<any> {
 	return JSON.parse(await readFile(Setting.settingFilePath, 'utf8'));
 }
@@ -64,21 +66,26 @@ describe('models/Setting', () => {
 		await expectThrow(async () => Setting.value('itsgone'), 'unknown_key');
 	}));
 
-	it('should allow registering new settings dynamically', (async () => {
+	it.each([
+		SettingStorage.Database, SettingStorage.File,
+	])('should allow registering new settings dynamically (storage: %d)', (async (storage) => {
 		await expectThrow(async () => Setting.setValue('myCustom', '123'), 'unknown_key');
 
 		await Setting.registerSetting('myCustom', {
 			public: true,
 			value: 'default',
 			type: Setting.TYPE_STRING,
+			storage,
 		});
+
+		expect(Setting.value('myCustom')).toBe('default');
 
 		await expectNotThrow(async () => Setting.setValue('myCustom', '123'));
 
 		expect(Setting.value('myCustom')).toBe('123');
 	}));
 
-	it('should not clear old custom settings', (async () => {
+	it.each([SettingStorage.Database, SettingStorage.File])('should not clear old custom settings if not registered immediately', (async (storage) => {
 		// In general the following should work:
 		//
 		// - Plugin register a new setting
@@ -99,6 +106,7 @@ describe('models/Setting', () => {
 			public: true,
 			value: 'default',
 			type: Setting.TYPE_STRING,
+			storage,
 		});
 
 		Setting.setValue('myCustom', '123');
@@ -113,12 +121,41 @@ describe('models/Setting', () => {
 			public: true,
 			value: 'default',
 			type: Setting.TYPE_STRING,
+			storage,
 		});
 
 		await Setting.saveAll();
 
 		expect(Setting.value('myCustom')).toBe('123');
 	}));
+
+	it.each([SettingStorage.Database, SettingStorage.File])('should not clear old custom settings if not registered until restart', async (storage) => {
+		const registerCustom = async () => {
+			await Setting.registerSetting('myCustom', {
+				public: true,
+				value: 'test',
+				type: Setting.TYPE_STRING,
+				storage,
+			});
+		};
+
+		await registerCustom();
+		Setting.setValue('myCustom', 'test2');
+		await Setting.saveAll();
+
+		await Setting.reset();
+		await Setting.load();
+
+		// Change a file setting
+		Setting.setValue('sync.target', 9);
+
+		await Setting.saveAll();
+		await Setting.reset();
+		await Setting.load();
+
+		await registerCustom();
+		expect(Setting.value('myCustom')).toBe('test2');
+	});
 
 	it('should return values with correct type for custom settings', (async () => {
 		await Setting.registerSetting('myCustom', {
@@ -170,7 +207,7 @@ describe('models/Setting', () => {
 	it('should save and load settings from file', (async () => {
 		Setting.setValue('sync.target', 9); // Saved to file
 		Setting.setValue('encryption.passwordCache', {}); // Saved to keychain or db
-		Setting.setValue('plugins.states', { test: true }); // Always saved to db
+		Setting.setValue('plugins.states', { test: defaultPluginSetting() }); // Always saved to db
 		await Setting.saveAll();
 
 		{
@@ -327,7 +364,7 @@ describe('models/Setting', () => {
 
 		expect((await Setting.loadOne('locale')).value).toBe('fr_FR');
 		expect((await Setting.loadOne('theme')).value).toBe(Setting.THEME_DARK);
-		expect((await Setting.loadOne('sync.target')).value).toBe(undefined);
+		expect((await Setting.loadOne('sync.target'))).toBe(null);
 	});
 
 	it('should save sub-profile settings', async () => {
@@ -406,4 +443,17 @@ describe('models/Setting', () => {
 		expect(Setting.value('myCustom')).toBe('');
 	});
 
+	test('should not fail Sqlite UNIQUE constraint when re-registering saved settings', async () => {
+		// Re-registering a saved database setting previously caused issues with saving.
+		for (let i = 0; i < 2; i++) {
+			await Setting.registerSetting('myCustom', {
+				public: true,
+				value: `${i}`,
+				type: Setting.TYPE_STRING,
+				storage: SettingStorage.Database,
+			});
+			Setting.setValue('myCustom', 'test');
+			await Setting.saveAll();
+		}
+	});
 });

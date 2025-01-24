@@ -72,7 +72,7 @@ export function changeTypeToString(t: ChangeType): string {
 	if (t === ChangeType.Create) return 'create';
 	if (t === ChangeType.Update) return 'update';
 	if (t === ChangeType.Delete) return 'delete';
-	throw new Error(`Unkown type: ${t}`);
+	throw new Error(`Unknown type: ${t}`);
 }
 
 export const getDefaultValue = (tableName: string, colName: string): string|number|null => {
@@ -135,10 +135,12 @@ export enum TaskId {
 	ProcessOrphanedItems,
 	ProcessShares,
 	ProcessEmails,
+	LogHeartbeatMessage,
+	DeleteOldEvents,
 }
 
 // AUTO-GENERATED-TYPES
-// Auto-generated using `yarn run generate-types`
+// Auto-generated using `yarn generate-types`
 export interface Session extends WithDates, WithUuid {
 	user_id?: Uuid;
 	auth_code?: string;
@@ -148,6 +150,7 @@ export interface File {
 	id?: Uuid;
 	owner_id?: Uuid;
 	name?: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	content?: any;
 	mime_type?: string;
 	size?: number;

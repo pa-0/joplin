@@ -18,6 +18,7 @@ export interface OrgSponsor {
 	urlWebsite?: string;
 	title: string;
 	imageName: string;
+	alt?: string;
 }
 
 export const loadSponsors = async (): Promise<Sponsors> => {
@@ -39,7 +40,11 @@ export const loadSponsors = async (): Promise<Sponsors> => {
 			},
 		});
 
-		if (!userResponse.ok) throw new Error(await userResponse.text());
+		if (!userResponse.ok) {
+			const apiErrorMessage = await userResponse.text();
+			throw new Error(`Could not get user: "${ghSponsor.name}": ${apiErrorMessage}`);
+		}
+
 		const user = await userResponse.json();
 		ghSponsor.id = user.id;
 	}

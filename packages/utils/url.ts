@@ -8,7 +8,7 @@
 // - It always returns paths with forward slashes "/". This is normally handled
 //   properly everywhere.
 //
-// - Adds the "platform" parameter to optionall return paths with "\" for win32
+// - Adds the "platform" parameter to optionally return paths with "\" for win32
 function fileUriToPath_(uri: string, platform: string) {
 	const sep = '/';
 
@@ -99,4 +99,15 @@ export const fileUriToPath = (path: string, platform = 'linux') => {
 
 export const isDataUrl = (path: string) => {
 	return path.startsWith('data:');
+};
+
+export const hasProtocol = (url: string, protocol: string | string[]) => {
+	if (!url) return false;
+
+	const protocols = typeof protocol === 'string' ? [protocol] : protocol;
+	url = url.toLowerCase();
+	for (const p of protocols) {
+		if (url.startsWith(`${p.toLowerCase()}://`)) return true;
+	}
+	return false;
 };

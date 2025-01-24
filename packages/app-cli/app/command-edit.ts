@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import BaseCommand from './base-command';
 import { splitCommandString } from '@joplin/utils';
 import uuid from '@joplin/lib/uuid';
-const { app } = require('./app.js');
+import app from './app';
 import { _ } from '@joplin/lib/locale';
 import Note from '@joplin/lib/models/Note';
 import Setting from '@joplin/lib/models/Setting';
@@ -17,6 +17,7 @@ class Command extends BaseCommand {
 		return _('Edit note.');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override async action(args: any) {
 		let tempFilePath: string|null = null;
 

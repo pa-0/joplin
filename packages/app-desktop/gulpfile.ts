@@ -4,6 +4,7 @@ const compileSass = require('@joplin/tools/compileSass');
 const compilePackageInfo = require('@joplin/tools/compilePackageInfo');
 import buildDefaultPlugins from '@joplin/default-plugins/commands/buildAll';
 import copy7Zip from './tools/copy7Zip';
+import { remove } from 'fs-extra';
 
 const tasks = {
 	compileScripts: {
@@ -34,12 +35,13 @@ const tasks = {
 	buildDefaultPlugins: {
 		fn: async () => {
 			const outputDir = `${__dirname}/build/defaultPlugins/`;
+			await remove(outputDir);
 			await buildDefaultPlugins(outputDir);
 		},
 	},
 	tsc: require('@joplin/tools/gulp/tasks/tsc'),
 	updateIgnoredTypeScriptBuild: require('@joplin/tools/gulp/tasks/updateIgnoredTypeScriptBuild'),
-	buildCommandIndex: require('@joplin/tools/gulp/tasks/buildCommandIndex'),
+	buildScriptIndexes: require('@joplin/tools/gulp/tasks/buildScriptIndexes'),
 	compileSass: {
 		fn: async () => {
 			await compileSass(
@@ -58,7 +60,7 @@ const buildBeforeStartParallel = [
 	'copyPluginAssets',
 	'copyApplicationAssets',
 	'updateIgnoredTypeScriptBuild',
-	'buildCommandIndex',
+	'buildScriptIndexes',
 	'compileSass',
 ];
 

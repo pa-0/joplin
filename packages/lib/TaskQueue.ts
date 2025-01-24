@@ -2,6 +2,7 @@ import time from './time';
 import Setting from './models/Setting';
 import Logger, { LoggerWrapper } from '@joplin/utils/Logger';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 type TaskCallback = ()=> Promise<any>;
 
 interface Task {
@@ -11,6 +12,7 @@ interface Task {
 
 interface TaskResult {
 	id: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	result: any;
 	error?: Error;
 }
@@ -76,6 +78,7 @@ export default class TaskQueue {
 
 		this.processingQueue_ = true;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const completeTask = (task: Task, result: any, error: Error) => {
 			delete this.processingTasks_[task.id];
 
@@ -103,7 +106,7 @@ export default class TaskQueue {
 			// the task to complete, but still want to capture the result.
 			task
 				.callback()
-				// eslint-disable-next-line promise/prefer-await-to-then
+				// eslint-disable-next-line promise/prefer-await-to-then, @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				.then((result: any) => {
 					completeTask(task, result, null);
 				})
@@ -187,7 +190,7 @@ export default class TaskQueue {
 
 		// In general it's not a big issue if some tasks are still running because
 		// it won't call anything unexpected in caller code, since the caller has
-		// to explicitely retrieve the results
+		// to explicitly retrieve the results
 		const startTime = Date.now();
 		while (Object.keys(this.processingTasks_).length) {
 			await time.sleep(0.1);
