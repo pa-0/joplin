@@ -21,6 +21,7 @@ window.setImmediate = setImmediate;
 
 shimInit({
 	nodeSqlite: sqlite3,
+	appVersion: () => require('./package.json').version,
 	React,
 	sharp,
 });
@@ -54,6 +55,10 @@ jest.mock('./components/ExtendedWebView', () => {
 	return require('./components/ExtendedWebView/index.jest.js');
 });
 
+jest.mock('./components/CameraView/Camera', () => {
+	return require('./components/CameraView/Camera/index.jest');
+});
+
 jest.mock('@react-native-clipboard/clipboard', () => {
 	return { default: { getString: jest.fn(), setString: jest.fn() } };
 });
@@ -79,6 +84,10 @@ jest.mock('react-native-image-picker', () => {
 	return { default: { } };
 });
 
+jest.mock('react-native-zip-archive', () => {
+	return { default: { } };
+});
+
 jest.mock('react-native-document-picker', () => ({ default: { } }));
 
 // Used by the renderer
@@ -99,6 +108,10 @@ jest.doMock('react-native-fs', () => {
 		CachesDirectoryPath: tempDirectoryPath,
 	};
 });
+
+shim.fsDriver().getCacheDirectoryPath = () => {
+	return tempDirectoryPath;
+};
 
 beforeAll(async () => {
 	await mkdir(tempDirectoryPath);

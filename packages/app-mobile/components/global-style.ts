@@ -3,25 +3,32 @@ import { Platform, TextStyle, ViewStyle } from 'react-native';
 import { themeById } from '@joplin/lib/theme';
 import { Theme as BaseTheme } from '@joplin/lib/themes/type';
 
+const Color = require('color');
+
 const baseStyle = {
 	appearance: 'light',
 	fontSize: 16,
-	noteViewerFontSize: 16,
+	fontSizeLarge: 20,
 	margin: 15, // No text and no interactive component should be within this margin
 	itemMarginTop: 10,
 	itemMarginBottom: 10,
 	fontSizeSmaller: 14,
 	disabledOpacity: 0.2,
 	lineHeight: '1.6em',
+	// The default, may be overridden in settings:
+	noteViewerFontSize: 16,
 };
 
 export type ThemeStyle = BaseTheme & typeof baseStyle & {
+	backgroundColorHover4: string;
+
 	fontSize: number;
 	fontSizeSmaller: number;
 	marginRight: number;
 	marginLeft: number;
 	marginTop: number;
 	marginBottom: number;
+	borderRadius: number;
 	icon: TextStyle;
 	lineInput: ViewStyle;
 	buttonRow: ViewStyle;
@@ -29,6 +36,8 @@ export type ThemeStyle = BaseTheme & typeof baseStyle & {
 	urlText: TextStyle;
 	headerStyle: TextStyle;
 	headerWrapperStyle: ViewStyle;
+	rootStyle: ViewStyle;
+	hiddenRootStyle: ViewStyle;
 	keyboardAppearance: 'light'|'dark';
 };
 
@@ -81,6 +90,16 @@ function extraStyles(theme: BaseTheme) {
 		backgroundColor: theme.headerBackgroundColor,
 	};
 
+	const rootStyle: ViewStyle = {
+		flex: 1,
+		backgroundColor: theme.backgroundColor,
+	};
+
+	const hiddenRootStyle: ViewStyle = {
+		...rootStyle,
+		flex: 0.001, // This is a bit of a hack but it seems to work fine - it makes the component invisible but without unmounting it
+	};
+
 	return {
 		marginRight: baseStyle.margin,
 		marginLeft: baseStyle.margin,
@@ -94,10 +113,15 @@ function extraStyles(theme: BaseTheme) {
 		urlText,
 		headerStyle,
 		headerWrapperStyle,
+		rootStyle,
+		hiddenRootStyle,
 
 		keyboardAppearance: theme.appearance,
 		color5: theme.color5 ?? theme.backgroundColor4,
 		backgroundColor5: theme.backgroundColor5 ?? theme.color4,
+
+		backgroundColorHover4: Color(theme.color4).alpha(0.12).rgb().string(),
+		borderRadius: 24,
 	};
 }
 
