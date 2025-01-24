@@ -6,13 +6,78 @@ import resolvePathWithinDir from '@joplin/lib/utils/resolvePathWithinDir';
 import { LoggerWrapper } from '@joplin/utils/Logger';
 import * as fs from 'fs-extra';
 import { createReadStream } from 'fs';
-import { Readable } from 'stream';
 import { fromFilename } from '@joplin/lib/mime-utils';
+import { createSecureRandom } from '@joplin/lib/uuid';
+
+export interface AccessController {
+	remove(): void;
+}
 
 export interface CustomProtocolHandler {
+	// note-viewer/ URLs
 	allowReadAccessToDirectory(path: string): void;
-	allowReadAccessToFile(path: string): { remove(): void };
+	allowReadAccessToFile(path: string): AccessController;
+
+	// file-media/ URLs
+	setMediaAccessEnabled(enabled: boolean): void;
+	getMediaAccessKey(): string;
 }
+
+
+// In some cases, the NodeJS built-in adapter (Readable.toWeb) closes its controller twice,
+// leading to an error dialog. See:
+// - https://github.com/nodejs/node/blob/e578c0b1e8d3dd817e692a0c5df1b97580bc7c7f/lib/internal/webstreams/adapters.js#L454
+// - https://github.com/nodejs/node/issues/54205
+// We work around this by creating a more-error-tolerant custom adapter.
+const nodeStreamToWeb = (resultStream: fs.ReadStream) => {
+	resultStream.pause();
+
+	let closed = false;
+
+	return new ReadableStream({
+		start: (controller) => {
+			resultStream.on('data', (chunk) => {
+				if (closed) {
+					return;
+				}
+
+				if (Buffer.isBuffer(chunk)) {
+					controller.enqueue(new Uint8Array(chunk));
+				} else {
+					controller.enqueue(chunk);
+				}
+
+				if (controller.desiredSize <= 0) {
+					resultStream.pause();
+				}
+			});
+
+			resultStream.on('error', (error) => {
+				controller.error(error);
+			});
+
+			resultStream.on('end', () => {
+				if (!closed) {
+					closed = true;
+					controller.close();
+				}
+			});
+		},
+		pull: (_controller) => {
+			if (closed) {
+				return;
+			}
+
+			resultStream.resume();
+		},
+		cancel: () => {
+			if (!closed) {
+				closed = true;
+				resultStream.close();
+			}
+		},
+	}, { highWaterMark: resultStream.readableHighWaterMark });
+};
 
 // Allows seeking videos.
 // See https://github.com/electron/electron/issues/38749 for why this is necessary.
@@ -42,7 +107,7 @@ const handleRangeRequest = async (request: Request, targetPath: string) => {
 	}
 
 	// Note: end is inclusive.
-	const resultStream = Readable.toWeb(createReadStream(targetPath, { start: startByte, end: endByte }));
+	const resultStream = createReadStream(targetPath, { start: startByte, end: endByte });
 
 	// See the HTTP range requests guide: https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
 	const headers = new Headers([
@@ -52,10 +117,9 @@ const handleRangeRequest = async (request: Request, targetPath: string) => {
 		['Content-Range', `bytes ${startByte}-${endByte}/${stat.size}`],
 	]);
 
+
 	return new Response(
-		// This cast is necessary -- .toWeb produces a different type
-		// from the global ReadableStream.
-		resultStream as ReadableStream,
+		nodeStreamToWeb(resultStream),
 		{ headers, status: 206 },
 	);
 };
@@ -71,8 +135,16 @@ const handleRangeRequest = async (request: Request, targetPath: string) => {
 // TODO: Use Logger.create (doesn't work for now because Logger is only initialized
 // in the main process.)
 const handleCustomProtocols = (logger: LoggerWrapper): CustomProtocolHandler => {
+	logger = {
+		...logger,
+		debug: () => {},
+	};
+
+	// Allow-listed files/directories for joplin-content://note-viewer/
 	const readableDirectories: string[] = [];
 	const readableFiles = new Map<string, number>();
+	// Access for joplin-content://file-media/
+	let mediaAccessKey: string|false = false;
 
 	// See also the protocol.handle example: https://www.electronjs.org/docs/latest/api/protocol#protocolhandlescheme-handler
 	protocol.handle(contentProtocolName, async request => {
@@ -88,10 +160,9 @@ const handleCustomProtocols = (logger: LoggerWrapper): CustomProtocolHandler => 
 
 		pathname = resolve(appBundleDirectory, pathname);
 
-		const allowedHosts = ['note-viewer'];
-
 		let canRead = false;
-		if (allowedHosts.includes(host)) {
+		let mediaOnly = true;
+		if (host === 'note-viewer') {
 			if (readableFiles.has(pathname)) {
 				canRead = true;
 			} else {
@@ -101,6 +172,20 @@ const handleCustomProtocols = (logger: LoggerWrapper): CustomProtocolHandler => 
 						break;
 					}
 				}
+			}
+
+			mediaOnly = false;
+		} else if (host === 'file-media') {
+			if (!mediaAccessKey) {
+				throw new Error('Media access denied. This must be enabled with .setMediaAccessEnabled');
+			}
+
+			canRead = true;
+			mediaOnly = true;
+
+			const accessKey = url.searchParams.get('access-key');
+			if (accessKey !== mediaAccessKey) {
+				throw new Error(`Invalid or missing media access key (was ${accessKey}). An allow-listed ?access-key= parameter must be provided.`);
 			}
 		} else {
 			throw new Error(`Invalid URL ${request.url}`);
@@ -114,12 +199,26 @@ const handleCustomProtocols = (logger: LoggerWrapper): CustomProtocolHandler => 
 		logger.debug('protocol handler: Fetch file URL', asFileUrl);
 
 		const rangeHeader = request.headers.get('Range');
+		let response;
 		if (!rangeHeader) {
-			const response = await net.fetch(asFileUrl);
-			return response;
+			response = await net.fetch(asFileUrl);
 		} else {
-			return handleRangeRequest(request, pathname);
+			response = await handleRangeRequest(request, pathname);
 		}
+
+		if (mediaOnly) {
+			// Tells the browser to avoid MIME confusion attacks. See
+			// https://blog.mozilla.org/security/2016/08/26/mitigating-mime-confusion-attacks-in-firefox/
+			response.headers.set('X-Content-Type-Options', 'nosniff');
+
+			// This is an extra check to prevent loading text/html and arbitrary non-media content from the URL.
+			const contentType = response.headers.get('Content-Type');
+			if (!contentType || !contentType.match(/^(image|video|audio)\//)) {
+				throw new Error(`Attempted to access non-media file from ${request.url}, which is media-only. Content type was ${contentType}.`);
+			}
+		}
+
+		return response;
 	});
 
 	const appBundleDirectory = dirname(dirname(__dirname));
@@ -150,6 +249,18 @@ const handleCustomProtocols = (logger: LoggerWrapper): CustomProtocolHandler => 
 					}
 				},
 			};
+		},
+		setMediaAccessEnabled: (enabled: boolean) => {
+			if (enabled) {
+				mediaAccessKey ||= createSecureRandom();
+			} else {
+				mediaAccessKey = false;
+			}
+		},
+		// Allows access to all local media files, provided a matching ?access-key=<key> is added
+		// to the request URL.
+		getMediaAccessKey: () => {
+			return mediaAccessKey || null;
 		},
 	};
 };
