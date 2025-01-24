@@ -26,11 +26,13 @@ const shim = require('@joplin/lib/shim').default;
 const { shimInit } = require('@joplin/lib/shim-init-node.js');
 const bridge = require('@electron/remote').require('./bridge').default;
 const EncryptionService = require('@joplin/lib/services/e2ee/EncryptionService').default;
-const { FileApiDriverLocal } = require('@joplin/lib/file-api-driver-local');
+const FileApiDriverLocal = require('@joplin/lib/file-api-driver-local').default;
 const React = require('react');
 const nodeSqlite = require('sqlite3');
 const initLib = require('@joplin/lib/initLib').default;
 const pdfJs = require('pdfjs-dist');
+require('@sentry/electron/renderer');
+
 
 const main = async () => {
 	if (bridge().env() === 'dev') {
@@ -78,7 +80,7 @@ const main = async () => {
 	BaseItem.loadClass('MasterKey', MasterKey);
 	BaseItem.loadClass('Revision', Revision);
 
-	Setting.setConstant('appId', `net.cozic.joplin${bridge().env() === 'dev' ? 'dev' : ''}-desktop`);
+	Setting.setConstant('appId', bridge().appId());
 	Setting.setConstant('appType', 'desktop');
 
 	// eslint-disable-next-line no-console
@@ -108,27 +110,6 @@ const main = async () => {
 		electronBridge: bridge(),
 		nodeSqlite,
 		pdfJs,
-	});
-
-	// Disable drag and drop of links inside application (which would
-	// open it as if the whole app was a browser)
-	document.addEventListener('dragover', event => event.preventDefault());
-	document.addEventListener('drop', event => event.preventDefault());
-
-	// Disable middle-click (which would open a new browser window, but we don't want this)
-	document.addEventListener('auxclick', event => event.preventDefault());
-
-	// Each link (rendered as a button or list item) has its own custom click event
-	// so disable the default. In particular this will disable Ctrl+Clicking a link
-	// which would open a new browser window.
-	document.addEventListener('click', (event) => {
-		// We don't apply this to labels and inputs because it would break
-		// checkboxes. Such a global event handler is probably not a good idea
-		// anyway but keeping it for now, as it doesn't seem to break anything else.
-		// https://github.com/facebook/react/issues/13477#issuecomment-489274045
-		if (['LABEL', 'INPUT'].includes(event.target.nodeName)) return;
-
-		event.preventDefault();
 	});
 
 	const logger = new Logger();

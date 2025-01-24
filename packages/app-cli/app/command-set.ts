@@ -1,5 +1,5 @@
 import BaseCommand from './base-command';
-const { app } = require('./app.js');
+import app from './app';
 import { _ } from '@joplin/lib/locale';
 import BaseModel from '@joplin/lib/BaseModel';
 import Database from '@joplin/lib/database';
@@ -22,6 +22,7 @@ class Command extends BaseCommand {
 		return _('Sets the property <name> of the given <note> to the given [value]. Possible properties are:\n\n%s', s.join(', '));
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override async action(args: any) {
 		const title = args['note'];
 		const propName = args['name'];
@@ -36,6 +37,7 @@ class Command extends BaseCommand {
 
 			const timestamp = Date.now();
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			const newNote: any = {
 				id: notes[i].id,
 				type_: notes[i].type_,

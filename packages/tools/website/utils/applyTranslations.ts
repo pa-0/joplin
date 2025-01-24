@@ -63,11 +63,11 @@ export default (html: string, _languageCode: string, translations: Translations)
 		// The opening tag is "div".
 		currentTranslationTag: string[];
 
-		// Once we finished processing the translable block, this will contain
+		// Once we finished processing the translatable block, this will contain
 		// the string to be translated. It may contain HTML.
 		currentTranslationContent: string[];
 
-		// Tells if we're at the beginning of a translable block.
+		// Tells if we're at the beginning of a translatable block.
 		translateIsOpening: boolean;
 
 		inScript: boolean;
@@ -95,6 +95,7 @@ export default (html: string, _languageCode: string, translations: Translations)
 
 	const parser = new htmlparser2.Parser({
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		onopentag: (name: string, attrs: any) => {
 			if (name === 'script') state.inScript = true;
 

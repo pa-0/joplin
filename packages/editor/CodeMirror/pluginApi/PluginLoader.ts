@@ -1,16 +1,19 @@
-import { LogMessageCallback, PluginData } from '../../types';
+import { LogMessageCallback, ContentScriptData } from '../../types';
 import CodeMirrorControl from '../CodeMirrorControl';
 import codeMirrorRequire from './codeMirrorRequire';
 
 let pluginScriptIdCounter = 0;
 let pluginLoaderCounter = 0;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 type OnScriptLoadCallback = (exports: any)=> void;
 type OnPluginRemovedCallback = ()=> void;
 
+const contentScriptToId = (contentScript: ContentScriptData) => `${contentScript.pluginId}--${contentScript.contentScriptId}`;
+
 export default class PluginLoader {
 	private pluginScriptsContainer: HTMLElement;
-	private loadedPluginIds: string[] = [];
+	private loadedContentScriptIds: string[] = [];
 	private pluginRemovalCallbacks: Record<string, OnPluginRemovedCallback> = {};
 	private pluginLoaderId: number;
 
@@ -25,24 +28,28 @@ export default class PluginLoader {
 
 		// addPlugin works by creating <script> elements with the plugin's content. To pass
 		// information to this <script>, we use global objects:
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		(window as any).__pluginLoaderScriptLoadCallbacks ??= Object.create(null);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		(window as any).__pluginLoaderRequireFunctions ??= Object.create(null);
 
 		this.pluginLoaderId = pluginLoaderCounter++;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		(window as any).__pluginLoaderRequireFunctions[this.pluginLoaderId] = codeMirrorRequire;
 	}
 
-	public async setPlugins(plugins: PluginData[]) {
-		for (const plugin of plugins) {
-			if (!this.loadedPluginIds.includes(plugin.pluginId)) {
-				this.addPlugin(plugin);
+	public async setPlugins(contentScripts: ContentScriptData[]) {
+		for (const contentScript of contentScripts) {
+			const id = contentScriptToId(contentScript);
+			if (!this.loadedContentScriptIds.includes(id)) {
+				this.addPlugin(contentScript);
 			}
 		}
 
 		// Remove old plugins
-		const pluginIds = plugins.map(plugin => plugin.pluginId);
-		const removedIds = this.loadedPluginIds
-			.filter(id => !pluginIds.includes(id));
+		const contentScriptIds = contentScripts.map(contentScriptToId);
+		const removedIds = this.loadedContentScriptIds
+			.filter(id => !contentScriptIds.includes(id));
 
 		for (const id of removedIds) {
 			if (id in this.pluginRemovalCallbacks) {
@@ -51,10 +58,10 @@ export default class PluginLoader {
 		}
 	}
 
-	private addPlugin(plugin: PluginData) {
+	private addPlugin(plugin: ContentScriptData) {
 		const onRemoveCallbacks: OnPluginRemovedCallback[] = [];
 
-		this.logMessage(`Loading plugin ${plugin.pluginId}`);
+		this.logMessage(`Loading plugin ${plugin.pluginId}, content script ${plugin.contentScriptId}`);
 
 		const addScript = (onLoad: OnScriptLoadCallback) => {
 			const scriptElement = document.createElement('script');
@@ -68,13 +75,14 @@ export default class PluginLoader {
 				const js = await plugin.contentScriptJs();
 
 				// Stop if cancelled
-				if (!this.loadedPluginIds.includes(plugin.pluginId)) {
+				if (!this.loadedContentScriptIds.includes(contentScriptToId(plugin))) {
 					return;
 				}
 
-				scriptElement.innerText = `
+				scriptElement.appendChild(document.createTextNode(`
 				(async () => {
 					const exports = {};
+					const module = { exports: exports };
 					const require = window.__pluginLoaderRequireFunctions[${JSON.stringify(this.pluginLoaderId)}];
 					const joplin = {
 						require,
@@ -82,10 +90,11 @@ export default class PluginLoader {
 		
 					${js};
 		
-					window.__pluginLoaderScriptLoadCallbacks[${JSON.stringify(scriptId)}](exports);
+					window.__pluginLoaderScriptLoadCallbacks[${JSON.stringify(scriptId)}](module.exports);
 				})();
-				`;
+				`));
 
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				(window as any).__pluginLoaderScriptLoadCallbacks[scriptId] = onLoad;
 
 				this.pluginScriptsContainer.appendChild(scriptElement);
@@ -109,17 +118,17 @@ export default class PluginLoader {
 			this.pluginScriptsContainer.appendChild(styleContainer);
 		};
 
-		this.pluginRemovalCallbacks[plugin.pluginId] = () => {
+		this.pluginRemovalCallbacks[contentScriptToId(plugin)] = () => {
 			for (const callback of onRemoveCallbacks) {
 				callback();
 			}
 
-			this.loadedPluginIds = this.loadedPluginIds.filter(id => {
-				return id !== plugin.pluginId;
+			this.loadedContentScriptIds = this.loadedContentScriptIds.filter(id => {
+				return id !== contentScriptToId(plugin);
 			});
 		};
 
-		addScript(exports => {
+		addScript(async exports => {
 			if (!exports?.default || !(typeof exports.default === 'function')) {
 				throw new Error('All plugins must have a function default export');
 			}
@@ -129,7 +138,7 @@ export default class PluginLoader {
 				pluginId: plugin.pluginId,
 				contentScriptId: plugin.contentScriptId,
 			};
-			const loadedPlugin = exports.default(context);
+			const loadedPlugin = exports.default(context) ?? {};
 
 			loadedPlugin.plugin?.(this.editor);
 
@@ -143,23 +152,37 @@ export default class PluginLoader {
 				const cssStrings = [];
 
 				for (const asset of loadedPlugin.assets()) {
+					let assetText: string = asset.text;
+					let assetMime: string = asset.mime;
+
 					if (!asset.inline) {
-						this.logMessage('Warning: The CM6 plugin API currently only supports inline CSS.');
-						continue;
+						if (!asset.name) {
+							throw new Error('Non-inline asset missing required property "name"');
+						}
+						if (assetMime !== 'text/css' && !asset.name.endsWith('.css')) {
+							throw new Error(
+								`Non-css assets are not supported by the CodeMirror 6 editor. (Asset path: ${asset.name})`,
+							);
+						}
+
+						assetText = await plugin.loadCssAsset(asset.name);
+						assetMime = 'text/css';
 					}
 
-					if (asset.mime !== 'text/css') {
-						throw new Error('Inline assets must have property "mime" set to "text/css"');
+					if (assetMime !== 'text/css') {
+						throw new Error(
+							'Plugin assets must have property "mime" set to "text/css" or have a filename ending with ".css"',
+						);
 					}
 
-					cssStrings.push(asset.text);
+					cssStrings.push(assetText);
 				}
 
 				addStyles(cssStrings);
 			}
 		});
 
-		this.loadedPluginIds.push(plugin.pluginId);
+		this.loadedContentScriptIds.push(contentScriptToId(plugin));
 	}
 
 	public remove() {

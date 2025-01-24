@@ -18,10 +18,15 @@ There are also a few forks of existing packages under the "fork-*" name.
 
 ## Required dependencies
 
-- Install Node 16+. On Windows, also install the build tools - https://nodejs.org/en/
-  - [Enable Yarn](https://yarnpkg.com/getting-started/install): `corepack enable`
-- macOS: Install Cocoapods - `brew install cocoapods`. Apple Silicon [may require libvips](https://github.com/laurent22/joplin/pull/5966#issuecomment-1007158597) - `brew install vips`.
-- Linux: Install dependencies - `sudo apt install build-essential libnss3 libsecret-1-dev python rsync`
+All of the required dependencies are listed within the [devbox.json](https://github.com/laurent22/joplin/blob/dev/devbox.json) file in the project root. You can either manually install them based on that list, or you can automatically install them on Linux or MacOS by using:
+
+```sh
+devbox shell
+```
+
+If you don't already have devbox, please [follow these instructions](https://www.jetify.com/docs/devbox/quickstart/).
+
+If working on the `onenote-converter` packages you will need to install the [Rust toolchain](https://rustup.rs/).
 
 ## Building
 
@@ -51,7 +56,7 @@ First you need to setup React Native to build projects with native code. For thi
 
 ### Android
 
-Run this to build and install the app on the emmulator:
+Run this to build and install the app on the emulator:
 
 	cd packages/app-mobile/android
 	./gradlew installDebug # or gradlew.bat installDebug on Windows
@@ -67,6 +72,17 @@ Once this is done, open the file `ios/Joplin.xcworkspace` on XCode and run the a
 
 Normally the **bundler** should start automatically with the application. If it doesn't, run `yarn start` from `packages/app-mobile`.
 
+### Web
+
+To run the mobile app in a web browser,
+
+	cd packages/app-mobile
+	yarn serve-web
+
+Above, `yarn serve-web` starts a development server on port `8088`. To create a release build, instead run `yarn web`. The built output will be stored in `packages/app-mobile/web/dist`.
+
+Like the iOS and Android builds, it's necessary to compile TypeScript to JS. See "Watching files" below.
+
 ## Building the clipper
 
 	cd packages/app-clipper/popup
@@ -78,9 +94,9 @@ To test the extension please refer to the relevant pages for each browser: [Fire
 
 To make changes to the application, you'll need to rebuild any TypeScript file you've changed. The simplest way to do this is to watch for changes from the root of the project. Simply run this command, and it should take care of the rest:
 
-	yarn run watch
+	yarn watch
 
-Running `yarn run tsc` would have the same effect, but without watching.
+Running `yarn tsc` would have the same effect, but without watching.
 
 ## Running an application with additional parameters
 
@@ -91,21 +107,6 @@ You can specify additional parameters when running the desktop or CLI applicatio
 ## TypeScript
 
 The application was originally written in JavaScript, however it has slowly been migrated to [TypeScript](https://www.typescriptlang.org/). New classes and files should be written in TypeScript. All compiled files are generated next to the .ts or .tsx file. So for example, if there's a file "lib/MyClass.ts", there will be a generated "lib/MyClass.js" next to it. It is implemented that way as it requires minimal changes to integrate TypeScript in the existing JavaScript code base.
-
-## Hot reload
-
-If you'd like to auto-reload the desktop app on changes rather than having to quit and restart it manually each time, you can use [watchman-make](https://facebook.github.io/watchman/docs/watchman-make.html):
-
-```sh
-cd packages/app-desktop
-watchman-make -p '**/*.js' '**/*.jsx' --run "yarn start"
-```
-
-It still requires you to quit the application each time you want it to rebuild, but at least you don't have to re-run `"yarn start"` each time. Here's what the workflow loop looks like in practice:
-
-1. Edit and save files in your text editor.
-2. Switch to the Electron app and <kbd>cmd</kbd>+<kbd>Q</kbd> to quit it.
-3. `watchman` immediately restarts the app for you (whereas usually you'd have to switch back to the terminal, type `"yarn start"`, and hit enter).
 
 ## Troubleshooting
 

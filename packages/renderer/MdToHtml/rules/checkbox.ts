@@ -2,6 +2,7 @@ import { RuleOptions } from '../../MdToHtml';
 
 let checkboxIndex_ = -1;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function pluginAssets(theme: any) {
 	return [
 		{
@@ -23,6 +24,8 @@ function pluginAssets(theme: any) {
 				li.md-checkbox input[type=checkbox] {
 					margin-left: -1.71em;
 					margin-right: 0.7em;
+					position: relative;
+					top: 1px;
 				}
 				
 				ul.joplin-checklist {
@@ -53,6 +56,7 @@ function pluginAssets(theme: any) {
 	];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function createPrefixTokens(Token: any, id: string, checked: boolean, label: string, postMessageSyntax: string, sourceToken: any, disabled: boolean): any[] {
 	let token = null;
 	const tokens = [];
@@ -106,6 +110,7 @@ function createPrefixTokens(Token: any, id: string, checked: boolean, label: str
 	return tokens;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function createSuffixTokens(Token: any): any[] {
 	return [
 		new Token('label_close', 'label', -1),
@@ -113,9 +118,11 @@ function createSuffixTokens(Token: any): any[] {
 	];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function checkboxPlugin(markdownIt: any, options: RuleOptions) {
 	const renderingType = options.checkboxRenderingType || 1;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	markdownIt.core.ruler.push('checkbox', (state: any) => {
 		const tokens = state.tokens;
 		const Token = state.Token;

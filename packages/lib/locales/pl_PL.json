@@ -63,7 +63,10 @@
 		"%s = %s (%s)"
 	],
 	"%s is not optimised for synchronising many small files so your initial synchronisation will be slow.": [
-		""
+		"%s nie jest zoptymalizowany pod kątem synchronizacji wielu małych plików, więc początkowa synchronizacja będzie powolna."
+	],
+	"%s tab opened": [
+		"Otwarto zakładkę %s"
 	],
 	"%s: %d": [
 		"%s: %d"
@@ -107,6 +110,9 @@
 	"(In plugin: %s)": [
 		"(W pluginie: %s)"
 	],
+	"(level %d)": [
+		""
+	],
 	"(None)": [
 		"(Brak)"
 	],
@@ -139,6 +145,9 @@
 	],
 	"A5": [
 		"A5"
+	],
+	"About": [
+		"Czytaj więcej"
 	],
 	"About Joplin": [
 		"O aplikacji Joplin"
@@ -188,6 +197,9 @@
 	"Add recipient:": [
 		"Dodaj odbiorcę:"
 	],
+	"Add tag %s to note": [
+		""
+	],
 	"Add title": [
 		"Dodaj tytuł"
 	],
@@ -209,11 +221,17 @@
 	"All data, including notes, notebooks and tags will be permanently deleted.": [
 		"Wszystkie dane, włączając notatki, notatniki i tagi zostaną trwale usunięte."
 	],
+	"All item sync failures have been marked as \"ignored\".": [
+		"Wszystkie błędy synchronizacji elementów zostały oznaczone jako \"zignorowane\"."
+	],
 	"All notes": [
 		"Wszystkie notatki"
 	],
 	"All potential ports are in use - please report the issue at %s": [
 		"Wszystkie możliwe porty są w użyciu - proszę zgłosić błąd na %s"
+	],
+	"Allows debugging mobile plugins. See %s for details.": [
+		"Umożliwia debugowanie wtyczek mobilnych. Zobacz %s, aby uzyskać szczegóły."
 	],
 	"Also displays unset and hidden config variables.": [
 		"Wyświetla także nieustawione i ukryte zmienne konfiguracyjne."
@@ -226,6 +244,9 @@
 	],
 	"Always ask": [
 		"Zawsze pytaj"
+	],
+	"Always open %s files without asking.": [
+		"Zawsze otwieraj %s plików bez pytania."
 	],
 	"Always resize": [
 		"Zmień rozmiar"
@@ -244,6 +265,9 @@
 	],
 	"An update is available, do you want to download it now?": [
 		"Aktualizacja jest dostępna, czy chcesz ją pobrać?"
+	],
+	"Android API level: %d": [
+		"Poziom API Androida: %d"
 	],
 	"Any email sent to this address will be converted into a note and added to your collection. The note will be saved into the Inbox notebook": [
 		"Każda wiadomość e-mail wysłana na ten adres zostanie przekształcona w notatkę i dodana do kolekcji. Notatka zostanie zapisana w notatniku Skrzynka odbiorcza"
@@ -268,6 +292,9 @@
 	],
 	"Aritim Dark": [
 		"Aritim ciemny"
+	],
+	"At present, Joplin Web can only be open in one tab at a time. Please close the other instance of Joplin.": [
+		""
 	],
 	"Attach": [
 		"Załącz"
@@ -314,11 +341,17 @@
 	"Auto-add disabled accounts for deletion": [
 		"Automatycznie dodaj wyłączone konta do usunięcia"
 	],
-	"Auto-pair braces, parenthesis, quotations, etc.": [
+	"Auto-pair braces, parentheses, quotations, etc.": [
 		"Automatycznie zamykaj klamry, nawiasy, cudzysłowy itd."
+	],
+	"Autocomplete Markdown and HTML": [
+		""
 	],
 	"Automatically check for updates": [
 		"Sprawdź dostępność aktualizacji"
+	],
+	"Automatically delete notes in the trash after a number of days": [
+		"Automatyczne usuwanie notatek z kosza po upływie określonej liczby dni"
 	],
 	"Automatically switch theme to match system theme": [
 		"Automatycznie dopasuj motyw do motywu systemowego"
@@ -329,8 +362,8 @@
 	"Basic": [
 		"Podstawowy"
 	],
-	"Biometric unlock is not setup on the device. Please set it up in order to unlock Joplin. If the device is on lockout, consider switching it off and on to reset biometrics scanning.": [
-		"Odblokowanie biometryczne nie jest skonfigurowane na urządzeniu. Należy je skonfigurować w celu odblokowania Joplin. Jeśli urządzenie jest zablokowane, należy je wyłączyć i włączyć, aby zresetować skanowanie biometryczne."
+	"Beta": [
+		"Beta"
 	],
 	"Bold": [
 		"Pogrubienie"
@@ -341,11 +374,17 @@
 	"Browse...": [
 		"Przeglądaj..."
 	],
-	"Built in": [
-		""
+	"Built-in": [
+		"Wbudowana"
 	],
 	"Bulleted List": [
 		"Lista punktowa"
+	],
+	"by %s": [
+		"autorstwa %s"
+	],
+	"by word": [
+		""
 	],
 	"Can Share": [
 		"Może udostępniać"
@@ -422,11 +461,17 @@
 	"Change language": [
 		"Zmień język"
 	],
+	"Change shortcut for \"%s\"": [
+		""
+	],
 	"Characters": [
 		"Znaki"
 	],
 	"Characters excluding spaces": [
 		"Znaki bez spacji"
+	],
+	"Check elements to display in the toolbar": [
+		""
 	],
 	"Check for updates...": [
 		"Sprawdź dostępność aktualizacji..."
@@ -470,8 +515,20 @@
 	"Close dropdown": [
 		"Zamknij rozwijane menu"
 	],
+	"Close side menu": [
+		""
+	],
+	"Close the application, then delete your profile in \"%s\", and start the application again. Make sure you create a backup first by exporting all your notes as JEX.": [
+		"Zamknij aplikację, a następnie usuń swój profil w \"%s\" i uruchom aplikację ponownie. Upewnij się, że najpierw utworzyłeś kopię zapasową, eksportując wszystkie swoje notatki jako JEX."
+	],
 	"Close Window": [
 		"Zamknij okno"
+	],
+	"Cmd-click to open": [
+		"Cmd-click aby otworzyć"
+	],
+	"Cmd-click to open: %s": [
+		"Cmd-click aby otworzyć: %s"
 	],
 	"Code": [
 		"Kod"
@@ -488,8 +545,8 @@
 	"Collaborate on notebooks with others": [
 		"Współpracuj z innymi przy notatnikach"
 	],
-	"Collapse": [
-		"Zwiń"
+	"Collapsed, press space to expand.": [
+		""
 	],
 	"Coming alarms": [
 		"Przychodzące powiadomienia"
@@ -518,8 +575,14 @@
 	"Completed decryption.": [
 		"Deszyfrowywanie zakończone."
 	],
+	"Completed with warnings:\n%s": [
+		"Zakończono z ostrzeżeniami:\n%s"
+	],
 	"Completed: %s (%s)": [
 		"Ukończono: %s (%s)"
+	],
+	"completion date": [
+		"data ukończenia"
 	],
 	"Compress old changes": [
 		"Skompresuj stare zmiany"
@@ -622,7 +685,7 @@
 	"Could not verify the share status of this notebook - aborting. Please try again when you are connected to the internet.": [
 		"Nie udało się zweryfikować statusu udostępnienia tego notatnika - przerywanie. Proszę spróbować ponownie, gdy będziesz podłączony do internetu."
 	],
-	"Could not verify your identify: %s": [
+	"Could not verify your identity: %s": [
 		"Nie udało się zweryfikować twojej tożsamości: %s"
 	],
 	"Create": [
@@ -685,6 +748,12 @@
 	"Creating report...": [
 		"Tworzenie raportu..."
 	],
+	"Ctrl-click to open": [
+		"Ctrl-click aby otworzyć"
+	],
+	"Ctrl-click to open: %s": [
+		"Ctrl-click aby otworzyć: %s"
+	],
 	"Current version is up-to-date.": [
 		"Obecna wersja jest aktualna."
 	],
@@ -714,9 +783,6 @@
 	],
 	"Dashboard": [
 		"Panel"
-	],
-	"Database v%s": [
-		"Baza danych v%s"
 	],
 	"Date": [
 		"Data"
@@ -763,38 +829,26 @@
 	"Delete local data and re-download from sync target": [
 		"Usuń dane lokalne i pobierz je ponownie z miejsca docelowego synchronizacji"
 	],
+	"Delete model and re-download?\nThis cannot be undone.": [
+		""
+	],
 	"Delete note": [
 		"Usuń notatkę"
 	],
-	"Delete note \"%s\"?": [
-		"Usunąć notatkę \"%s\"?"
-	],
-	"Delete note?": [
-		"Usunąć notatkę?"
-	],
 	"Delete notebook": [
 		"Usuń notatnik"
-	],
-	"Delete notebook \"%s\"?\n\nAll notes and sub-notebooks within this notebook will also be deleted.": [
-		"Usunąć notatnik \"%s:?\n\nWszystkie notatki i notatniki podrzędne zawarte w tym notatniku także zostaną usunięte."
-	],
-	"Delete notebook? All notes and sub-notebooks within this notebook will also be deleted.": [
-		"Usunąć notatnik? Wszystkie notatki i notatniki podrzędne zawarte w notatniku zostaną także usunięte."
 	],
 	"Delete plugin \"%s\"?": [
 		"Usunąć wtyczkę \"%s\"?"
 	],
 	"Delete profile \"%s\"": [
-		"Usuń profil “%s”"
+		"Usuń profil \"%s\""
 	],
 	"Delete selected notes": [
 		"Usuń wybrane notatki"
 	],
 	"Delete the Inbox notebook?\n\nIf you delete the inbox notebook, any email that's recently been sent to it may be lost.": [
 		"Usunąć notatnik Skrzynka odbiorcza?\n\nUsunięcie notatnika Skrzynki odbiorcza może spowodować utratę wszystkich ostatnio wysłanych do niego wiadomości e-mail."
-	],
-	"Delete these %d notes?": [
-		"Usunąć %d notatki?"
 	],
 	"Delete this invitation? The recipient will no longer have access to this shared notebook.": [
 		"Usunąć to zaproszenie? Odbiorca nie będzie miał dłużej dostępu do tego udostępnionego notatnika."
@@ -807,6 +861,9 @@
 	],
 	"Deleted remote items: %d.": [
 		"Usunięto zdalne obiekty: %d."
+	],
+	"Deletes notes permanently, skipping the trash.": [
+		"Usuwa notatki na stałe, z pominięciem kosza."
 	],
 	"Deletes the given notebook.": [
 		"Usuwa wybrany notatnik."
@@ -943,6 +1000,9 @@
 	"Dropbox Login": [
 		"Nazwa użytkownika Dropbox"
 	],
+	"Due": [
+		"Termin"
+	],
 	"Duplicate": [
 		"Duplikuj"
 	],
@@ -960,6 +1020,9 @@
 	],
 	"Edit in external editor": [
 		"Edytuj w edytorze zewnętrznym"
+	],
+	"Edit in new window": [
+		""
 	],
 	"Edit link": [
 		"Edytuj link"
@@ -1021,6 +1084,9 @@
 	"emphasised text": [
 		"tekst wyróżniony"
 	],
+	"Empty trash": [
+		"Opróżnij kosz"
+	],
 	"Enable": [
 		"Aktywuj"
 	],
@@ -1048,6 +1114,9 @@
 	"Enable encryption": [
 		"Aktywuj szyfrowanie"
 	],
+	"Enable file:// URLs for images and videos": [
+		""
+	],
 	"Enable footnotes": [
 		"Aktywuj stopki"
 	],
@@ -1073,7 +1142,7 @@
 		"Aktywuj historię notatek"
 	],
 	"Enable optical character recognition (OCR)": [
-		""
+		"Włącz rozpoznawanie tekstu (OCR)"
 	],
 	"Enable PDF viewer": [
 		"Aktywuj wyświetlacz PDF"
@@ -1104,6 +1173,9 @@
 	],
 	"Enabled": [
 		"Aktywowano"
+	],
+	"Enables Markdown list continuation, auto-closing HTML tags, and other markup autocompletions.": [
+		""
 	],
 	"Enabling encryption means *all* your notes and attachments are going to be re-synchronised and sent encrypted to the sync target.": [
 		"Deaktywowanie szyfrowania oznacza, że *wszystkie* Twoje notatki i załączniki będą resynchronizowane i wysłane niezabezpieczone do serwisu synchonizacji."
@@ -1171,8 +1243,8 @@
 	"Exits the application.": [
 		"Wychodzi z aplikacji."
 	],
-	"Expand": [
-		"Rozwiń"
+	"Expanded, press space to collapse.": [
+		""
 	],
 	"Export": [
 		"Eksportuj"
@@ -1191,9 +1263,6 @@
 	],
 	"Export profile": [
 		"Eksportuj profil"
-	],
-	"Export your data": [
-		"Eksportuj swoje dane"
 	],
 	"Exported successfully!": [
 		"Eksportowanie zakończone pomyślnie!"
@@ -1243,9 +1312,6 @@
 	"Filter tags": [
 		"Filtrowanie znaczników"
 	],
-	"Find and replace": [
-		"Znajdź i zamień"
-	],
 	"Find: ": [
 		"Znaleziono: "
 	],
@@ -1267,8 +1333,8 @@
 	"Focus title": [
 		"Przejdź do tytułu"
 	],
-	"Folders": [
-		"Foldery"
+	"Follow link": [
+		""
 	],
 	"For debugging purpose only: export your profile to an external SD card.": [
 		"Tylko w celu debugowania: eksportuj profil na zewnętrzną kartę SD."
@@ -1287,9 +1353,6 @@
 	],
 	"Force path style": [
 		"Wymuś styl ścieżki"
-	],
-	"Formatting": [
-		"Formatowanie"
 	],
 	"Forward": [
 		"Przekaż"
@@ -1329,6 +1392,15 @@
 	"Gets or sets a config value. If [value] is not provided, it will show the value of [name]. If neither [name] nor [value] is provided, it will list the current configuration.": [
 		"Pobiera lub ustawia wartość pliku konfiguracyjnego. Jeżeli [wartość] nie jest podana, zostanie wyświetlona wartość [nazwa]. Jeżeli zarówno [nazwa], jak i [wartość] nie zostanie podana, wyświetlona zostanie lista z obecną konfiguracją."
 	],
+	"go": [
+		""
+	],
+	"Go back": [
+		""
+	],
+	"Go to line": [
+		""
+	],
 	"Go to source URL": [
 		"Idź do adresu źródłowego odnośnika"
 	],
@@ -1338,17 +1410,20 @@
 	"Grant authorisation": [
 		"Zautoryzuj"
 	],
+	"Have you authorised the application login in the above URL?": [
+		"Czy zezwoliłeś na zalogowanie do aplikacji przy użyciu powyższego adresu URL?"
+	],
 	"Header %d": [
 		"Nagłówek %d"
-	],
-	"Headers": [
-		"Nagłówki"
 	],
 	"Heading": [
 		"Nagłówek"
 	],
 	"Help": [
 		"Pomoc"
+	],
+	"Here's what we do to make plugins safer:": [
+		"Oto, co robimy, aby wtyczki były bezpieczniejsze:"
 	],
 	"Hermes enabled: %d": [
 		"Hermes włączony: %d"
@@ -1370,9 +1445,6 @@
 	],
 	"Hide keyboard": [
 		"Ukryj klawiaturę"
-	],
-	"Hide more actions": [
-		"Ukryj więcej działań"
 	],
 	"Highlight": [
 		"Podświetlenie"
@@ -1404,6 +1476,9 @@
 	"Idle": [
 		"Spoczynek"
 	],
+	"If you have already authorised, please wait for the application to sync to Joplin Cloud.": [
+		"Jeśli dokonałeś autoryzacji, poczekaj, aż aplikacja zsynchronizuje się z chmurą Joplin."
+	],
 	"Ignore": [
 		"Ignoruj"
 	],
@@ -1415,6 +1490,15 @@
 	],
 	"Import": [
 		"Zaimportuj"
+	],
+	"Import failed. Make sure a JEX file was selected.\nDetails: %s": [
+		"Import nie powiódł się. Upewnij się, że wybrano plik JEX.\nSzczegóły: %s"
+	],
+	"Import from JEX": [
+		"Importuj z JEX"
+	],
+	"Import notes from a JEX (Joplin Export) file.": [
+		"Importuj notatki z pliku JEX (Joplin Export)."
 	],
 	"Importing from \"%s\" as \"%s\" format. Please wait...": [
 		"Importowanie z \"%s\"  jako \"%s\". Proszę czekać..."
@@ -1437,6 +1521,9 @@
 	"In order to do so, your entire data set will have to be encrypted and synchronised, so it is best to run it overnight.\n\nTo start, please follow these instructions:\n\n1. Synchronise all your devices.\n2. Click \"%s\".\n3. Let it run to completion. While it runs, avoid changing any note on your other devices, to avoid conflicts.\n4. Once sync is done on this device, sync all your other devices and let it run to completion.\n\nImportant: you only need to run this ONCE on one device.": [
 		"Aby to zrobić należy zaszyfrować i zsynchronizować wszystkie twoje dane, więc najlepiej będzie zrobić to przez noc.\n\nAby rozpocząć postępuj zgodnie z instrukcją:\n\n1. Zsynchronizuj wszystkie swoje urządzenia.\n2. Naciśnij \"%s\".\n3. Poczekaj na zakończenie. W trakcie tego procesu postaraj się nie zmieniać żadnych notatek na swoich urządzeniach, aby uniknąć błędów.\n4. Kiedy synchronizacja się zakończy na tym urządzeniu, zsynchronizuj inne urządzenia.\n\nWażne: musisz wykonać powyższe kroki tylko RAZ na jednym urządzeniu."
 	],
+	"In order to synchronise, please upgrade your application to version %s+": [
+		"Aby przeprowadzić synchronizację, zaktualizuj aplikację do wersji %s+"
+	],
 	"In order to use file system synchronisation your permission to write to external storage is required.": [
 		"Aby użyć synchronizacji z systemem plików, musisz wyrazić zgodę na zapis na zewnętrznym urządzeniu."
 	],
@@ -1449,6 +1536,9 @@
 	"In: %s": [
 		"W: %s"
 	],
+	"Incompatible": [
+		"Niezgodny"
+	],
 	"Increase indent level": [
 		"Zwiększ poziom wcięcia"
 	],
@@ -1457,6 +1547,9 @@
 	],
 	"Indent more": [
 		"Wstaw akapit"
+	],
+	"Info": [
+		""
 	],
 	"Information": [
 		"Informacja"
@@ -1518,20 +1611,14 @@
 	"Items that cannot be synchronised": [
 		"Elementy nie mogą być zsynchronizowane"
 	],
-	"Join us on Twitter": [
-		"Dołącz do nas na Twitterze"
-	],
 	"Joplin can synchronise your notes using various providers. Select one from the list below.": [
 		"Joplin może synchronizować twoje notatki używając różnych dostawców. Wybierz jednego z listy poniżej."
 	],
 	"Joplin Cloud": [
 		"ChmuraJoplin"
 	],
-	"Joplin Cloud email": [
-		"Email Chmury Joplin"
-	],
-	"Joplin Cloud password": [
-		"Hasło Chmury Joplin"
+	"Joplin doesn't recognise the %s extension. Opening this file could be dangerous. What would you like to do?": [
+		"Joplin nie rozpoznaje rozszerzenia %s. Otwarcie tego pliku może być niebezpieczne. Co chcesz zrobić?"
 	],
 	"Joplin Export Directory": [
 		"Katalog Eksportu Joplin"
@@ -1566,9 +1653,6 @@
 	"Joplin's own sync service. Also gives access to Joplin-specific features such as publishing notes or collaborating on notebooks with others.": [
 		"Własna usługa synchronizacji Joplin. Daje także dostęp do funkcji specyficznych dla Joplin, takich jak publikowanie notatek czy współpraca nad notatnikami z innymi."
 	],
-	"KaTeX": [
-		"KaTeX"
-	],
 	"Keep note history for": [
 		"Zachowuj historię przez"
 	],
@@ -1602,6 +1686,9 @@
 	"Later": [
 		"Później"
 	],
+	"Latitude": [
+		"Szerokość geograficzna"
+	],
 	"Layout": [
 		"Układ"
 	],
@@ -1623,6 +1710,9 @@
 	"Light": [
 		"Jasny"
 	],
+	"Like any software you install, plugins can potentially cause security issues or data loss.": [
+		"Podobnie jak każde oprogramowanie, które instalujesz, wtyczki mogą potencjalnie stwarzać problemy z bezpieczeństwem lub powodować utratę danych."
+	],
 	"Lines": [
 		"Wiersze"
 	],
@@ -1640,14 +1730,8 @@
 	"Link text": [
 		"Tekst odnośnika"
 	],
-	"Links with protocol \"%s\" are not supported": [
-		"Odnośniki protokołu \"%s\" nie są wspierane"
-	],
 	"List item": [
 		"Obiekt listy"
-	],
-	"Lists": [
-		"Listy"
 	],
 	"Loaded": [
 		"Załadowano"
@@ -1664,12 +1748,6 @@
 	"Log": [
 		"Dziennik"
 	],
-	"Login": [
-		"Zaloguj"
-	],
-	"Login below.": [
-		"Zaloguj poniżej."
-	],
 	"Login with Dropbox": [
 		"Zaloguj się z Dropbox"
 	],
@@ -1681,6 +1759,9 @@
 	],
 	"Logs, profiles, sync status": [
 		"Dzienniki, profile, stan synchronizacji"
+	],
+	"Longitude": [
+		"Długość geograficzna"
 	],
 	"Make a donation": [
 		"Przekaż datek"
@@ -1730,6 +1811,12 @@
 	"Master password:": [
 		"Główne hasło:"
 	],
+	"match case": [
+		""
+	],
+	"Math": [
+		""
+	],
 	"Max concurrent connections": [
 		"Maksymalne połączenia jednoczesne"
 	],
@@ -1744,6 +1831,9 @@
 	],
 	"Media player, math, diagrams, table of contents": [
 		"Odtwarzacz multimediów, matematyka, diagramy, spis treści"
+	],
+	"Minimise": [
+		"Zminimalizuj"
 	],
 	"Missing keys": [
 		"Brakujące Klucze"
@@ -1768,6 +1858,9 @@
 	],
 	"More than one item match \"%s\". Please narrow down your query.": [
 		"Więcej niż jeden wynik spełnia zapytanie \"%s\". Proszę zawęzić wyszukiwanie."
+	],
+	"Most plugins have source code available for review on the plugin website.": [
+		"Większość wtyczek posiada kod źródłowy dostępny do wglądu na stronie internetowej danej wtyczki."
 	],
 	"Move %d notes to notebook \"%s\"?": [
 		"Przenieść %d notatek do notatnika \"%s\"?"
@@ -1817,6 +1910,9 @@
 	"New version: %s": [
 		"Nowa wersja: %s"
 	],
+	"next": [
+		""
+	],
 	"Next match": [
 		"Kolejne dopasowanie"
 	],
@@ -1841,8 +1937,8 @@
 	"No active notebook.": [
 		"Brak aktywnego notatnika."
 	],
-	"No item with ID %s": [
-		"Brak przedmiotu z ID %s"
+	"No new invitations": [
+		"Brak nowych zaproszeń"
 	],
 	"No notebook has been specified.": [
 		"Notatnik nie został określony."
@@ -1852,6 +1948,9 @@
 	],
 	"No notes in here. Create one by clicking on \"New note\".": [
 		"Brak notatek. Utwórz nową, naciskając na \"Nowa notatka\"."
+	],
+	"No plugins are installed.": [
+		"Żadne wtyczki nie są zainstalowane."
 	],
 	"No resources!": [
 		"Brak zasobów!"
@@ -1871,7 +1970,7 @@
 	"Nord": [
 		"Nord"
 	],
-	"Not authentified with %s. Please provide any missing credentials.": [
+	"Not authenticated with %s. Please provide any missing credentials.": [
 		"Nie uwierzytelniono z %s. Proszę uzupełnij brakujące dane."
 	],
 	"Not downloaded": [
@@ -1967,6 +2066,9 @@
 	"Numbered List": [
 		"Lista numerowana"
 	],
+	"OCR: Clear cache and re-download language data files": [
+		""
+	],
 	"OK": [
 		"OK"
 	],
@@ -1975,6 +2077,9 @@
 	],
 	"On %s: %s": [
 		"Na %s: %s"
+	],
+	"on line": [
+		""
 	],
 	"One of your master keys use an obsolete encryption method.": [
 		"Jeden z twoich master kluczy ma przestarzałą metodę szyfrowanie."
@@ -2021,9 +2126,6 @@
 	"Options": [
 		"Opcje"
 	],
-	"Or create an account.": [
-		"Lub utwórz nowe konto."
-	],
 	"Ordered list": [
 		"Lista posortowana"
 	],
@@ -2069,9 +2171,6 @@
 	"Permission needed": [
 		"Potrzebne uprawnienie"
 	],
-	"Permission to use camera": [
-		"Uprawnienie do użytkowania kamery"
-	],
 	"Please click on \"%s\" to proceed, or set the passwords in the \"%s\" list below.": [
 		"Kliknij proszę na \"%s\" by kontynuować, lub ustaw hasła z listy \"%s\" poniżej."
 	],
@@ -2105,20 +2204,26 @@
 	"Please specify the notebook where the notes should be imported to.": [
 		"Proszę określić notatnik do którego będą zaimportowane notatki."
 	],
-	"Please upgrade Joplin to use this plugin": [
-		"Zaaktualizuj Joplin, aby używać tej wtyczki"
-	],
 	"Please wait for all attachments to be downloaded and decrypted. You may also switch to %s to edit the note.": [
 		"Poczekaj na pobranie I odszyfrowanie wszystkich załączników. Możesz też przenieść się do %s żeby edytować notatkę."
 	],
 	"Please wait...": [
 		"Proszę czekać..."
 	],
+	"Plugin repository failed to load": [
+		"Nie udało się załadować repozytorium wtyczek"
+	],
 	"Plugin tools": [
 		"Narzędzia wtyczek"
 	],
+	"Plugin WebView debugging": [
+		"Debugowanie WebView dla wtyczki"
+	],
 	"Plugins": [
 		"Wtyczki"
+	],
+	"Plugins extend Joplin with features that are not present by default. Plugins can extend Joplin's editor, viewer, and more.": [
+		"Wtyczki rozszerzają Joplin o funkcje, które nie są domyślnie obecne. Wtyczki mogą rozszerzać edytor, przeglądarkę i inne funkcje Joplin."
 	],
 	"Portrait": [
 		"Pionowo"
@@ -2140,6 +2245,12 @@
 	],
 	"Preferred light theme": [
 		"Preferuj jasny motyw"
+	],
+	"Preferred voice typing provider": [
+		""
+	],
+	"Preserve colours when pasting text in Rich Text Editor": [
+		""
 	],
 	"Press Ctrl+D or type \"exit\" to exit the application": [
 		"Naciśnij Ctrl+D lub wpisz \"exit\" aby wyjść z aplikacji"
@@ -2179,6 +2290,9 @@
 	],
 	"Process user deletions": [
 		"Przetwarzanie usuwania użytkowników"
+	],
+	"Processing": [
+		"Przetwarzanie"
 	],
 	"Profile": [
 		"Profil"
@@ -2221,6 +2335,9 @@
 	],
 	"Quit": [
 		"Wyjdź"
+	],
+	"Re-download model": [
+		""
 	],
 	"Re-encrypt data": [
 		"Ponownie zaszyfruj dane"
@@ -2297,6 +2414,21 @@
 	"Replace: ": [
 		"Zamień: "
 	],
+	"replaced $ matches": [
+		""
+	],
+	"replaced match on line $": [
+		""
+	],
+	"Report an issue": [
+		"Zgłoś problem"
+	],
+	"Report any issues concerning the plugin.": [
+		"Zgłoś wszelkie problemy dotyczące wtyczki."
+	],
+	"Report fraudulent plugin": [
+		"Zgłoś złośliwą wtyczkę"
+	],
 	"Reset application layout": [
 		"Zresetuj układ aplikacji"
 	],
@@ -2324,6 +2456,9 @@
 	"Restored Notes": [
 		"Przywrócone notatki"
 	],
+	"Results (%d):": [
+		"Wyniki (%d):"
+	],
 	"Retry": [
 		"Ponów"
 	],
@@ -2341,6 +2476,12 @@
 	],
 	"Revision: %s (%s)": [
 		"Rewizja: %s (%s)"
+	],
+	"Rich Text": [
+		""
+	],
+	"Rich Text editor. Press Escape then Tab to escape focus.": [
+		""
 	],
 	"Runs the commands contained in the text file. There should be one command per line.": [
 		"Wykonuje polecenie zawarte w pliku tekstowym. Powinno występować jedno polecenie na wiersz."
@@ -2386,6 +2527,9 @@
 	],
 	"Save geo-location with notes": [
 		"Zapisz lokalizację geograficzną z notatkami"
+	],
+	"Scanned code": [
+		""
 	],
 	"Search": [
 		"Wyszukaj"
@@ -2456,6 +2600,9 @@
 	"Sets the property <name> of the given <note> to the given [value]. Possible properties are:\n\n%s": [
 		"Ustawia własność <name> z wskazanej <note> do wskazanej [wartość]. Możliwe własności: \n\n%s"
 	],
+	"Settings": [
+		""
+	],
 	"Share": [
 		"Udostępnij"
 	],
@@ -2497,9 +2644,6 @@
 	],
 	"Show disabled keys": [
 		"Pokaż wyłączone klawisze"
-	],
-	"Show more actions": [
-		"Pokaż więcej działań"
 	],
 	"Show note counts": [
 		"Pokaż liczbę notatek"
@@ -2543,6 +2687,12 @@
 	"Solarised Light": [
 		"Solarised Light"
 	],
+	"Some attachments could not be downloaded. Please try to download them again.": [
+		"Niektórych załączników nie można było pobrać. Spróbuj pobrać je ponownie."
+	],
+	"Some attachments need to be downloaded. Set the attachment download mode to \"always\" and try again.": [
+		"Niektóre załączniki muszą zostać pobrane. Ustaw tryb pobierania załączników na \"zawsze\" i spróbuj ponownie."
+	],
 	"Some items cannot be decrypted.": [
 		"Niektóre obiekty nie mogą być odszyfrowane."
 	],
@@ -2551,6 +2701,12 @@
 	],
 	"Some items cannot be synchronised. Press for more info.": [
 		"Niektóre przedmioty nie mogą zostać zsynchronizowane."
+	],
+	"Sort \"%s\" in ascending order": [
+		""
+	],
+	"Sort \"%s\" in descending order": [
+		""
 	],
 	"Sort notebooks by": [
 		"Sortuj notatniki po"
@@ -2564,11 +2720,17 @@
 	"Sorts the item by <field> (eg. title, updated_time, created_time).": [
 		"Sortuje obiekty po <field> (np. tytuł, data_aktualizacji, data_utworzenia)."
 	],
+	"Source": [
+		"Źródło"
+	],
 	"Source format: %s": [
 		"Format źródłowy: %s"
 	],
 	"Source: ": [
 		"Źródło: "
+	],
+	"Spacer": [
+		"Separator"
 	],
 	"Specify the port that should be used by the API server. If not set, a default will be used.": [
 		"Jeśli nie określisz portu używany przez serwer API, użyty zostanie domyślny."
@@ -2660,6 +2822,9 @@
 	"Switch profile": [
 		"Zmień profil"
 	],
+	"Switch to back-facing camera": [
+		""
+	],
 	"Switch to note type": [
 		"Przełącz na notatkę"
 	],
@@ -2747,6 +2912,9 @@
 	"Take photo": [
 		"Wykonaj zdjęcie"
 	],
+	"Task \"%s\" failed with error: %s": [
+		"Zadanie \"%s\" nie powiodło się z powodu błędu: %s"
+	],
 	"Task list": [
 		"Lista zadań"
 	],
@@ -2761,9 +2929,6 @@
 	],
 	"Text editor command": [
 		"Ścieżka edytora tekstu"
-	],
-	"Thank you! Your Joplin Cloud account is now setup and ready to use.": [
-		"Dziękujemy Ci! Twoje konto Chmury Joplin jest teraz gotowe do użycia."
 	],
 	"The active profile cannot be deleted. Switch to a different profile and try again.": [
 		"Nie można usunąć aktywnego profilu. Przełącz się na inny profil i spróbuj ponownie."
@@ -2816,8 +2981,8 @@
 	"The following keys use an out-dated encryption algorithm and it is recommended to upgrade them. The upgraded key will still be able to decrypt and encrypt your data as usual.": [
 		"Następujące klucze główne używają przestarzałego algorytmu szyfrowania i zaleca się ich aktualizację. Zaktualizowane klucze główne będą nadal mogły szyfrować i odszyfrować twoje dane."
 	],
-	"The Joplin mobile app does not currently support this type of link: %s": [
-		"Aplikacja mobilna Joplin nie wspiera aktualnie odnośników tego typu: %s"
+	"The following plugins may not support the current markdown editor:": [
+		""
 	],
 	"The Joplin team has vetted this plugin and it meets our standards for security and performance.": [
 		"Zespół Joplin sprawdził tę wtyczkę i spełnia ona nasze standardy bezpieczeństwa i wydajności."
@@ -2846,6 +3011,9 @@
 	"The recipient could not be removed from the list. Please try again.\n\nThe error was: \"%s\"": [
 		"Odbiorca nie mógł być usunięty z listy. Proszę spróbować ponownie.\n\nBłąd: \"%s\""
 	],
+	"The sync target cannot be changed for the following reason: %s\n\nIf the issue cannot be resolved, you may need to clear your data first by following these instructions:\n\n%s": [
+		"Nie można zmienić miejsca synchronizacji z następującego powodu: %s\n\nJeśli problemu nie uda się rozwiązać, może być konieczne wyczyszczenie danych, poprzez wykonanie następujących instrukcji:\n\n%s"
+	],
 	"The sync target needs to be upgraded before Joplin can sync. The operation may take a few minutes to complete and the app needs to be restarted. To proceed please click on the link.": [
 		"Cel synchronizacji wymaga aktualizacji zanim Joplin może się zsynchronizować. Ta operacja może zająć kilka minut po czym aplikacja będzie wymagać ponownego uruchomienia. Kliknij w link aby kontynuować."
 	],
@@ -2860,6 +3028,9 @@
 	],
 	"The target to synchronise to. Each sync target may have additional parameters which are named as `sync.NUM.NAME` (all documented below).": [
 		"Serwis z którym nastąpi synchronizacja. Każdy serwis może zawierać dodatkowe parametry, które są nazwane jako `sync.NUM.NAME` (udokumentowane poniżej)."
+	],
+	"The web client does not support accepting encrypted shared notebooks. Please switch to the desktop or mobile app before accepting the share.\n\nError: \"%s\"": [
+		""
 	],
 	"The Web Clipper needs your authorisation to access your data.": [
 		"Web Clipper potrzebuje twojej autoryzacji by uzyskać dostęp do danych."
@@ -2885,9 +3056,6 @@
 	"There are unsaved changes.": [
 		"Istnieją niezapisane zmiany."
 	],
-	"There is currently no notebook. Create one by clicking on \"New notebook\".": [
-		"Brak notatników. Utwórz nowy, naciskając na \"Nowy notatnik\"."
-	],
 	"There is no data to export.": [
 		"Brak danych do eksportu."
 	],
@@ -2897,8 +3065,8 @@
 	"There was an error downloading this attachment:": [
 		"Wystąpił błąd pobierania załącznika:"
 	],
-	"There was an error setting up your Joplin Cloud account. Please verify your email and password and try again. Error was:\n\n%s": [
-		"Wystąpił błąd podczas konfigutacji twojego konta Chmury Joplin. Proszę zweryfikuj swój adres email i hasło oraz ponów próbę. Błąd:\n\n%s"
+	"These items failed to sync, but have been marked as \"ignored\". They won't cause the sync warning to appear, but still aren't synced. To unignore, click \"retry\".": [
+		"Te elementy nie zostały zsynchronizowane, ale zostały oznaczone jako \"zignorowane\". Nie spowodują wyświetlenia ostrzeżeń o synchronizacji, ale nadal nie są zsynchronizowane. Aby anulować ignorowanie, kliknij \"ponów próbę\"."
 	],
 	"These items will remain on the device but will not be uploaded to the sync target. In order to find these items, either search for the title or the ID (which is displayed in brackets above).": [
 		"Obiekty pozostaną na urządzeniu, jednakże nie zostaną wysłane na serwis synchronizacji. W celu wyszukania tych obiektów, proszę szukać po tytule lub po ID (które jest wyświetlane w klamrach poniżej)."
@@ -2909,11 +3077,11 @@
 	"This allows another user to share a notebook with you, and you can then both collaborate on it. It does not however allow you to share a notebook with someone else, unless you have the feature \"%s\".": [
 		"Pozwala to innemu użytkownikowi na udostępnienie ci notatnika, a następnie oboje możecie nad nim współpracować. Nie pozwala to jednak na udostępnienie notatnika komuś innemu, chyba że masz funkcję \"%s\"."
 	],
+	"This attachment does not have OCR data (Status: %s)": [
+		"Ten załącznik nie zawiera danych OCR (Status: %s)"
+	],
 	"This attachment is not downloaded or not decrypted yet": [
 		"Załącznik nie został jeszcze pobrany lub odszyfrowany"
-	],
-	"This attachment is not downloaded or not decrypted yet.": [
-		"Załącznik nie został jeszcze pobrany lub odszyfrowany."
 	],
 	"This authorisation token is only needed to allow third-party applications to access Joplin.": [
 		"Token uwierzytelniający jest potrzebny jedynie w celu pozwolenia aplikacjom firm trzecich na dostęp do Joplin."
@@ -2951,17 +3119,26 @@
 	"This note has no history": [
 		"Ta notatka nie posiada historii"
 	],
+	"This plugin doesn't support %s.": [
+		"Ta wtyczka nie obsługuje %s."
+	],
 	"This Rich Text editor has a number of limitations and it is recommended to be aware of them before using it.": [
 		"Ten edytor tekstu sformatowanego ma wiele ograniczeń i zaleca się, abyś był ich świadomy przed jego użyciem."
 	],
 	"This service allows the browser extension to communicate with Joplin. When enabling it your firewall may ask you to give permission to Joplin to listen to a particular port.": [
 		"Ta usługa umożliwia rozszerzeniu do przeglądarki komunikować się  z Joplin. Kiedy zostanie aktywowana, zapora systemowa może zapytać o uprawnienia dla Joplin w celu nasłuchiwania na określonym porcie."
 	],
+	"This subfolder of the trash has no notes.": [
+		"Ten podfolder kosza nie zawiera żadnych notatek."
+	],
 	"This will allow Joplin to run in the background. It is recommended to enable this setting so that your notes are constantly being synchronised, thus reducing the number of conflicts.": [
 		"Pozwala Joplin pracować w tle. Rekomendowanym jest, aby aktywować to ustawienie, przez co notatki będę stale synchronizowane, redukując liczbę błędów."
 	],
 	"This will open a new screen. Save your current changes?": [
 		"Otworzy się nowy ekran. Zapisać zmiany?"
+	],
+	"This will permanently delete all items in the trash. Continue?": [
+		"To spowoduje trwałe usunięcie wszystkich elementów z kosza. Kontynuować?"
 	],
 	"This will remove the notebook from your collection and you will no longer have access to its content. Do you wish to continue?": [
 		"Notatnik zostanie usunięty z twojej kolekcji i nie będziesz miał dłużej dostępu do jego zawartości. Czy chciałbyś kontynuować?"
@@ -3062,6 +3239,9 @@
 	"Total: %d/%d": [
 		"Ogółem: %d/%d"
 	],
+	"Trash": [
+		"Kosz"
+	],
 	"Try again": [
 		"Spróbuj ponownie"
 	],
@@ -3086,9 +3266,6 @@
 	"Unable to edit resource of type %s": [
 		"Nie można edytować zasobu typu %s"
 	],
-	"Unable to export or share data. Reason: %s": [
-		"Nie można eksportować ani udostępniać danych. Powód: %s"
-	],
 	"Unable to share log data. Reason: %s": [
 		"Nie można udostępniać danych dziennika. Powód: %s"
 	],
@@ -3097,6 +3274,12 @@
 	],
 	"Undo": [
 		"Cofnij"
+	],
+	"Uninstall and reinstall the application. Make sure you create a backup first by exporting all your notes as JEX from the desktop application.": [
+		"Odinstaluj i zainstaluj ponownie aplikację. Upewnij się by najpierw utworzyć kopię zapasową, eksportując wszystkie notatki jako JEX z aplikacji na pulpicie."
+	],
+	"Unknown": [
+		"Nieznany"
 	],
 	"Unknown flag: %s": [
 		"Nieznana flaga: %s"
@@ -3212,6 +3395,9 @@
 	"View": [
 		"Widok"
 	],
+	"View OCR text": [
+		"Wyświetl tekst OCR"
+	],
 	"View on map": [
 		"Pokaż na mapie"
 	],
@@ -3230,14 +3416,20 @@
 	"Voice typing...": [
 		"Pisanie głosowe..."
 	],
+	"Vosk": [
+		""
+	],
 	"Warning": [
 		"Uwaga"
 	],
 	"Warning: not all resources shown for performance reasons (limit: %s).": [
 		"Uwaga, aby zachować dobrą wydajność, nie wszystkie zasoby zostały wyświetlone (limit: %s)."
 	],
-	"Warnings:\n%s": [
-		"Uwaga:\n%s"
+	"We have a system for reporting and removing problematic plugins.": [
+		"Mamy system zgłaszania i usuwania problematycznych wtyczek."
+	],
+	"We mark plugins developed by trusted Joplin community members as \"recommended\".": [
+		"Wtyczki opracowane przez zaufanych członków społeczności Joplin oznaczamy jako \"polecane\"."
 	],
 	"Web Clipper": [
 		"Web clipper"
@@ -3257,6 +3449,9 @@
 	"Website and documentation": [
 		"Strona internetowa i dokumentacja"
 	],
+	"WebView package: %s": [
+		"Paczka WebView: %s"
+	],
 	"Welcome to Joplin!\n\nType `:help shortcuts` for the list of keyboard shortcuts, or just `:help` for usage information.\n\nFor example, to create a notebook press `mb`; to create a note press `mn`.": [
 		"Witaj w Joplin!\n\nWpisz: `:help shortcuts` aby uzyskać listę skrótów klawiaturowych lub `help` aby uzyskać informacje o użytkowaniu.\n\nNa przykład, aby utworzyć notatnik, naciśnij `mb`; aby utworzyć notatkę, naciśnij `mn`."
 	],
@@ -3270,6 +3465,9 @@
 		"Podczas tworzenia nowego zadania:"
 	],
 	"When enabled, the application will scan your attachments and extract the text from it. This will allow you to search for text in these attachments.": [
+		"Po włączeniu aplikacja przeskanuje załączniki i wyodrębni z nich tekst. Umożliwi to wyszukiwanie tekstu w tych załącznikach."
+	],
+	"Whisper": [
 		""
 	],
 	"Window unresponsive.": [
@@ -3293,6 +3491,9 @@
 	"You are about to attach a large image (%dx%d pixels). Would you like to resize it down to %d pixels before attaching it?": [
 		"Jesteś w trakcie załączenia dużego zdjęcia (%dx%d pikseli). Chciałbyś zmniejszyć rozmiar do %d pikseli przed załączeniem?"
 	],
+	"You are logged in into Joplin Cloud, you can leave this screen now.": [
+		"Jesteś zalogowany do Joplin Cloud. Możesz teraz opuścić ten ekran."
+	],
 	"You currently have no notebooks.": [
 		"Brak aktywnych notatników."
 	],
@@ -3305,20 +3506,23 @@
 	"You may use the tool below to re-encrypt your data, for example if you know that some of your notes are encrypted with an obsolete encryption method.": [
 		"Możesz skorzystać z narzędzia poniżej żeby ponownie zaszyfrować swoje dane, na przykład jeśli wiesz że część twoich notatek jest szyfrowana przestarzałą metodą."
 	],
+	"Your account doesn't have access to this feature": [
+		"Twoje konto nie ma dostępu do tej funkcji"
+	],
 	"Your choice: ": [
 		"Twój wybór: "
 	],
 	"Your data is going to be re-encrypted and synced again.": [
 		"Twoje dane zostaną ponownie zaszyfrowane i zsynchronizowane."
 	],
+	"Your Joplin Cloud credentials are invalid, please login.": [
+		"Twoje dane logowania do Joplin Cloud są nieprawidłowe. Zaloguj się."
+	],
 	"Your password is needed to decrypt some of your data.": [
 		"Twoje hasło jest potrzebne do odszyfrowania części twoich danych."
 	],
 	"Your password is needed to decrypt some of your data. Type `:e2ee decrypt` to set it.": [
 		"Twoje hasło jest potrzebne do odszyfrowania części twoich danych. Wpisz `:e2ee decrypt` by je ustawić."
-	],
-	"Your permission to use your camera is required.": [
-		"Wymagane uprawnienie do użytkowania kamery."
 	],
 	"Your version: %s": [
 		"Twoja wersja: %s"

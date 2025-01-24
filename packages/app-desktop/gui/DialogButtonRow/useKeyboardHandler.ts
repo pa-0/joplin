@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { isInsideContainer } from '@joplin/lib/dom';
 
@@ -29,6 +30,7 @@ export default (props: Props) => {
 		return ln && globalKeydownHandlersRef.current[ln - 1] === elementId;
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const isInSubModal = (targetElement: any) => {
 		// If we are inside a sub-modal within the dialog, we shouldn't handle
 		// global key events. It can be for example the emoji picker. In general
@@ -39,7 +41,7 @@ export default (props: Props) => {
 		return false;
 	};
 
-	const onKeyDown = useCallback((event: any) => {
+	const onKeyDown = useCallback((event: KeyboardEvent|React.KeyboardEvent) => {
 		// Early exit if it's neither ENTER nor ESCAPE, because isInSubModal
 		// function can be costly.
 		if (event.keyCode !== 13 && event.keyCode !== 27) return;
@@ -47,8 +49,12 @@ export default (props: Props) => {
 		if (!isTopDialog() || isInSubModal(event.target)) return;
 
 		if (event.keyCode === 13) {
-			if (event.target.nodeName !== 'TEXTAREA') {
-				props.onOkButtonClick();
+			if ('nodeName' in event.target && event.target.nodeName === 'INPUT') {
+				const target = event.target as HTMLInputElement;
+
+				if (target.type !== 'button' && target.type !== 'checkbox') {
+					props.onOkButtonClick();
+				}
 			}
 		} else if (event.keyCode === 27) {
 			props.onCancelButtonClick();

@@ -5,6 +5,9 @@
 		},
 	],
 	"settings": {
+		"rust-analyzer.linkedProjects": [
+			"./packages/onenote-converter/Cargo.toml",
+		],
 		"files.exclude": {
 			"_mydocs/mdtest/": true,
 			"_releases/": true,
@@ -106,7 +109,6 @@
 			"./packages/renderer/**/node_modules/": true,
 			".eslintignore": true,
 			".gitignore": true,
-			".vscode/*": true,
 			".yarn/cache": true,
 			".yarn/install-state.gz": true,
 			".yarn/plugins": true,
@@ -186,6 +188,8 @@
 			"packages/doc-builder/help": true,
 			"packages/doc-builder/news": true,
 			"packages/doc-builder/i18n": true,
+			"packages/doc-builder/.docusaurus": true,
+			"packages/doc-builder/static/images": true,
 			"readme/i18n": true,
 			"packages/app-cli/**/*.*~": true,
 			"packages/app-cli/**/*.mo": true,

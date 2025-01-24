@@ -79,19 +79,32 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 	// be at least this specific.
 	const selectionBackgroundSelector = '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground';
 
+	// Matches the editor only when there are no gutters (e.g. line numbers) added by
+	// plugins
+	const editorNoGuttersSelector = '&:not(:has(> .cm-scroller > .cm-gutters))';
+
 	const baseHeadingStyle = {
 		fontWeight: 'bold',
 		fontFamily: theme.fontFamily,
 	};
 
 	const codeMirrorTheme = EditorView.theme({
-		'&': baseGlobalStyle,
+		// Include &.CodeMirror to handle the case where additional CodeMirror 5 styles
+		// need to be overridden.
+		'&, &.CodeMirror': baseGlobalStyle,
+
+		'& .cm-dropCursor': {
+			backgroundColor: isDarkTheme ? 'white' : 'black',
+			width: '1px',
+		},
 
 		// These must be !important or more specific than CodeMirror's built-ins
-		'.cm-content': {
+		'& .cm-content': {
 			fontFamily: theme.fontFamily,
 			...baseContentStyle,
 			paddingBottom: theme.isDesktop ? '400px' : undefined,
+			marginLeft: `${theme.marginLeft}px`,
+			marginRight: `${theme.marginRight}px`,
 		},
 		'&.cm-focused .cm-cursor': baseCursorStyle,
 
@@ -143,7 +156,7 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 			borderColor: theme.colorFaded,
 			backgroundColor: 'rgba(155, 155, 155, 0.1)',
 
-			...(theme.isDesktop ? monospaceStyle : {}),
+			...monospaceStyle,
 		},
 
 		// CodeMirror wraps the existing inline span in an additional element.
@@ -157,7 +170,7 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 			borderColor: isDarkTheme ? 'rgba(200, 200, 200, 0.5)' : 'rgba(100, 100, 100, 0.5)',
 			borderRadius: '4px',
 
-			...(theme.isDesktop ? monospaceStyle : {}),
+			...monospaceStyle,
 		},
 
 		'& .cm-mathBlock, & .cm-inlineMath': {
@@ -167,7 +180,7 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 		'& .cm-tableHeader, & .cm-tableRow, & .cm-tableDelimiter': monospaceStyle,
 		'& .cm-taskMarker': monospaceStyle,
 
-		// Applies maximum width styles to individual lines.
+		// Apply maximum width styles to individual lines.
 		'& .cm-line': theme.contentMaxWidth ? {
 			maxWidth: theme.contentMaxWidth,
 
@@ -176,9 +189,16 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 			marginRight: 'auto',
 		} : undefined,
 
+		// Allows editor content to be left-aligned with the toolbar on desktop.
+		// See https://github.com/laurent22/joplin/issues/11279
+		[`${editorNoGuttersSelector} .cm-line`]: theme.isDesktop ? {
+			// Note: This cannot be zero:
+			paddingLeft: '1px',
+		} : undefined,
+
 		// Override the default URL style when the URL is within a link
 		'& .tok-url.tok-link, & .tok-link.tok-meta, & .tok-link.tok-string': {
-			opacity: theme.isDesktop ? 0.6 : 1,
+			opacity: 0.661,
 		},
 
 		// Applying font size changes with CSS rather than the theme below works
@@ -240,7 +260,6 @@ const createTheme = (theme: EditorTheme): Extension[] => {
 		{
 			tag: tags.link,
 			color: theme.urlColor,
-			textDecoration: theme.isDesktop ? undefined : 'underline',
 		},
 		{
 			tag: [mathTag, inlineMathTag],

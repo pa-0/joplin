@@ -1,5 +1,77 @@
 # Joplin Terminal App Changelog
 
+## [cli-v3.2.3](https://github.com/laurent22/joplin/releases/tag/cli-v3.2.3) - 2025-01-16T01:14:35Z
+
+- Improved: Updated packages @rollup/plugin-node-resolve (v15.2.4), adm-zip (v0.5.16)
+- Fixed: Revert deprecation warning suppression (#11620) (#11577 by [@pedr](https://github.com/pedr))
+
+## [cli-v3.2.2](https://github.com/laurent22/joplin/releases/tag/cli-v3.2.2) - 2024-12-12T15:44:50Z
+
+- Improved: Make Sharp package optional (388d124)
+
+## [cli-v3.2.1](https://github.com/laurent22/joplin/releases/tag/cli-v3.2.1) - 2024-12-12T14:16:34Z
+
+- New: Add new encryption methods based on native crypto libraries (#10696 by Self Not Found)
+- Improved: Added feature flag to disable sync lock support (#10925) (#10407)
+- Improved: Deprecated OneDrive sync method (e36f377)
+- Improved: Make feature flags advanced settings by default (700ffa2)
+- Improved: Mermaid version update (#11367 by [@LEVIII007](https://github.com/LEVIII007))
+- Improved: Prevent PDF and HTML export from failing when a plugin references a non-existent file (d1fc69f)
+- Improved: Reactivate pCloud synchronisation (23032b9)
+- Improved: Remove the need for sync locks (#11377)
+- Improved: Removed deprecation notice on OneDrive sync method (ceea0bc)
+- Improved: Set min version for synchronising to 3.0.0 (a1f9c9c)
+- Improved: Updated packages @adobe/css-tools (v4.4.0), @rollup/plugin-commonjs (v25.0.8), @rollup/plugin-replace (v5.0.7), async-mutex (v0.5.0), compare-versions (v6.1.1), dayjs (v1.11.12), glob (v10.4.5), highlight.js (v11.10.0), jsdom (v24.1.1), katex (v0.16.11), markdown-it-ins (v4), markdown-it-sup (v2), react, sass (v1.77.8), sharp (v0.33.4), style-to-js (v1.1.12), tar (v6.2.1), terminal-kit (v3.1.1), tesseract.js (v5.1.0), turndown (v7.2.0)
+- Fixed: Change Resource filetype detecting strategy (#10907) (#10653 by [@pedr](https://github.com/pedr))
+- Fixed: Decrypt master keys only as needed (#10990) (#10856 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Delete revisions on the sync target when deleted locally (#11035) (#11017 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Disable deprecation warning when running Joplin from CLI (#11074) (#10992 by [@pedr](https://github.com/pedr))
+- Fixed: Fix "Enable auto-updates" enabled by default and visible on unsupported platforms (#10897) (#10896 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix `undefined` errors in translations (#11407 by Self Not Found)
+- Fixed: Fix the error caused by undefined isCodeBlock_ (turndown-plugin-gfm) (#11471 by Manabu Nakazawa)
+- Fixed: WebDAV synchronisation not working because of URL encoding differences (#11076) (#10608 by [@pedr](https://github.com/pedr))
+
+## [cli-v3.0.1](https://github.com/laurent22/joplin/releases/tag/cli-v3.0.1) - 2024-07-02T18:42:44Z
+
+- Improved: Add trash folder (#9671) (#483)
+- Improved: Allow deleting notes and notebooks permanently (#10107) (#10090 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Avoid unnecessary requests if Joplin Cloud credentials are empty (#10256 by [@pedr](https://github.com/pedr))
+- Improved: Bump @codemirror/view version. (#10174 by [@itzTheMeow](https://github.com/itzTheMeow))
+- Improved: Change Joplin Cloud login process (#9722 by [@pedr](https://github.com/pedr))
+- Improved: Clarify that the "restore" command is to restore items from the trash (8cb9c08)
+- Improved: Do not repeat failed requests with ENOTFOUND error (#6173)
+- Improved: Don't render empty title page for Fountain (#10631 by [@XPhyro](https://github.com/XPhyro))
+- Improved: Improved log formatting and allow saving last lines of log to memory (74bc9b3)
+- Improved: Improves formatting of log statements (aac8d58)
+- Improved: Log user actions (deletions) (#9585) (#9465 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Set min version for synchronising to 3.0.0 (e4b8976)
+- Improved: Updated packages @adobe/css-tools (v4.3.3), chokidar (v3.6.0), follow-redirects (v1.15.6), jsdom (v23), react, sass (v1.71.0), style-to-js (v1.1.11), terminal-kit (v3.0.2), tesseract.js (v5.0.5), turndown (v7.1.3)
+- Fixed: After deleting the last note from the conflicts folder, the application state is invalid (#10189)
+- Fixed: ENEX does not import correctly when title of note matches the name of the attachment (#10125)
+- Fixed: English: Use the plural form of a localization for negative and zero items (#10582) (#10581 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [cli-v2.14.1](https://github.com/laurent22/joplin/releases/tag/cli-v2.14.1) - 2024-03-01T19:08:28Z
+
+- Improved: Allow setting a minimum app version on the sync target (#9778)
+- Improved: Display an error if a resource cannot be downloaded (cbf7e24)
+- Improved: Don't log OneDrive `Authorization` tokens (#9707) (#9706 by Henry Heino)
+- Improved: Handle Dropbox payload_too_large error (f267d88)
+- Improved: Improve search engine error handling when preparing text for search (#9871 by Henry Heino)
+- Improved: Migrate profile in preparation for trash feature (115eb5d)
+- Improved: Remove unnecessary warning when importing ENEX file (495f088)
+- Improved: Restore note links after importing an ENEX file (#9596)
+- Improved: Updated packages @rmp135/sql-ts (v1.18.1), async-mutex (v0.4.1), follow-redirects (v1.15.5), fs-extra (v11.2.0), highlight.js (v11.9.0), mermaid (v10.6.1), moment (v2.30.1), nanoid (v3.3.7), react, sass (v1.69.7), sharp (v0.33.2), style-to-js (v1.1.9), tesseract.js (v5.0.3)
+- Fixed: Fix AWS S3 sync error (#9696) (#8891 by Henry Heino)
+- Fixed: Fix ENEX import issue (20b1c2e)
+- Fixed: Fix broken synchronisation link in welcome notes (#9804) (#9799 by Henry Heino)
+- Fixed: Fix importing certain ENEX notes that include invalid tables (00eee19)
+- Fixed: Fixed importing invalid tables from ENEX files (d264bdd)
+- Fixed: Fixes issue with resources having no associated files when the RAW import process is interrupted (#9484)
+- Fixed: Import ENEX archives that contain files with invalid names (#9548)
+- Fixed: Markdown-FrontMatter exporter generates invalid file when note starts with a dash in title (#9483)
+- Fixed: When importing MarkdownD+FrontMatter files that contain images with a data URL source, the import fails (#9485)
+- Fixed: When importing a Markdown file that contains a link to an invalid image, import fails (#9486)
+
 ## [cli-v2.13.2](https://github.com/laurent22/joplin/releases/tag/cli-v2.13.2) - 2023-11-30T18:11:38Z
 
 - Improved: Updated packages mermaid (v10.5.1), sass (v1.69.5)
@@ -112,7 +184,7 @@
 - Fixed: Fix default sync target (4b39d30)
 - Fixed: Fixed potential infinite loop when Joplin Server session is invalid (c5569ef)
 - Fixed: Fixed running out of memory when importing large ENEX files (#5543)
-- Fixed: Ignore newline between quotes while spliting batch (#5540) (#5341 by Kingsley Yung)
+- Fixed: Ignore newline between quotes while splitting batch (#5540) (#5341 by Kingsley Yung)
 
 ## [cli-v2.4.1](https://github.com/laurent22/joplin/releases/tag/cli-v2.4.1) - 2021-09-29T15:28:01Z
 
@@ -128,7 +200,7 @@
 ## [cli-v2.3.2](https://github.com/laurent22/joplin/releases/tag/cli-v2.3.2) - 2021-08-16T09:38:40Z
 
 - Improved: Improved E2EE usability by making its state a property of the sync target (#5276)
-- Fixed: Bump hightlight.js to v11.2 (#5278) (#5245 by Roman Musin)
+- Fixed: Bump highlight.js to v11.2 (#5278) (#5245 by Roman Musin)
 - Fixed: Fixed version command so that it does not require the keychain (ca6d8ec)
 
 ## [cli-v2.2.2](https://github.com/laurent22/joplin/releases/tag/cli-v2.2.2) - 2021-08-11T15:34:56Z
@@ -196,7 +268,7 @@
 
 ## [cli-v1.6.3](https://github.com/laurent22/joplin/releases/tag/cli-v1.6.3) - 2021-01-11T11:52:11Z
 
-- New: Add more log info when a revision cannot be deleted due to still-encrypted itel
+- New: Add more log info when a revision cannot be deleted due to still-encrypted item
 - Improved: Do not display error message when fixing ENEX resource mime type (#4310)
 - Improved: Improve support for SVG images when importing ENEX files
 - Improved: Improved support for bold and italic format when importing ENEX file (#4316)
@@ -378,7 +450,7 @@ IMPORTANT: If you use the web API, please note that there are a few breaking cha
 - Improved: Allow exporting a note as HTML
 - Improved: Improved logging during sync to allow finding bugs more easily
 - Fixed: Handle WebDAV servers that do not return a last modified date (fixes mail.ru) (#2091)
-- Fixed: Restaured translations that had been accidentally deleted (#2126)
+- Fixed: Restored translations that had been accidentally deleted (#2126)
 - Fixed: Prevent synch from happening if target dir could not be created, in local sync (#2117)
 - Fixed: Handle rare case when notebook has a parent that no longer exists, which causes a crash when sorting (#2088)
 

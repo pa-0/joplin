@@ -1,3 +1,6 @@
+// Do not import anything here -- the built version of this file is copied to packages/app-clipper's
+// content_scripts folder.
+
 function absoluteUrl(url: string) {
 	if (!url) return url;
 	const protocol = url.toLowerCase().split(':')[0];
@@ -133,3 +136,8 @@ export function getStyleSheets(doc: Document) {
 	}
 	return output;
 }
+
+// Required to run in Firefox with tabs.executeScript. See
+// https://stackoverflow.com/a/44774834
+// eslint-disable-next-line no-unused-expressions -- Old code before rule was applied
+undefined;
