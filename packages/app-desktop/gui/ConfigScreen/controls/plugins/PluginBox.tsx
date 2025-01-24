@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { _ } from '@joplin/lib/locale';
 import styled from 'styled-components';
 import ToggleButton from '../../../lib/ToggleButton/ToggleButton';
 import Button, { ButtonLevel } from '../../../Button/Button';
 import { PluginManifest } from '@joplin/lib/services/plugins/utils/types';
 import bridge from '../../../../services/bridge';
+import { ItemEvent, PluginItem } from '@joplin/lib/components/shared/config/plugins/types';
+import PluginService from '@joplin/lib/services/plugins/PluginService';
 
 export enum InstallState {
 	NotInstalled = 1,
@@ -18,10 +20,6 @@ export enum UpdateState {
 	CanUpdate = 2,
 	Updating = 3,
 	HasBeenUpdated = 4,
-}
-
-export interface ItemEvent {
-	item: PluginItem;
 }
 
 interface Props {
@@ -40,21 +38,13 @@ interface Props {
 function manifestToItem(manifest: PluginManifest): PluginItem {
 	return {
 		manifest: manifest,
+		installed: true,
 		enabled: true,
 		deleted: false,
 		devMode: false,
 		builtIn: false,
 		hasBeenUpdated: false,
 	};
-}
-
-export interface PluginItem {
-	manifest: PluginManifest;
-	enabled: boolean;
-	deleted: boolean;
-	devMode: boolean;
-	builtIn: boolean;
-	hasBeenUpdated: boolean;
 }
 
 const CellRoot = styled.div<{ isCompatible: boolean }>`
@@ -109,6 +99,7 @@ const BoxedLabel = styled.div`
 	margin-top: auto;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const StyledNameAndVersion = styled.div<{ mb: any }>`
 	font-family: ${props => props.theme.fontFamily};
 	color: ${props => props.theme.color};
@@ -182,6 +173,7 @@ export default function(props: Props) {
 			themeId={props.themeId}
 			value={item.enabled}
 			onToggle={() => props.onToggle({ item })}
+			aria-label={_('Enabled')}
 		/>;
 	}
 
@@ -242,7 +234,7 @@ export default function(props: Props) {
 			return (
 				<CellFooter>
 					<NeedUpgradeMessage>
-						{_('Please upgrade Joplin to use this plugin')}
+						{PluginService.instance().describeIncompatibility(item.manifest)}
 					</NeedUpgradeMessage>
 				</CellFooter>
 			);
@@ -265,10 +257,17 @@ export default function(props: Props) {
 		return <RecommendedBadge href="#" title={_('The Joplin team has vetted this plugin and it meets our standards for security and performance.')} onClick={onRecommendedClick}><i className="fas fa-crown"></i></RecommendedBadge>;
 	}
 
+	const nameLabelId = useId();
+
 	return (
-		<CellRoot isCompatible={props.isCompatible}>
+		<CellRoot isCompatible={props.isCompatible} role='group' aria-labelledby={nameLabelId}>
 			<CellTop>
-				<StyledNameAndVersion mb={'5px'}><StyledName onClick={onNameClick} href="#" style={{ marginRight: 5 }}>{item.manifest.name} {item.deleted ? _('(%s)', 'Deleted') : ''}</StyledName><StyledVersion>v{item.manifest.version}</StyledVersion></StyledNameAndVersion>
+				<StyledNameAndVersion mb={'5px'}>
+					<StyledName onClick={onNameClick} href="#" style={{ marginRight: 5 }} id={nameLabelId}>
+						{item.manifest.name} {item.deleted ? _('(%s)', 'Deleted') : ''}
+					</StyledName>
+					<StyledVersion>v{item.manifest.version}</StyledVersion>
+				</StyledNameAndVersion>
 				{renderToggleButton()}
 				{renderRecommendedBadge()}
 			</CellTop>

@@ -10,15 +10,22 @@ const { FileApiDriverOneDrive } = require('./file-api-driver-onedrive.js');
 
 export default class SyncTargetOneDrive extends BaseSyncTarget {
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private api_: any;
 
 	public static id() {
 		return 3;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public constructor(db: any, options: any = null) {
 		super(db, options);
 		this.api_ = null;
+	}
+
+	public static unsupportedPlatforms() {
+		// Web: The login UI doesn't work.
+		return ['web'];
 	}
 
 	public static targetName() {
@@ -71,6 +78,7 @@ export default class SyncTargetOneDrive extends BaseSyncTarget {
 
 		this.api_ = new OneDriveApi(this.oneDriveParameters().id, this.oneDriveParameters().secret, isPublic);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.api_.on('authRefreshed', (a: any) => {
 			this.logger().info('Saving updated OneDrive auth.');
 			Setting.setValue(`sync.${this.syncTargetId()}.auth`, a ? JSON.stringify(a) : null);
@@ -100,7 +108,11 @@ export default class SyncTargetOneDrive extends BaseSyncTarget {
 
 		if (!accountProperties) {
 			accountProperties = await api.execAccountPropertiesRequest();
-			context ? context.accountProperties = accountProperties : context = { accountProperties: accountProperties };
+			if (context) {
+				context.accountProperties = accountProperties;
+			} else {
+				context = { accountProperties: accountProperties };
+			}
 			Setting.setValue(`sync.${this.syncTargetId()}.context`, JSON.stringify(context));
 		}
 		api.setAccountProperties(accountProperties);

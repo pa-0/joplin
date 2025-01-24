@@ -49,27 +49,27 @@ const blockQuoteDecoration = Decoration.line({
 });
 
 const header1LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h1 cm-headerLine' },
+	attributes: { class: 'cm-h1 cm-headerLine cm-header' },
 });
 
 const header2LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h2 cm-headerLine' },
+	attributes: { class: 'cm-h2 cm-headerLine cm-header' },
 });
 
 const header3LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h3 cm-headerLine' },
+	attributes: { class: 'cm-h3 cm-headerLine cm-header' },
 });
 
 const header4LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h4 cm-headerLine' },
+	attributes: { class: 'cm-h4 cm-headerLine cm-header' },
 });
 
 const header5LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h5 cm-headerLine' },
+	attributes: { class: 'cm-h5 cm-headerLine cm-header' },
 });
 
 const header6LineDecoration = Decoration.line({
-	attributes: { class: 'cm-h6 cm-headerLine' },
+	attributes: { class: 'cm-h6 cm-headerLine cm-header' },
 });
 
 const tableHeaderDecoration = Decoration.line({
@@ -82,6 +82,18 @@ const tableBodyDecoration = Decoration.line({
 
 const tableDelimiterDecoration = Decoration.line({
 	attributes: { class: 'cm-tableDelimiter' },
+});
+
+const orderedListDecoration = Decoration.line({
+	attributes: { class: 'cm-orderedList' },
+});
+
+const unorderedListDecoration = Decoration.line({
+	attributes: { class: 'cm-unorderedList' },
+});
+
+const listItemDecoration = Decoration.line({
+	attributes: { class: 'cm-listItem' },
 });
 
 const horizontalRuleDecoration = Decoration.mark({
@@ -97,6 +109,10 @@ const nodeNameToLineDecoration: Record<string, Decoration> = {
 	'CodeBlock': codeBlockDecoration,
 	'BlockMath': mathBlockDecoration,
 	'Blockquote': blockQuoteDecoration,
+	'OrderedList': orderedListDecoration,
+	'BulletList': unorderedListDecoration,
+
+	'ListItem': listItemDecoration,
 
 	'SetextHeading1': header1LineDecoration,
 	'ATXHeading1': header1LineDecoration,
@@ -122,6 +138,14 @@ const nodeNameToMarkDecoration: Record<string, Decoration> = {
 	'TaskMarker': taskMarkerDecoration,
 };
 
+const multilineNodes = {
+	'FencedCode': true,
+	'CodeBlock': true,
+	'BlockMath': true,
+	'Blockquote': true,
+	'OrderedList': true,
+	'BulletList': true,
+};
 
 type DecorationDescription = { pos: number; length: number; decoration: Decoration };
 
@@ -179,8 +203,8 @@ const computeDecorations = (view: EditorView) => {
 					addDecorationToRange(viewFrom, viewTo, decoration);
 				}
 
-				// Only block decorations will have differing first and last lines
-				if (blockDecorated) {
+				// Only certain block decorations will have differing first and last lines
+				if (blockDecorated && multilineNodes.hasOwnProperty(node.name)) {
 					// Allow different styles for the first, last lines in a block.
 					if (viewFrom === node.from) {
 						addDecorationToLines(viewFrom, viewFrom, regionStartDecoration);

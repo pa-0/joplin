@@ -2,7 +2,7 @@ const Entities = require('html-entities').AllHtmlEntities;
 const htmlentities = new Entities().encode;
 const stringUtilsCommon = require('./string-utils-common.js');
 
-export const pregQuote = stringUtilsCommon.pregQuote;
+export const pregQuote = stringUtilsCommon.pregQuote as (str: string, delimiter?: string)=> string;
 export const replaceRegexDiacritics = stringUtilsCommon.replaceRegexDiacritics;
 
 const defaultDiacriticsRemovalMap = [
@@ -100,23 +100,8 @@ export function removeDiacritics(str: string) {
 	return str;
 }
 
-export function escapeFilename(s: string, maxLength = 32) {
-	let output = removeDiacritics(s);
-	output = output.replace('\n\r', ' ');
-	output = output.replace('\r\n', ' ');
-	output = output.replace('\r', ' ');
-	output = output.replace('\n', ' ');
-	output = output.replace('\t', ' ');
-	output = output.replace('\0', '');
-
-	const unsafe = '/\\:*"\'?<>|'; // In Windows
-	for (let i = 0; i < unsafe.length; i++) {
-		output = output.replace(unsafe[i], '_');
-	}
-
-	if (output.toLowerCase() === 'nul') output = 'n_l'; // For Windows...
-
-	return output.substr(0, maxLength);
+export function escapeRegExp(keyword: string) {
+	return keyword.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 export function wrap(text: string, indent: string, width: number) {
@@ -219,7 +204,9 @@ export function escapeHtml(s: string) {
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#039;');
+		.replace(/'/g, '&#039;')
+		.replace(/^ +/g, match => '&nbsp;'.repeat(match.length))
+		.replace(/^\t+/g, match => '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(match.length));
 }
 
 // keywords can either be a list of strings, or a list of objects with the format:

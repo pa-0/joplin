@@ -1,29 +1,31 @@
 import * as React from 'react';
 
-import { FlatList, View, Text, Button, StyleSheet, Platform, Alert } from 'react-native';
+import { FlatList, View, Text, Button, StyleSheet, Platform } from 'react-native';
 import { connect } from 'react-redux';
-import { reg } from '@joplin/lib/registry.js';
+import { reg } from '@joplin/lib/registry';
 import { ScreenHeader } from '../ScreenHeader';
 import time from '@joplin/lib/time';
-const { themeStyle } = require('../global-style.js');
+import { themeStyle } from '../global-style';
 import Logger from '@joplin/utils/Logger';
 import { BaseScreenComponent } from '../base-screen';
 import { _ } from '@joplin/lib/locale';
 import { MenuOptionType } from '../ScreenHeader';
 import { AppState } from '../../utils/types';
-import Share from 'react-native-share';
 import { writeTextToCacheFile } from '../../utils/ShareUtils';
 import shim from '@joplin/lib/shim';
 import { TextInput } from 'react-native-paper';
+import shareFile from '../../utils/shareFile';
 
 const logger = Logger.create('LogScreen');
 
 interface Props {
 	themeId: number;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	navigation: any;
 }
 
 interface State {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	logEntries: any[];
 	showErrorsOnly: boolean;
 	filter: string|undefined;
@@ -31,8 +33,10 @@ interface State {
 
 class LogScreenComponent extends BaseScreenComponent<Props, State> {
 	private readonly menuOptions_: MenuOptionType[];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private styles_: any;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public static navigationOptions(): any {
 		return { header: null };
 	}
@@ -57,6 +61,7 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 		];
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private refreshLogTimeout: any = null;
 	public override componentDidUpdate(_prevProps: Props, prevState: State) {
 		if ((prevState?.filter ?? '') !== (this.state.filter ?? '')) {
@@ -86,6 +91,7 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 	}
 
 	private async onSharePress() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const allEntries: any[] = await this.getLogEntries(this.state.showErrorsOnly);
 		const logData = allEntries.map(entry => this.formatLogEntry(entry)).join('\n');
 
@@ -94,18 +100,12 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 			// Using a .txt file extension causes a "No valid provider found from URL" error
 			// and blank share sheet on iOS for larger log files (around 200 KiB).
 			fileToShare = await writeTextToCacheFile(logData, 'mobile-log.log');
-
-			await Share.open({
-				type: 'text/plain',
-				filename: 'log.txt',
-				url: `file://${fileToShare}`,
-				failOnCancel: false,
-			});
+			await shareFile(fileToShare, 'text/plain');
 		} catch (e) {
 			logger.error('Unable to share log data:', e);
 
 			// Display a message to the user (e.g. in the case where the user is out of disk space).
-			Alert.alert(_('Error'), _('Unable to share log data. Reason: %s', e.toString()));
+			void shim.showErrorDialog(_('Unable to share log data. Reason: %s', e.toString()));
 		} finally {
 			if (fileToShare) {
 				await shim.fsDriver().remove(fileToShare);
@@ -119,6 +119,7 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 
 		const theme = themeStyle(this.props.themeId);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const styles: any = {
 			row: {
 				flexDirection: 'row',
@@ -171,10 +172,12 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 		void this.refreshLogEntries(!this.state.showErrorsOnly);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private formatLogEntry(item: any) {
 		return `${time.formatMsToLocal(item.timestamp, 'MM-DDTHH:mm:ss')}: ${item.message}`;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private onRenderLogRow = ({ item }: any) => {
 		let textStyle = this.styles().rowText;
 		if (item.level === Logger.LEVEL_WARN) textStyle = this.styles().rowTextWarn;
@@ -216,6 +219,7 @@ class LogScreenComponent extends BaseScreenComponent<Props, State> {
 				{this.state.filter !== undefined ? filterInput : null}
 				<FlatList
 					data={this.state.logEntries}
+					initialNumToRender={100}
 					renderItem={this.onRenderLogRow}
 					keyExtractor={item => { return `${item.id}`; }}
 				/>

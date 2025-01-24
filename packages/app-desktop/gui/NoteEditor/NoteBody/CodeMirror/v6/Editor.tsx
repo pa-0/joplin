@@ -8,14 +8,21 @@ import { PluginStates } from '@joplin/lib/services/plugins/reducer';
 import { ContentScriptType } from '@joplin/lib/services/plugins/api/types';
 import shim from '@joplin/lib/shim';
 import PluginService from '@joplin/lib/services/plugins/PluginService';
-import setupVim from '@joplin/editor/CodeMirror/util/setupVim';
+import setupVim from '@joplin/editor/CodeMirror/utils/setupVim';
 import { dirname } from 'path';
+import useKeymap from './utils/useKeymap';
+import useEditorSearch from '../utils/useEditorSearchExtension';
+import CommandService from '@joplin/lib/services/CommandService';
+import { SearchMarkers } from '../../../utils/useSearchMarkers';
+import localisation from './utils/localisation';
 
 interface Props extends EditorProps {
 	style: React.CSSProperties;
 	pluginStates: PluginStates;
 
 	onEditorPaste: (event: Event)=> void;
+	externalSearch: SearchMarkers;
+	useLocalSearch: boolean;
 }
 
 const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
@@ -32,11 +39,14 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 		onLogMessageRef.current = props.onLogMessage;
 	}, [props.onEvent, props.onLogMessage]);
 
+	useEditorSearch(editor);
+
 	useEffect(() => {
 		if (!editor) {
 			return () => {};
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const pasteEventHandler = (_editor: any, event: Event) => {
 			props.onEditorPaste(event);
 		};
@@ -72,6 +82,7 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 						const path = shim.fsDriver().resolveRelativePathWithinDir(assetPath, name);
 						return shim.fsDriver().readFile(path, 'utf8');
 					},
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					postMessageHandler: (message: any) => {
 						const plugin = PluginService.instance().pluginById(pluginId);
 						return plugin.emitContentScriptMessage(contentScript.id, message);
@@ -88,6 +99,7 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 
 		const editorProps: EditorProps = {
 			...props,
+			localisations: localisation(),
 			onEvent: event => onEventRef.current(event),
 			onLogMessage: message => onLogMessageRef.current(message),
 		};
@@ -95,6 +107,12 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 		const editor = createEditor(editorContainerRef.current, editorProps);
 		editor.addStyles({
 			'.cm-scroller': { overflow: 'auto' },
+			'&.CodeMirror': {
+				height: 'unset',
+				background: 'unset',
+				overflow: 'unset',
+				direction: 'unset',
+			},
 		});
 		setEditor(editor);
 
@@ -105,6 +123,45 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 	}, []);
 
 	useEffect(() => {
+		if (!editor) {
+			return;
+		}
+
+		const searchState = editor.getSearchState();
+		const externalSearchText = props.externalSearch.keywords.map(k => k.value).join(' ') || searchState.searchText;
+
+		if (externalSearchText === searchState.searchText && searchState.dialogVisible === props.useLocalSearch) {
+			return;
+		}
+
+		editor.setSearchState({
+			...searchState,
+			dialogVisible: props.useLocalSearch,
+			searchText: externalSearchText,
+		});
+	}, [editor, props.externalSearch, props.useLocalSearch]);
+
+	const theme = props.settings.themeData;
+	useEffect(() => {
+		if (!editor) return () => {};
+
+		const styles = editor.addStyles({
+			'& .cm-search-marker *, & .cm-search-marker': {
+				color: theme.searchMarkerColor,
+				backgroundColor: theme.searchMarkerBackgroundColor,
+			},
+			'& .cm-search-marker-selected *, & .cm-search-marker-selected': {
+				background: `${theme.selectedColor2} !important`,
+				color: `${theme.color2} !important`,
+			},
+		});
+
+		return () => {
+			styles.remove();
+		};
+	}, [editor, theme]);
+
+	useEffect(() => {
 		editor?.updateSettings(props.settings);
 	}, [props.settings, editor]);
 
@@ -113,8 +170,14 @@ const Editor = (props: Props, ref: ForwardedRef<CodeMirrorControl>) => {
 			return;
 		}
 
-		setupVim(editor);
+		setupVim(editor, {
+			sync: () => {
+				void CommandService.instance().execute('synchronize');
+			},
+		});
 	}, [editor]);
+
+	useKeymap(editor);
 
 	return (
 		<div

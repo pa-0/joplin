@@ -1,4 +1,5 @@
 const React = require('react');
+import { CSSProperties } from 'react';
 const { connect } = require('react-redux');
 const { clipboard } = require('electron');
 import ExtensionBadge from './ExtensionBadge';
@@ -8,6 +9,7 @@ import ClipperServer from '@joplin/lib/ClipperServer';
 import Setting from '@joplin/lib/models/Setting';
 import EncryptionService from '@joplin/lib/services/e2ee/EncryptionService';
 import { AppState } from '../app.reducer';
+import shim, { MessageBoxType } from '@joplin/lib/shim';
 
 class ClipperConfigScreenComponent extends React.Component {
 	public constructor() {
@@ -29,7 +31,7 @@ class ClipperConfigScreenComponent extends React.Component {
 	private copyToken_click() {
 		clipboard.writeText(this.props.apiToken);
 
-		alert(_('Token has been copied to the clipboard!'));
+		void shim.showMessageBox(_('Token has been copied to the clipboard!'), { type: MessageBoxType.Info });
 	}
 
 	private renewToken_click() {
@@ -46,7 +48,8 @@ class ClipperConfigScreenComponent extends React.Component {
 	public render() {
 		const theme = themeStyle(this.props.themeId);
 
-		const containerStyle = { ...theme.containerStyle, overflowY: 'scroll',
+		const containerStyle: CSSProperties = { ...theme.containerStyle,
+			overflowY: 'scroll',
 			// padding: theme.configScreenPadding,
 			backgroundColor: theme.backgroundColor3 };
 
@@ -104,7 +107,8 @@ class ClipperConfigScreenComponent extends React.Component {
 			);
 		}
 
-		const apiTokenStyle = { ...theme.textStyle, color: theme.colorFaded,
+		const apiTokenStyle: CSSProperties = { ...theme.textStyle,
+			color: theme.colorFaded,
 			wordBreak: 'break-all',
 			paddingTop: 10,
 			paddingBottom: 10 };
