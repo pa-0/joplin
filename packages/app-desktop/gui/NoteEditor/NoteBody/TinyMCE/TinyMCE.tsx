@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
-import { ScrollOptions, ScrollOptionTypes, EditorCommand, NoteBodyEditorProps, ResourceInfos, HtmlToMarkdownHandler } from '../../utils/types';
-import { resourcesStatus, commandAttachFileToBody, getResourcesFromPasteEvent, processPastedHtml, attachedResources } from '../../utils/resourceHandling';
+import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
+import { ScrollOptions, ScrollOptionTypes, EditorCommand, NoteBodyEditorProps, ResourceInfos, HtmlToMarkdownHandler, ScrollToTextValue } from '../../utils/types';
+import { resourcesStatus, commandAttachFileToBody, getResourcesFromPasteEvent, processPastedHtml } from '../../utils/resourceHandling';
+import attachedResources from '@joplin/lib/utils/attachedResources';
 import useScroll from './utils/useScroll';
 import styles_ from './styles';
 import CommandService from '@joplin/lib/services/CommandService';
-import { ToolbarButtonInfo } from '@joplin/lib/services/commands/ToolbarButtonUtils';
+import { ToolbarItem } from '@joplin/lib/services/commands/ToolbarButtonUtils';
 import ToggleEditorsButton, { Value as ToggleEditorsButtonValue } from '../../../ToggleEditorsButton/ToggleEditorsButton';
 import ToolbarButton from '../../../../gui/ToolbarButton/ToolbarButton';
 import usePluginServiceRegistration from '../../utils/usePluginServiceRegistration';
@@ -23,7 +24,7 @@ import { themeStyle } from '@joplin/lib/theme';
 import { loadScript } from '../../../utils/loadScript';
 import bridge from '../../../../services/bridge';
 import { TinyMceEditorEvents } from './utils/types';
-import type { Editor } from 'tinymce';
+import type { Editor, EditorEvent } from 'tinymce';
 import { joplinCommandToTinyMceCommands, TinyMceCommand } from './utils/joplinCommandToTinyMceCommands';
 import shouldPasteResources from './utils/shouldPasteResources';
 import lightTheme from '@joplin/lib/themes/light';
@@ -38,6 +39,9 @@ const md5 = require('md5');
 const { clipboard } = require('electron');
 const supportedLocales = require('./supportedLocales');
 import { hasProtocol } from '@joplin/utils/url';
+import useTabIndenter from './utils/useTabIndenter';
+import useKeyboardRefocusHandler from './utils/useKeyboardRefocusHandler';
+import useDocument from '../../../hooks/useDocument';
 
 const logger = Logger.create('TinyMCE');
 
@@ -96,6 +100,8 @@ let changeId_ = 1;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
+	const [editorContainer, setEditorContainer] = useState<HTMLDivElement|null>(null);
+	const editorContainerDom = useDocument(editorContainer);
 	const [editor, setEditor] = useState<Editor|null>(null);
 	const [scriptLoaded, setScriptLoaded] = useState(false);
 	const [editorReady, setEditorReady] = useState(false);
@@ -116,9 +122,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		contentKey: null,
 	});
 
-	const rootIdRef = useRef<string>(`tinymce-${Date.now()}${Math.round(Math.random() * 10000)}`);
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	const editorRef = useRef<any>(null);
+	const editorRef = useRef<Editor>(null);
 	editorRef.current = editor;
 
 	const styles = styles_(props);
@@ -128,6 +132,8 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 	usePluginServiceRegistration(ref);
 	useContextMenu(editor, props.plugins, props.dispatch, props.htmlToMarkdown, props.markupToHtml);
+	useTabIndenter(editor);
+	useKeyboardRefocusHandler(editor);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const dispatchDidUpdate = (editor: any) => {
@@ -216,6 +222,13 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 					editor.insertContent(result.html);
 				} else if (cmd.name === 'editor.focus') {
 					focus('TinyMCE::editor.focus', editor);
+					if (cmd.value?.moveCursorToStart) {
+						editor.selection.placeCaretAt(0, 0);
+						editor.selection.setCursorLocation(
+							editor.dom.root,
+							0,
+						);
+					}
 				} else if (cmd.name === 'editor.execCommand') {
 					if (!('ui' in cmd.value)) cmd.value.ui = false;
 					if (!('value' in cmd.value)) cmd.value.value = null;
@@ -230,6 +243,28 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 						insertResourcesIntoContentRef.current(cmd.value.paths, { createFileURL: !!cmd.value.createFileURL });
 					} else {
 						logger.warn('unsupported drop item: ', cmd);
+					}
+				} else if (cmd.name === 'editor.scrollToText') {
+
+					const cmdValue = cmd.value as ScrollToTextValue;
+
+					const findElementByText = (doc: Document, text: string, element: string) => {
+						const headers = doc.querySelectorAll(element);
+						for (const header of headers) {
+							if (header.textContent?.trim() === text) {
+								return header;
+							}
+						}
+						return null;
+					};
+
+					const contentDocument = editor.getDoc();
+					const targetElement = findElementByText(contentDocument, cmdValue.text, cmdValue.element);
+
+					if (targetElement) {
+						targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					} else {
+						logger.warn('editor.scrollToText: Could not find text to scroll to :', cmdValue);
 					}
 				} else {
 					commandProcessed = false;
@@ -321,6 +356,8 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 	// };
 
 	useEffect(() => {
+		if (!editorContainerDom) return () => {};
+
 		let cancelled = false;
 
 		async function loadScripts() {
@@ -339,7 +376,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			];
 
 			for (const s of scriptsToLoad) {
-				if (document.getElementById(s.id)) {
+				if (editorContainerDom.getElementById(s.id)) {
 					s.loaded = true;
 					continue;
 				}
@@ -347,7 +384,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 				// eslint-disable-next-line no-console
 				console.info('Loading script', s.src);
 
-				await loadScript(s);
+				await loadScript(s, editorContainerDom);
 				if (cancelled) return;
 
 				s.loaded = true;
@@ -361,22 +398,25 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [editorContainerDom]);
 
-	useWebViewApi(editor);
+	useWebViewApi(editor, editorContainerDom?.defaultView);
 	const { resetModifiedTitles: resetLinkTooltips } = useLinkTooltips(editor);
 
 	useEffect(() => {
+		if (!editorContainerDom) return () => {};
 		const theme = themeStyle(props.themeId);
 		const backgroundColor = props.whiteBackgroundNoteRendering ? lightTheme.backgroundColor : theme.backgroundColor;
 
-		const element = document.createElement('style');
+		const element = editorContainerDom.createElement('style');
 		element.setAttribute('id', 'tinyMceStyle');
-		document.head.appendChild(element);
-		element.appendChild(document.createTextNode(`
-			.joplin-tinymce .tox-editor-header {
-				padding-left: ${styles.leftExtraToolbarContainer.width + styles.leftExtraToolbarContainer.padding * 2}px;
-				padding-right: ${styles.rightExtraToolbarContainer.width + styles.rightExtraToolbarContainer.padding * 2}px;
+		editorContainerDom.head.appendChild(element);
+		element.appendChild(editorContainerDom.createTextNode(`
+			.joplin-tinymce .tox-editor-header.tox-editor-header {
+				margin-left: ${styles.leftExtraToolbarContainer.width + styles.leftExtraToolbarContainer.padding * 2}px;
+				margin-right: ${styles.rightExtraToolbarContainer.width + styles.rightExtraToolbarContainer.padding * 2}px;
+				padding: 0;
+				box-shadow: none;
 			}
 			
 			.tox .tox-toolbar,
@@ -396,8 +436,23 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			}
 
 			.tox .tox-dialog__body-content,
-			.tox .tox-collection__item {
+			.tox .tox-collection__item,
+			.tox .tox-insert-table-picker__label {
 				color: ${theme.color};
+			}
+
+			.tox .tox-dialog__body-nav-item {
+				color: ${theme.color};
+			}
+
+			.tox .tox-dialog__body-nav-item[aria-selected=true] {
+				color: ${theme.color3};
+				border-color: ${theme.color3};
+				background-color: ${theme.backgroundColor3};
+			}
+
+			.tox .tox-checkbox__icons .tox-checkbox-icon__unchecked svg {
+				fill: ${theme.color};
 			}
 
 			.tox .tox-collection--list .tox-collection__item--active {
@@ -421,7 +476,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			*/
 			
 			.tox .tox-dialog textarea {
-				font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+				font-family: Menlo, Monaco, Consolas, "Courier New", monospace !important;
 			}
 
 			.tox .tox-dialog-wrap__backdrop {
@@ -446,6 +501,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			.tox .tox-toolbar-label {
 				color: ${theme.color3} !important;
 				fill: ${theme.color3} !important;
+				background: transparent;
 			}
 
 			.tox .tox-statusbar a,
@@ -471,6 +527,11 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			.tox .tox-tbtn:focus,
 			.tox .tox-split-button:focus {
 				background-color: ${theme.backgroundColor3}
+			}
+
+			.tox .tox-tbtn:focus-visible,
+			.tox .tox-split-button:focus-visible {
+				background-color: ${theme.backgroundColorHover3}
 			}
 			
 			.tox .tox-tbtn:hover,
@@ -507,6 +568,12 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 			.tox .tox-split-button:hover {
 				box-shadow: none;
+			}
+			
+			/* Decrease the spacing between groups */
+			.tox .tox-toolbar__group {
+				padding-left: 7px;
+				padding-right: 7px;
 			}
 
 			.tox-tinymce,
@@ -556,7 +623,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		`));
 
 		return () => {
-			document.head.removeChild(element);
+			editorContainerDom.head.removeChild(element);
 		};
 		// editorReady is here because TinyMCE starts by initializing a blank iframe, which needs to be
 		// styled by us, otherwise users in dark mode get a bright white flash. During initialization
@@ -568,7 +635,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		//
 		// tl;dr: editorReady is used here because the css needs to be re-applied after TinyMCE init
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [editorReady, props.themeId, lightTheme, props.whiteBackgroundNoteRendering, props.watchedNoteFiles]);
+	}, [editorReady, editorContainerDom, props.themeId, lightTheme, props.whiteBackgroundNoteRendering, props.watchedNoteFiles]);
 
 	// -----------------------------------------------------------------------------------------
 	// Enable or disable the editor
@@ -576,7 +643,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 	useEffect(() => {
 		if (!editor) return;
-		editor.setMode(props.disabled ? 'readonly' : 'design');
+		editor.mode.set(props.disabled ? 'readonly' : 'design');
 	}, [editor, props.disabled]);
 
 	// -----------------------------------------------------------------------------------------
@@ -585,6 +652,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 	useEffect(() => {
 		if (!scriptLoaded) return;
+		if (!editorContainer) return;
 
 		const loadEditor = async () => {
 			const language = closestSupportedLocale(props.locale, true, supportedLocales);
@@ -619,16 +687,23 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-			const editors = await (window as any).tinymce.init({
-				selector: `#${rootIdRef.current}`,
+			const containerWindow = editorContainerDom.defaultView as any;
+			const editors = await containerWindow.tinymce.init({
+				selector: `#${editorContainer.id}`,
+
+				// Ensures that the "Premium plugins" toolbar option is disabled. See
+				// https://www.tiny.cloud/docs/tinymce/latest/editor-premium-upgrade-promotion/
+				promotion: false,
 				width: '100%',
 				body_class: 'jop-tinymce',
 				height: '100%',
 				resize: false,
+				highlight_on_focus: false,
 				icons: 'Joplin',
 				icons_url: 'gui/NoteEditor/NoteBody/TinyMCE/icons.js',
-				plugins: 'noneditable link joplinLists hr searchreplace codesample table',
-				noneditable_noneditable_class: 'joplin-editable', // Can be a regex too
+				plugins: 'link joplinLists searchreplace codesample table',
+				noneditable_class: 'joplin-editable', // Can be a regex too
+				iframe_aria_text: _('Rich Text editor. Press Escape then Tab to escape focus.'),
 
 				// #p: Pad empty paragraphs with &nbsp; to prevent them from being removed.
 				// *[*]: Allow all elements and attributes -- we already filter in sanitize_html
@@ -639,23 +714,15 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 				relative_urls: false,
 				branding: false,
 				statusbar: false,
-				target_list: false,
+				link_target_list: false,
 				// Handle the first table row as table header.
 				// https://www.tiny.cloud/docs/plugins/table/#table_header_type
 				table_header_type: 'sectionCells',
-				table_resize_bars: false,
 				language_url: ['en_US', 'en_GB'].includes(language) ? undefined : `${bridge().vendorDir()}/lib/tinymce/langs/${language}`,
 				toolbar: toolbar.join(' '),
 				localization_function: _,
 				contextmenu: false,
 				browser_spellcheck: true,
-
-				// Work around an issue where images with a base64 SVG data URL would be broken.
-				//
-				// See https://github.com/tinymce/tinymce/issues/3864
-				//
-				// This was fixed in TinyMCE 6.1, so remove it when we upgrade.
-				images_dataimg_filter: (img: HTMLImageElement) => !img.src.startsWith('data:'),
 
 				formats: {
 					joplinHighlight: { inline: 'mark', remove: 'all' },
@@ -693,14 +760,15 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 						tooltip: _('Inline Code'),
 						icon: 'sourcecode',
 						onAction: function() {
-							editor.execCommand('mceToggleFormat', false, 'code', { class: 'inline-code' });
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+							editor.execCommand('mceToggleFormat', false, 'code', { class: 'inline-code' } as any);
 						},
 						onSetup: function(api) {
 							api.setActive(editor.formatter.match('code'));
-							const unbind = editor.formatter.formatChanged('code', api.setActive).unbind;
+							const handle = editor.formatter.formatChanged('code', active => api.setActive(active));
 
 							return function() {
-								if (unbind) unbind();
+								handle?.unbind();
 							};
 						},
 					});
@@ -805,7 +873,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 		void loadEditor();
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [scriptLoaded]);
+	}, [scriptLoaded, editorContainer]);
 
 	// -----------------------------------------------------------------------------------------
 	// Set the initial content and load the plugin CSS and JS files
@@ -981,6 +1049,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 			const allAssetsOptions: NoteStyleOptions = {
 				contentMaxWidthTarget: '.mce-content-body',
+				scrollbarSize: props.scrollbarSize,
 				themeId: props.contentMarkupLanguage === MarkupLanguage.Html ? 1 : null,
 				whiteBackgroundNoteRendering: props.whiteBackgroundNoteRendering,
 			};
@@ -997,7 +1066,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			cancelled = true;
 		};
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [editor, props.themeId, props.markupToHtml, props.allAssets, props.content, props.resourceInfos, props.contentKey, props.contentMarkupLanguage, props.whiteBackgroundNoteRendering]);
+	}, [editor, props.themeId, props.scrollbarSize, props.markupToHtml, props.allAssets, props.content, props.resourceInfos, props.contentKey, props.contentMarkupLanguage, props.whiteBackgroundNoteRendering]);
 
 	useEffect(() => {
 		if (!editor) return () => {};
@@ -1151,9 +1220,10 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		}
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-		const onSetAttrib = (event: any) => {
+		const onSetAttrib = (event: EditorEvent<any>) => {
 			// Dispatch onChange when a link is edited
-			if (event.attrElm[0].nodeName === 'A') {
+			const target = Array.isArray(event.attrElm) ? event.attrElm[0] : event.attrElm;
+			if (target.nodeName === 'A') {
 				if (event.attrName === 'title' || event.attrName === 'href' || event.attrName === 'rel') {
 					onChangeHandler();
 				}
@@ -1329,7 +1399,9 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		};
 	}, []);
 
-	function renderExtraToolbarButton(key: string, info: ToolbarButtonInfo) {
+	function renderExtraToolbarButton(key: string, info: ToolbarItem) {
+		if (info.type === 'separator') return null;
+
 		return <ToolbarButton
 			key={key}
 			themeId={props.themeId}
@@ -1358,7 +1430,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		for (const info of props.noteToolbarButtonInfos) {
 			if (leftButtonCommandNames.includes(info.name)) continue;
 
-			if (info.name === 'toggleEditors') {
+			if (info.type === 'button' && info.name === 'toggleEditors') {
 				buttons.push(<ToggleEditorsButton
 					key={info.name}
 					value={ToggleEditorsButtonValue.RichText}
@@ -1395,12 +1467,15 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 		);
 	}
 
+	const containerId = useMemo(() => {
+		return `tinymce-container-${Math.ceil(Math.random() * 1000)}-${Date.now()}`;
+	}, []);
 	return (
 		<div style={styles.rootStyle} className="joplin-tinymce">
 			{renderDisabledOverlay()}
 			{renderLeftExtraToolbarButtons()}
 			{renderRightExtraToolbarButtons()}
-			<div style={{ width: '100%', height: '100%' }} id={rootIdRef.current}/>
+			<div style={{ width: '100%', height: '100%' }} id={containerId} ref={setEditorContainer}/>
 		</div>
 	);
 };
