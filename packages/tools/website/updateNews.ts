@@ -1,5 +1,5 @@
 // This script reads through the Markdown files in readme/news and post each of
-// them as Dicourse forum posts. It then also update the news file with a link
+// them as Discourse forum posts. It then also update the news file with a link
 // to that forum post.
 
 import { readdir, readFile, writeFile } from 'fs-extra';
@@ -67,6 +67,7 @@ const getPostContent = async (post: Post): Promise<PostContent> => {
 const generateRssFeed = async (posts: Post[]) => {
 	let pubDate = null;
 	let postCount = 0;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const feedItems: any[] = [];
 	for (const post of posts.reverse()) {
 		const content = await getPostContent(post);

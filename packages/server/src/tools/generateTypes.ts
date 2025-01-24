@@ -21,6 +21,7 @@ const config: Config = {
 	],
 	'interfaceNameFormat': '${table}',
 	'singularTableNames': true,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	'tableNameCasing': 'pascal' as any,
 	'filename': './db',
 	'columnSortOrder': 'source',
@@ -212,7 +213,7 @@ async function main() {
 		tableStrings.push(createRuntimeObject(table));
 	}
 
-	let content = `// Auto-generated using \`yarn run generate-types\`\n${typeStrings.join('\n\n')}`;
+	let content = `// Auto-generated using \`yarn generate-types\`\n${typeStrings.join('\n\n')}`;
 	content += '\n\n';
 	content += `export const databaseSchema: DatabaseTables = {\n${tableStrings.join('\n')}\n};`;
 

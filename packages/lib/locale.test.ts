@@ -1,4 +1,4 @@
-import { closestSupportedLocale, parsePluralForm, setLocale, _n } from './locale';
+import { closestSupportedLocale, parsePluralForm, setLocale, _n, toIso639Alpha3, languageName } from './locale';
 
 describe('locale', () => {
 
@@ -19,6 +19,8 @@ describe('locale', () => {
 		setLocale('en_GB');
 		expect(_n('Copy Shareable Link', 'Copy Shareable Links', 1)).toBe('Copy Shareable Link');
 		expect(_n('Copy Shareable Link', 'Copy Shareable Links', 2)).toBe('Copy Shareable Links');
+		expect(_n('Copy Shareable Link', 'Copy Shareable Links', -2)).toBe('Copy Shareable Links');
+		expect(_n('Copy Shareable Link', 'Copy Shareable Links', 0)).toBe('Copy Shareable Links');
 	});
 
 	it('should translate plurals - fr_FR', () => {
@@ -89,6 +91,26 @@ describe('locale', () => {
 				expect(pluralValues[index][i]).toBe(pluralFn(i));
 			}
 		}
+	});
+
+	test.each([
+		['en_GB', 'eng'],
+		['en', 'eng'],
+		['de', 'deu'],
+		['fr_FR', 'fra'],
+	])('should convert to ISO-639 alpha-3', (input, expected) => {
+		const actual = toIso639Alpha3(input);
+		expect(actual).toBe(expected);
+	});
+
+	test.each([
+		['en', 'English'],
+		['en_US', 'English'],
+		['fr', 'Français'],
+		['br', 'Breton'],
+	])('should give the language name', (input, expected) => {
+		const actual = languageName(input);
+		expect(actual).toBe(expected);
 	});
 
 });

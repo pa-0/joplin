@@ -16,7 +16,7 @@ The overall architecture for each application is as such:
 
 - Back end: This is shared by all applications. It is made of:
 
-	- Services: Provide high-level functionalities, such as the [search engine](https://github.com/laurent22/joplin/tree/dev/packages/lib/services/searchengine), [plugin system](https://github.com/laurent22/joplin/tree/dev/packages/lib/services/plugins) or [synchroniser](https://github.com/laurent22/joplin/blob/dev/packages/lib/Synchronizer.ts).
+	- Services: Provide high-level functionalities, such as the [search engine](https://github.com/laurent22/joplin/tree/dev/packages/lib/services/search), [plugin system](https://github.com/laurent22/joplin/tree/dev/packages/lib/services/plugins) or [synchroniser](https://github.com/laurent22/joplin/blob/dev/packages/lib/Synchronizer.ts).
 
 	- Models: The model layer sits between the services and database. They provide a higher level abstraction than SQL and utility functions to easily save data, such as notes, notebooks, etc.
 
@@ -52,7 +52,7 @@ A typical Joplin Server installation will use the following elements:
 
 - [Nginx](https://www.nginx.com/): It is used as a reverse proxy and for TLS termination.
 
-- A configuration file: A `.env` file, which contains environement variables used to configure the server.
+- A configuration file: A `.env` file, which contains environment variables used to configure the server.
 
 This is a typical Joplin Server installation, but many of its components can be configured - for example it is possible to use a different database engine, or to use the filesystem instead of AWS S3. Any reverse proxy would also work - using Nginx is not required.
 

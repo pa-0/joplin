@@ -127,6 +127,56 @@ rules.subscript = {
   }
 }
 
+// Handles foreground color changes as created by the rich text editor.
+// We intentionally don't handle the general style="color: colorhere" case as
+// this may leave unwanted formatting when saving websites as markdown.
+rules.foregroundColor = {
+  filter: function (node, options) {
+    return options.preserveColorStyles && node.nodeName === 'SPAN' && getStyleProp(node, 'color');
+  },
+
+  replacement: function (content, node, options) {
+    return `<span style="color: ${htmlentities(getStyleProp(node, 'color'))};">${content}</span>`;
+  },
+}
+
+// Converts placeholders for not-loaded resources.
+rules.resourcePlaceholder = {
+  filter: function (node, options) {
+    if (!options.allowResourcePlaceholders) return false;
+    if (!node.classList || !node.classList.contains('not-loaded-resource')) return false;
+    const isImage = node.classList.contains('not-loaded-image-resource');
+    if (!isImage) return false;
+
+    const resourceId = node.getAttribute('data-resource-id');
+    return resourceId && resourceId.match(/^[a-z0-9]{32}$/);
+  },
+
+  replacement: function (_content, node) {
+    const htmlBefore = node.getAttribute('data-original-before') || '';
+    const htmlAfter = node.getAttribute('data-original-after') || '';
+    const isHtml = htmlBefore || htmlAfter;
+    const resourceId = node.getAttribute('data-resource-id');
+    if (isHtml) {
+      const attrs = [
+        htmlBefore.trim(),
+        `src=":/${resourceId}"`,
+        htmlAfter.trim(),
+      ].filter(a => !!a);
+
+      return `<img ${attrs.join(' ')}>`;
+    } else {
+      const originalAltText = node.getAttribute('data-original-alt') || '';
+      const title = node.getAttribute('data-original-title');
+      return imageMarkdownFromAttributes({
+        alt: originalAltText,
+        title,
+        src: `:/${resourceId}`,
+      });
+    }
+  }
+}
+
 // ==============================
 // END Joplin format support
 // ==============================
@@ -146,7 +196,12 @@ rules.list = {
 
   replacement: function (content, node) {
     var parent = node.parentNode
-    if (parent.nodeName === 'LI' && parent.lastElementChild === node) {
+    if (parent && isCodeBlock(parent) && node.classList && node.classList.contains('pre-numbering')){
+      // Ignore code-block children of type ul with class pre-numbering.
+      // See https://github.com/laurent22/joplin/pull/10126#discussion_r1532204251 .
+      // test case: packages/app-cli/tests/html_to_md/code_multiline_2.html
+      return '';
+    } else if (parent.nodeName === 'LI' && parent.lastElementChild === node) {
       return '\n' + content
     } else {
       return '\n\n' + content + '\n\n'
@@ -172,7 +227,10 @@ rules.listItem = {
         .replace(/\n+$/, '\n') // replace trailing newlines with just a single one
 
     var prefix = options.bulletListMarker + ' '
-    content = content.replace(/\n/gm, '\n    ') // indent
+    if (node.isCode === false) {
+      content = content.replace(/\n/gm, '\n    ') // indent
+    }
+    
 
     const joplinCheckbox = joplinCheckboxInfo(node);
     if (joplinCheckbox) {
@@ -180,26 +238,33 @@ rules.listItem = {
     } else {
       var parent = node.parentNode
       if (isOrderedList(parent)) {
-        var start = parent.getAttribute('start')
-        var index = Array.prototype.indexOf.call(parent.children, node)
-        var indexStr = (start ? Number(start) + index : index + 1) + ''
-        // The content of the line that contains the bullet must align wih the following lines.
-        //
-        // i.e it should be:
-        //
-        // 9.  my content
-        //     second line
-        // 10. next one
-        //     second line
-        //
-        // But not:
-        //
-        // 9.  my content
-        //     second line
-        // 10.  next one
-        //     second line
-        //
-        prefix = indexStr + '.' + ' '.repeat(3 - indexStr.length)
+        if (node.isCode) {
+          // Ordered lists in code blocks are often for line numbers. Remove them. 
+          // See https://github.com/laurent22/joplin/pull/10126
+          // test case: packages/app-cli/tests/html_to_md/code_multiline_4.html
+          prefix = '';
+        } else {
+          var start = parent.getAttribute('start')
+          var index = Array.prototype.indexOf.call(parent.children, node)
+          var indexStr = (start ? Number(start) + index : index + 1) + ''
+          // The content of the line that contains the bullet must align wih the following lines.
+          //
+          // i.e it should be:
+          //
+          // 9.  my content
+          //     second line
+          // 10. next one
+          //     second line
+          //
+          // But not:
+          //
+          // 9.  my content
+          //     second line
+          // 10.  next one
+          //     second line
+          //
+          prefix = indexStr + '.' + ' '.repeat(3 - indexStr.length)
+        }
       }
     } 
 
@@ -253,6 +318,9 @@ rules.fencedCodeBlock = {
 
     var fence = repeat(fenceChar, fenceSize)
 
+    // remove code block leading and trailing empty lines
+    code = code.replace(/^([ \t]*\n)+/, '').trimEnd()
+
     return (
       '\n\n' + fence + language + '\n' +
       code.replace(/\n$/, '') +
@@ -280,6 +348,9 @@ function filterLinkHref (href) {
   // Replace the spaces with %20 because otherwise they can cause problems for some
   // renderer and space is not a valid URL character anyway.
   href = href.replace(/ /g, '%20');
+  // Newlines and tabs also break renderers
+  href = href.replace(/\n/g, '%0A');
+  href = href.replace(/\t/g, '%09');
   // Brackets also should be escaped
   href = href.replace(/\(/g, '%28');
   href = href.replace(/\)/g, '%29');
@@ -449,9 +520,23 @@ rules.code = {
     return node.nodeName === 'CODE' && !isCodeBlock
   },
 
-  replacement: function (content) {
-    if (!content) return ''
-    content = content.replace(/\r?\n|\r/g, ' ')
+  replacement: function (content, node, options) {
+    if (!content) {
+      return ''
+    }
+
+    content = content.replace(/\r?\n|\r/g, '\n')
+    // If code is multiline and in codeBlock, just return it, codeBlock will add fence(default is ```).
+    //
+    // This handles the case where a <code> element is nested directly within a <pre> and
+    // should not be turned into an inline code region.
+    //
+    // See https://github.com/laurent22/joplin/pull/10126 .
+    if (content.indexOf('\n') !== -1 && node.parentNode && isCodeBlock(node.parentNode)){
+      return content
+    }
+
+    content = content.replace(/\r?\n|\r/g, '')
 
     var extraSpace = /^`|^ .*?[^ ].* $|`$/.test(content) ? ' ' : ''
     var delimiter = '`'
@@ -462,20 +547,61 @@ rules.code = {
   }
 }
 
+function imageMarkdownFromAttributes(attributes) {
+  var alt = attributes.alt || ''
+  var src = filterLinkHref(attributes.src || '')
+  var title = attributes.title || ''
+  var titlePart = title ? ' "' + filterImageTitle(title) + '"' : ''
+  return src ? '![' + alt.replace(/([[\]])/g, '\\$1') + ']' + '(' + src + titlePart + ')' : ''
+}
+
 function imageMarkdownFromNode(node, options = null) {
   options = Object.assign({}, {
     preserveImageTagsWithSize: false,
   }, options);
 
   if (options.preserveImageTagsWithSize && (node.getAttribute('width') || node.getAttribute('height'))) {
-    return node.outerHTML;
+    let html = node.outerHTML;
+
+    // To prevent markup immediately after the image from being interpreted as HTML, a closing tag
+    // is sometimes necessary.
+    const needsClosingTag = () => {
+      const parent = node.parentElement;
+      if (!parent || parent.nodeName !== 'LI') return false;
+      const hasClosingTag = html.match(/<\/[a-z]+\/>$/ig);
+      if (hasClosingTag) {
+        return false;
+      }
+
+      const allChildren = [...parent.childNodes];
+      const nonEmptyChildren = allChildren.filter(item => {
+        // Even if surrounded by #text nodes that only contain whitespace, Markdown after
+        // an <img> can still be incorrectly interpreted as HTML. Only non-empty #texts seem
+        // to prevent this.
+        return item.nodeName !== '#text' || item.textContent.trim() !== '';
+      });
+
+      const imageIndex = nonEmptyChildren.indexOf(node);
+      const hasNextSibling = imageIndex + 1 < nonEmptyChildren.length;
+      const nextSiblingName = hasNextSibling ? (
+        nonEmptyChildren[imageIndex + 1].nodeName
+      ) : null;
+
+      const nextSiblingIsNewLine = nextSiblingName === 'UL' || nextSiblingName === 'OL' || nextSiblingName === 'BR';
+      return imageIndex === 0 && nextSiblingIsNewLine;
+    };
+
+    if (needsClosingTag()) {
+      html = html.replace(/[/]?>$/, `></${node.nodeName.toLowerCase()}>`);
+    }
+    return html;
   }
 
-  var alt = node.alt || ''
-  var src = filterLinkHref(node.getAttribute('src') || '')
-  var title = node.title || ''
-  var titlePart = title ? ' "' + filterImageTitle(title) + '"' : ''
-  return src ? '![' + alt.replace(/([[\]])/g, '\\$1') + ']' + '(' + src + titlePart + ')' : ''
+  return imageMarkdownFromAttributes({
+    alt: node.alt,
+    src: node.getAttribute('src'),
+    title: node.title,
+  });
 }
 
 function imageUrlFromSource(node) {

@@ -1,5 +1,5 @@
 import BaseCommand from './base-command';
-const { app } = require('./app.js');
+import app from './app';
 import { _ } from '@joplin/lib/locale';
 import BaseModel from '@joplin/lib/BaseModel';
 import Folder from '@joplin/lib/models/Folder';
@@ -14,6 +14,7 @@ class Command extends BaseCommand {
 		return _('Renames the given <item> (note or notebook) to <name>.');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override async action(args: any) {
 		const pattern = args['item'];
 		const name = args['name'];

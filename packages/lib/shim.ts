@@ -1,11 +1,57 @@
 import * as React from 'react';
 import { NoteEntity, ResourceEntity } from './services/database/types';
 import type FsDriverBase from './fs-driver-base';
+import type FileApiDriverLocal from './file-api-driver-local';
+import { Crypto } from './services/e2ee/types';
+import { MarkupLanguage } from '@joplin/renderer';
 
 export interface CreateResourceFromPathOptions {
 	resizeLargeImages?: 'always' | 'never' | 'ask';
 	userSideValidation?: boolean;
 	destinationResourceId?: string;
+}
+
+export interface CreatePdfFromImagesOptions {
+	minPage?: number;
+	maxPage?: number;
+	scaleFactor?: number;
+}
+
+export interface PdfInfo {
+	pageCount: number;
+}
+
+export interface Keytar {
+	setPassword(key: string, client: string, password: string): Promise<void>;
+	getPassword(key: string, client: string): Promise<string|null>;
+	deletePassword(key: string, client: string): Promise<void>;
+}
+
+interface FetchOptions {
+	method?: string;
+	headers?: Record<string, string>;
+	body?: string;
+	agent?: unknown;
+}
+
+interface AttachFileToNoteOptions {
+	resizeLargeImages?: 'always'|'never';
+	position?: number;
+	markupLanguage?: MarkupLanguage;
+}
+
+export enum MessageBoxType {
+	Confirm = 'question',
+	Error = 'error',
+	Info = 'info',
+}
+
+export interface ShowMessageBoxOptions {
+	title?: string;
+	buttons?: string[];
+	type?: MessageBoxType;
+	defaultId?: number;
+	cancelId?: number;
 }
 
 let isTestingEnv_ = false;
@@ -28,17 +74,24 @@ let isTestingEnv_ = false;
 //
 // https://stackoverflow.com/a/42816077/561309
 let react_: typeof React = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 let nodeSqlite_: any = null;
 
 const shim = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	Geolocation: null as any,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	electronBridge_: null as any,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	fsDriver_: null as any,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	httpAgent_: null as any,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	proxyAgent: null as any,
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	electronBridge: (): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: electronBridge');
 	},
 
 	msleep_: (ms: number) => {
@@ -65,7 +118,7 @@ const shim = {
 	},
 
 	isLinux: () => {
-		return process && process.platform === 'linux';
+		return typeof process !== 'undefined' && process.platform === 'linux';
 	},
 
 	isGNOME: () => {
@@ -92,15 +145,15 @@ const shim = {
 	},
 
 	isFreeBSD: () => {
-		return process && process.platform === 'freebsd';
+		return typeof process !== 'undefined' && process.platform === 'freebsd';
 	},
 
 	isWindows: () => {
-		return process && process.platform === 'win32';
+		return typeof process !== 'undefined' && process.platform === 'win32';
 	},
 
 	isMac: () => {
-		return process && process.platform === 'darwin';
+		return typeof process !== 'undefined' && process.platform === 'darwin';
 	},
 
 	platformName: () => {
@@ -109,7 +162,7 @@ const shim = {
 		if (shim.isWindows()) return 'win32';
 		if (shim.isLinux()) return 'linux';
 		if (shim.isFreeBSD()) return 'freebsd';
-		if (process && process.platform) return process.platform;
+		if (typeof process !== 'undefined' && process.platform) return process.platform;
 		throw new Error('Cannot determine platform');
 	},
 
@@ -121,11 +174,13 @@ const shim = {
 	// https://github.com/cheton/is-electron
 	isElectron: () => {
 		// Renderer process
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		if (typeof window !== 'undefined' && typeof window.process === 'object' && (window.process as any).type === 'renderer') {
 			return true;
 		}
 
 		// Main process
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!(process.versions as any).electron) {
 			return true;
 		}
@@ -145,6 +200,7 @@ const shim = {
 	// Node requests can go wrong is so many different ways and with so
 	// many different error messages... This handler inspects the error
 	// and decides whether the request can safely be repeated or not.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	fetchRequestCanBeRetried: (error: any) => {
 		if (!error) return false;
 
@@ -159,7 +215,11 @@ const shim = {
 		// that definitely exist and in this case repeating the request works.
 		// Error is:
 		// request to https://graph.microsoft.com/v1.0/drive/special/approot failed, reason: getaddrinfo ENOTFOUND graph.microsoft.com graph.microsoft.com:443
-		if (error.code === 'ENOTFOUND') return true;
+		//
+		// 2024-04-07: Strictly speaking we shouldn't repeat the request if the resource doesn't
+		// exist. Hopefully OneDrive has now fixed this issue and the hack is no longer necessary.
+		//
+		// (error.code === 'ENOTFOUND') return true;
 
 		// network timeout at: https://public-ch3302...859f9b0e3ab.md
 		if (error.message && error.message.indexOf('network timeout') === 0) return true;
@@ -191,7 +251,7 @@ const shim = {
 		return previous;
 	},
 
-	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
+	// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any -- Old code before rule was applied, Old code before rule was applied
 	fetchWithRetry: async function(fetchFn: Function, options: any = null) {
 		if (!options) options = {};
 		if (!options.timeout) options.timeout = 1000 * 120; // ms
@@ -214,10 +274,15 @@ const shim = {
 		}
 	},
 
-	fetch: (_url: string, _options: any = null): any => {
-		throw new Error('Not implemented');
+	fetch: (_url: string, _options: FetchOptions|null = null): Promise<Response> => {
+		throw new Error('Not implemented: fetch');
 	},
 
+	debugFetch: (_url: string, _options: FetchOptions|null): Promise<unknown> => {
+		throw new Error('Not implemented: debugFetch');
+	},
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	fetchText: async (url: string, options: any = null): Promise<string> => {
 		const r = await shim.fetch(url, options || {});
 		if (!r.ok) throw new Error(`Could not fetch ${url}`);
@@ -225,82 +290,111 @@ const shim = {
 	},
 
 	createResourceFromPath: async (_filePath: string, _defaultProps: ResourceEntity = null, _options: CreateResourceFromPathOptions = null): Promise<ResourceEntity> => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: createResourceFromPath');
 	},
 
 	FormData: typeof FormData !== 'undefined' ? FormData : null,
 
 	fsDriver: (): FsDriverBase => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: fsDriver');
 	},
 
-	FileApiDriverLocal: null as any,
+	sharpEnabled: (): boolean => {
+		return true;
+	},
 
+	FileApiDriverLocal: null as typeof FileApiDriverLocal,
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	readLocalFileBase64: (_path: string): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: readLocalFileBase64');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	uploadBlob: (_url: string, _options: any): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: uploadBlob');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	sjclModule: null as any,
 
+	crypto: null as Crypto,
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	randomBytes: async (_count: number): Promise<any> => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: randomBytes');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	stringByteLength: (_s: string): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: stringByteLength');
 	},
 
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	detectAndSetLocale: null as Function,
 
-	attachFileToNote: async (_note: any, _filePath: string): Promise<NoteEntity> => {
-		throw new Error('Not implemented');
+	attachFileToNote: async (_note: NoteEntity, _filePath: string, _options?: AttachFileToNoteOptions): Promise<NoteEntity> => {
+		throw new Error('Not implemented: attachFileToNote');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	attachFileToNoteBody: async (_body: string, _filePath: string, _position: number, _options: any): Promise<string> => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: attachFileToNoteBody');
 	},
 
 	imageToDataUrl: async (_filePath: string, _maxSize = 0): Promise<string> => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: imageToDataUrl');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	imageFromDataUrl: async (_imageDataUrl: string, _filePath: string, _options: any = null): Promise<any> => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: imageFromDataUrl');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	fetchBlob: function(_url: string, _options: any = null): any {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: fetchBlob');
 	},
 
-	pdfToImages: async (_pdfPath: string, _outputDirectoryPath: string): Promise<string[]> => {
-		throw new Error('Not implemented');
+	// Does not do OCR -- just extracts existing text from a PDF.
+	pdfExtractEmbeddedText: async (_pdfPath: string): Promise<string[]> => {
+		throw new Error('Not implemented: textFromPdf');
 	},
 
+	pdfToImages: async (_pdfPath: string, _outputDirectoryPath: string, _options?: CreatePdfFromImagesOptions): Promise<string[]> => {
+		throw new Error('Not implemented: pdfToImages');
+	},
+
+	pdfInfo: async (_pdfPath: string): Promise<PdfInfo> => {
+		throw new Error('Not implemented: pdfInfo');
+	},
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	Buffer: null as any,
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	openUrl: (_url: string): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: openUrl');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	httpAgent: (_url: string): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: httpAgent');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	openOrCreateFile: (_path: string, _defaultContents: any): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: openOrCreateFile');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	waitForFrame: (): any => {
-		throw new Error('Not implemented');
+		throw new Error('Not implemented: waitForFrame');
 	},
 
-	appVersion: (): any => {
-		throw new Error('Not implemented');
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	appVersion: (): string => {
+		throw new Error('Not implemented: appVersion');
 	},
 
 	injectedJs: (_name: string) => '',
@@ -313,15 +407,32 @@ const shim = {
 		isTestingEnv_ = v;
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	pathRelativeToCwd: (_path: string): any => {
 		throw new Error('Not implemented');
 	},
 
-	showMessageBox: (_message: string, _options: any = null): any => {
+	// Returns the index of the button that was clicked. By default,
+	// 0 -> OK
+	// 1 -> Cancel
+	showMessageBox: (_message: string, _options: ShowMessageBoxOptions = null): Promise<number> => {
 		throw new Error('Not implemented');
 	},
 
+	showErrorDialog: async (message: string): Promise<void> => {
+		await shim.showMessageBox(message, { type: MessageBoxType.Error });
+	},
+
+	showConfirmationDialog: async (message: string): Promise<boolean> => {
+		return await shim.showMessageBox(message, { type: MessageBoxType.Confirm }) === 0;
+	},
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	writeImageToFile: (_image: any, _format: any, _filePath: string): void => {
+		throw new Error('Not implemented');
+	},
+
+	restartApp: (): void => {
 		throw new Error('Not implemented');
 	},
 
@@ -344,24 +455,27 @@ const shim = {
 	//
 	// Having the timers wrapped in that way would also make it easier to debug timing issue and
 	// find out what timers have been fired or not.
-	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
+	// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any -- Old code before rule was applied, Old code before rule was applied
 	setTimeout: (_fn: Function, _interval: number): any=> {
 		throw new Error('Not implemented');
 	},
 
-	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
+	// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any -- Old code before rule was applied, Old code before rule was applied
 	setInterval: (_fn: Function, _interval: number): any=> {
 		throw new Error('Not implemented');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	clearTimeout: (_id: any): any => {
 		throw new Error('Not implemented');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	clearInterval: (_id: any): any => {
 		throw new Error('Not implemented');
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	setNodeSqlite: (nodeSqlite: any) => {
 		nodeSqlite_ = nodeSqlite;
 	},
@@ -371,6 +485,7 @@ const shim = {
 		return nodeSqlite_;
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	setReact: (react: any) => {
 		react_ = react;
 	},
@@ -380,6 +495,7 @@ const shim = {
 		return react_;
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	dgram: (): any => {
 		throw new Error('Not implemented');
 	},
@@ -405,7 +521,7 @@ const shim = {
 		return (shim.isWindows() || shim.isMac()) && !shim.isPortable();
 	},
 
-	keytar: (): any => {
+	keytar: (): Keytar => {
 		throw new Error('Not implemented');
 	},
 
@@ -414,6 +530,7 @@ const shim = {
 	// React Native. In React Native that code path will throw an error, but at
 	// least it will build.
 	// https://stackoverflow.com/questions/55581073
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	requireDynamic: (_path: string): any => {
 		throw new Error('Not implemented');
 	},

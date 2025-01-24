@@ -15,6 +15,9 @@ export enum EditorCommandType {
 	ToggleItalicized = 'textItalic',
 	ToggleCode = 'textCode',
 	ToggleMath = 'textMath',
+	ToggleComment = 'toggleComment',
+	DuplicateLine = 'duplicateLine',
+	SortSelectedLines = 'sortSelectedLines',
 
 	ToggleNumberedList = 'textNumberedList',
 	ToggleBulletedList = 'textBulletedList',
@@ -27,7 +30,10 @@ export enum EditorCommandType {
 	ToggleHeading4 = 'textHeading4',
 	ToggleHeading5 = 'textHeading5',
 
+	InsertHorizontalRule = 'textHorizontalRule',
+
 	// Find commands
+	ToggleSearch = 'textSearch',
 	ShowSearch = 'find',
 	HideSearch = 'hideSearchDialog',
 	FindNext = 'findNext',
@@ -35,8 +41,11 @@ export enum EditorCommandType {
 	ReplaceNext = 'replace',
 	ReplaceAll = 'replaceAll',
 
+	EditLink = 'textLink',
+
 	// Editing and navigation commands
 	ScrollSelectionIntoView = 'scrollSelectionIntoView',
+	DeleteLine = 'deleteLine',
 	DeleteToLineEnd = 'killLine',
 	DeleteToLineStart = 'delLineLeft',
 	IndentMore = 'indentMore',
@@ -60,20 +69,37 @@ export enum EditorCommandType {
 
 	UndoSelection = 'undoSelection',
 	RedoSelection = 'redoSelection',
+
+	// Getters and multi-argument commands. These correspond to global Joplin
+	// commands.
+	SelectedText = 'selectedText',
+	InsertText = 'insertText',
+	ReplaceSelection = 'replaceSelection',
+
+	SetText = 'setText',
 }
 
 // Because the editor package can run in a WebView, plugin content scripts
 // need to be provided as text, rather than as file paths.
-export interface PluginData {
+export interface ContentScriptData {
 	pluginId: string;
 	contentScriptId: string;
 	contentScriptJs: ()=> Promise<string>;
+	loadCssAsset: (name: string)=> Promise<string>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	postMessageHandler: (message: any)=> any;
 }
 
+// Intended to correspond with https://codemirror.net/docs/ref/#state.Transaction%5EuserEvent
+export enum UserEventSource {
+	Paste = 'input.paste',
+	Drop = 'input.drop',
+}
+
 export interface EditorControl {
-	supportsCommand(name: EditorCommandType|string): boolean;
-	execCommand(name: EditorCommandType|string): void;
+	supportsCommand(name: EditorCommandType|string): boolean|Promise<boolean>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	execCommand(name: EditorCommandType|string, ...args: any[]): void|Promise<any>;
 
 	undo(): void;
 	redo(): void;
@@ -83,7 +109,7 @@ export interface EditorControl {
 	// 0 corresponds to the top, 1 corresponds to the bottom.
 	setScrollPercent(fraction: number): void;
 
-	insertText(text: string): void;
+	insertText(text: string, source?: UserEventSource): void;
 	updateBody(newBody: string): void;
 
 	updateSettings(newSettings: EditorSettings): void;
@@ -94,12 +120,12 @@ export interface EditorControl {
 
 	setSearchState(state: SearchState): void;
 
-	setPlugins(plugins: PluginData[]): Promise<void>;
+	setContentScripts(plugins: ContentScriptData[]): Promise<void>;
 }
 
 export enum EditorLanguageType {
-	Markdown,
-	Html,
+	Markdown = 'markdown',
+	Html = 'html',
 }
 
 export enum EditorKeymap {
@@ -111,10 +137,12 @@ export enum EditorKeymap {
 export interface EditorTheme extends Theme {
 	fontFamily: string;
 	fontSize?: number;
-	fontSizeUnits?: number;
+	fontSizeUnits?: string;
 	isDesktop?: boolean;
 	monospaceFont?: string;
 	contentMaxWidth?: number;
+	marginLeft?: number;
+	marginRight?: number;
 }
 
 export interface EditorSettings {
@@ -128,6 +156,7 @@ export interface EditorSettings {
 	useExternalSearch: boolean;
 
 	automatchBraces: boolean;
+	autocompleteMarkup: boolean;
 
 	// True if internal command keyboard shortcuts should be ignored (thus
 	// allowing Joplin shortcuts to run).
@@ -142,15 +171,28 @@ export interface EditorSettings {
 	readOnly: boolean;
 
 	indentWithTabs: boolean;
+
+	editorLabel: string;
 }
 
 export type LogMessageCallback = (message: string)=> void;
 export type OnEventCallback = (event: EditorEvent)=> void;
+export type PasteFileCallback = (data: File)=> Promise<void>;
+type OnScrollPastBeginningCallback = ()=> void;
+
+interface Localisations {
+	[editorString: string]: string;
+}
 
 export interface EditorProps {
 	settings: EditorSettings;
 	initialText: string;
+	// Used mostly for internal editor library strings
+	localisations?: Localisations;
 
+	// If null, paste and drag-and-drop will not work for resources unless handled elsewhere.
+	onPasteFile: PasteFileCallback|null;
+	onSelectPastBeginning?: OnScrollPastBeginningCallback;
 	onEvent: OnEventCallback;
 	onLogMessage: LogMessageCallback;
 }
