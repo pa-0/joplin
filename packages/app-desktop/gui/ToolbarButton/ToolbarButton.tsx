@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ToolbarButtonInfo } from '@joplin/lib/services/commands/ToolbarButtonUtils';
-import { StyledRoot, StyledIconSpan, StyledIconI } from './styles';
 
 interface Props {
 	readonly themeId: number;
@@ -10,6 +9,9 @@ interface Props {
 	readonly iconName?: string;
 	readonly disabled?: boolean;
 	readonly backgroundHover?: boolean;
+	readonly tabIndex?: number;
+
+	buttonRef?: React.Ref<HTMLButtonElement>;
 }
 
 function isFontAwesomeIcon(iconName: string) {
@@ -33,8 +35,12 @@ export default function ToolbarButton(props: Props) {
 	let icon = null;
 	const iconName = getProp(props, 'iconName');
 	if (iconName) {
-		const IconClass = isFontAwesomeIcon(iconName) ? StyledIconI : StyledIconSpan;
-		icon = <IconClass className={iconName} title={title}/>;
+		const iconProps: React.HTMLProps<HTMLDivElement> = {
+			'aria-hidden': true,
+			role: 'img',
+			className: `toolbar-icon ${title ? '-has-title' : ''} ${iconName}`,
+		};
+		icon = isFontAwesomeIcon(iconName) ? <i {...iconProps} /> : <span {...iconProps} />;
 	}
 
 	// Keep this for legacy compatibility but for consistency we should use "disabled" prop
@@ -42,8 +48,9 @@ export default function ToolbarButton(props: Props) {
 	if (isEnabled === null) isEnabled = true;
 	if (props.disabled) isEnabled = false;
 
-	const classes = ['button'];
+	const classes = ['button', 'toolbar-button'];
 	if (!isEnabled) classes.push('disabled');
+	if (title) classes.push('-has-title');
 
 	const onClick = getProp(props, 'onClick');
 	const style: React.CSSProperties = {
@@ -51,25 +58,27 @@ export default function ToolbarButton(props: Props) {
 		overflow: 'hidden',
 		textOverflow: 'ellipsis' };
 	const disabled = !isEnabled;
+
 	return (
-		<StyledRoot
+		<button
 			className={classes.join(' ')}
 			title={tooltip}
-			href="#"
-			hasTitle={!!title}
 			onClick={() => {
 				if (isEnabled && onClick) onClick();
 			}}
+			ref={props.buttonRef}
 
 			// At least on MacOS, the disabled HTML prop isn't sufficient for the screen reader
 			// to read the element as disable. For this, aria-disabled is necessary.
 			disabled={disabled}
+			aria-label={!title ? tooltip : undefined}
+			aria-description={title ? tooltip : undefined}
 			aria-disabled={!isEnabled}
-			role='button'
+			tabIndex={props.tabIndex}
 		>
 			{icon}
 			<span style={style}>{title}</span>
-		</StyledRoot>
+		</button>
 	);
 }
 
