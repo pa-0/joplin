@@ -1,21 +1,20 @@
-import { Compartment, EditorState } from '@codemirror/state';
+import { Compartment, EditorState, Prec } from '@codemirror/state';
 import { indentOnInput, syntaxHighlighting } from '@codemirror/language';
-import {
-	openSearchPanel, closeSearchPanel, getSearchQuery, search,
-} from '@codemirror/search';
+import { openSearchPanel, closeSearchPanel, searchPanelOpen } from '@codemirror/search';
 
 import { classHighlighter } from '@lezer/highlight';
 
 import {
 	EditorView, drawSelection, highlightSpecialChars, ViewUpdate, Command, rectangularSelection,
+	dropCursor,
 } from '@codemirror/view';
-import { history, undoDepth, redoDepth, standardKeymap } from '@codemirror/commands';
+import { history, undoDepth, redoDepth, standardKeymap, insertTab } from '@codemirror/commands';
 
 import { keymap, KeyBinding } from '@codemirror/view';
 import { searchKeymap } from '@codemirror/search';
 import { historyKeymap } from '@codemirror/commands';
 
-import { SearchState, EditorProps, EditorSettings } from '../types';
+import { EditorProps, EditorSettings } from '../types';
 import { EditorEventType, SelectionRangeChangeEvent } from '../events';
 import {
 	decreaseIndent, increaseIndent,
@@ -29,6 +28,23 @@ import { selectionFormattingEqual } from '../SelectionFormatting';
 import configFromSettings from './configFromSettings';
 import getScrollFraction from './getScrollFraction';
 import CodeMirrorControl from './CodeMirrorControl';
+import insertLineAfter from './editorCommands/insertLineAfter';
+import handlePasteEvent from './utils/handlePasteEvent';
+import biDirectionalTextExtension from './utils/biDirectionalTextExtension';
+import searchExtension from './utils/searchExtension';
+import isCursorAtBeginning from './utils/isCursorAtBeginning';
+import overwriteModeExtension from './utils/overwriteModeExtension';
+import handleLinkEditRequests, { showLinkEditor } from './utils/handleLinkEditRequests';
+
+// Newer versions of CodeMirror by default use Chrome's EditContext API.
+// While this might be stable enough for desktop use, it causes significant
+// problems on Android:
+// - https://github.com/codemirror/dev/issues/1450
+// - https://github.com/codemirror/dev/issues/1451
+// For now, CodeMirror allows disabling EditContext to work around these issues:
+// https://discuss.codemirror.net/t/experimental-support-for-editcontext/8144/3
+type ExtendedEditorView = typeof EditorView & { EDIT_CONTEXT: boolean };
+(EditorView as ExtendedEditorView).EDIT_CONTEXT = false;
 
 const createEditor = (
 	parentElement: HTMLElement, props: EditorProps,
@@ -38,7 +54,6 @@ const createEditor = (
 
 	props.onLogMessage('Initializing CodeMirror...');
 
-	let searchVisible = false;
 
 	// Handles firing an event when the undo/redo stack changes
 	let schedulePostUndoRedoDepthChangeId_: ReturnType<typeof setTimeout>|null = null;
@@ -83,42 +98,6 @@ const createEditor = (
 		}
 	};
 
-	const notifyLinkEditRequest = () => {
-		props.onEvent({
-			kind: EditorEventType.EditLink,
-		});
-	};
-
-	const onSearchDialogUpdate = () => {
-		const query = getSearchQuery(editor.state);
-		const searchState: SearchState = {
-			searchText: query.search,
-			replaceText: query.replace,
-			useRegex: query.regexp,
-			caseSensitive: query.caseSensitive,
-			dialogVisible: searchVisible,
-		};
-		props.onEvent({
-			kind: EditorEventType.UpdateSearchDialog,
-			searchState,
-		});
-	};
-
-	const showSearchDialog = () => {
-		if (!searchVisible) {
-			openSearchPanel(editor);
-		}
-		searchVisible = true;
-		onSearchDialogUpdate();
-	};
-
-	const hideSearchDialog = () => {
-		if (searchVisible) {
-			closeSearchPanel(editor);
-		}
-		searchVisible = false;
-		onSearchDialogUpdate();
-	};
 
 	const globalSpellcheckEnabled = () => {
 		return editor.contentDOM.spellcheck;
@@ -180,29 +159,69 @@ const createEditor = (
 	const historyCompartment = new Compartment();
 	const dynamicConfig = new Compartment();
 
+	// Give the default keymap low precedence so that it is overridden
+	// by extensions with default precedence.
+	const keymapConfig = Prec.low(keymap.of([
+		// Custom mod-f binding: Toggle the external dialog implementation
+		// (don't show/hide the Panel dialog).
+		keyCommand('Mod-f', (editor: EditorView) => {
+			if (searchPanelOpen(editor.state)) {
+				closeSearchPanel(editor);
+			} else {
+				openSearchPanel(editor);
+			}
+			return true;
+		}),
+		// Markdown formatting keyboard shortcuts
+		keyCommand('Mod-b', toggleBolded),
+		keyCommand('Mod-i', toggleItalicized),
+		keyCommand('Mod-$', toggleMath),
+		keyCommand('Mod-`', toggleCode),
+		keyCommand('Mod-[', decreaseIndent),
+		keyCommand('Mod-]', increaseIndent),
+		keyCommand('Mod-k', showLinkEditor),
+		keyCommand('Tab', (view: EditorView) => {
+			if (settings.autocompleteMarkup) {
+				return insertOrIncreaseIndent(view);
+			}
+			// Use the default indent behavior (which doesn't adjust markup)
+			return insertTab(view);
+		}, true),
+		keyCommand('Shift-Tab', (view) => {
+			// When at the beginning of the editor, allow shift-tab to act
+			// normally.
+			if (isCursorAtBeginning(view.state)) {
+				return false;
+			}
+
+			return decreaseIndent(view);
+		}, true),
+		keyCommand('Mod-Enter', (_: EditorView) => {
+			insertLineAfter(_);
+			return true;
+		}, true),
+
+		keyCommand('ArrowUp', (view: EditorView) => {
+			if (isCursorAtBeginning(view.state) && props.onSelectPastBeginning) {
+				props.onSelectPastBeginning();
+				return true;
+			}
+			return false;
+		}, true),
+
+		...standardKeymap, ...historyKeymap, ...searchKeymap,
+	]));
+
 	const editor = new EditorView({
 		state: EditorState.create({
 			// See https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
 			// for a sample configuration.
 			extensions: [
+				keymapConfig,
+
 				dynamicConfig.of(configFromSettings(props.settings)),
 				historyCompartment.of(history()),
-
-				search(settings.useExternalSearch ? {
-					createPanel(_: EditorView) {
-						return {
-							// The actual search dialog is implemented with react native,
-							// use a dummy element.
-							dom: document.createElement('div'),
-							mount() {
-								showSearchDialog();
-							},
-							destroy() {
-								hideSearchDialog();
-							},
-						};
-					},
-				} : undefined),
+				searchExtension(props.onEvent, props.settings),
 
 				// Allows multiple selections and allows selecting a rectangle
 				// with ctrl (as in CodeMirror 5)
@@ -220,12 +239,36 @@ const createEditor = (
 							fraction: getScrollFraction(view),
 						});
 					},
+					paste: (event, view) => {
+						if (props.onPasteFile) {
+							handlePasteEvent(event, view, props.onPasteFile);
+						}
+					},
+					dragover: (event, _view) => {
+						if (props.onPasteFile && event.dataTransfer.files.length) {
+							event.preventDefault();
+							event.dataTransfer.dropEffect = 'copy';
+							return true;
+						}
+						return false;
+					},
+					drop: (event, view) => {
+						if (props.onPasteFile) {
+							handlePasteEvent(event, view, props.onPasteFile);
+						}
+					},
 				}),
 
 				EditorState.tabSize.of(4),
 
 				// Apply styles to entire lines (block-display decorations)
 				decoratorExtension,
+				dropCursor(),
+
+				biDirectionalTextExtension,
+				overwriteModeExtension,
+
+				props.localisations ? EditorState.phrases.of(props.localisations) : [],
 
 				// Adds additional CSS classes to tokens (the default CSS classes are
 				// auto-generated and thus unstable).
@@ -237,33 +280,12 @@ const createEditor = (
 					notifySelectionChange(viewUpdate);
 					notifySelectionFormattingChange(viewUpdate);
 				}),
-				keymap.of([
-					// Custom mod-f binding: Toggle the external dialog implementation
-					// (don't show/hide the Panel dialog).
-					keyCommand('Mod-f', (_: EditorView) => {
-						if (searchVisible) {
-							hideSearchDialog();
-						} else {
-							showSearchDialog();
-						}
-						return true;
-					}),
-					// Markdown formatting keyboard shortcuts
-					keyCommand('Mod-b', toggleBolded),
-					keyCommand('Mod-i', toggleItalicized),
-					keyCommand('Mod-$', toggleMath),
-					keyCommand('Mod-`', toggleCode),
-					keyCommand('Mod-[', decreaseIndent),
-					keyCommand('Mod-]', increaseIndent),
-					keyCommand('Mod-k', (_: EditorView) => {
-						notifyLinkEditRequest();
-						return true;
-					}),
-					keyCommand('Tab', insertOrIncreaseIndent, true),
-					keyCommand('Shift-Tab', decreaseIndent, true),
 
-					...standardKeymap, ...historyKeymap, ...searchKeymap,
-				]),
+				handleLinkEditRequests(() => {
+					props.onEvent({
+						kind: EditorEventType.EditLink,
+					});
+				}),
 			],
 			doc: initialText,
 		}),

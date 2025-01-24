@@ -11,6 +11,7 @@ import { _ } from '@joplin/lib/locale';
 import { EditorControl } from './types';
 import { useCallback } from 'react';
 import SelectionFormatting from '@joplin/editor/SelectionFormatting';
+import { focus } from '@joplin/lib/utils/focusHandler';
 
 interface LinkDialogProps {
 	editorControl: EditorControl;
@@ -83,6 +84,7 @@ const EditLinkDialog = (props: LinkDialogProps) => {
 	const onSubmit = useCallback(() => {
 		props.editorControl.updateLink(linkLabel, linkURL);
 		props.editorControl.hideLinkDialog();
+		focus('EditLinkDialog::onSubmit', props.editorControl);
 	}, [props.editorControl, linkLabel, linkURL]);
 
 	// See https://www.hingehealth.com/engineering-blog/accessible-react-native-textinput/
@@ -100,7 +102,7 @@ const EditLinkDialog = (props: LinkDialogProps) => {
 				autoFocus
 
 				onSubmitEditing={() => {
-					linkInputRef.current.focus();
+					focus('EditLinkDialog::onSubmitEditing', linkInputRef.current);
 				}}
 				onChangeText={(text: string) => setLinkLabel(text)}
 			/>
@@ -131,7 +133,7 @@ const EditLinkDialog = (props: LinkDialogProps) => {
 
 	return (
 		<Modal
-			animationType="slide"
+			animationType="fade"
 			containerStyle={styles.modalContent}
 			transparent={true}
 			visible={props.visible}

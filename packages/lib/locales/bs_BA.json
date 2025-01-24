@@ -53,6 +53,9 @@
 	"%s is not optimised for synchronising many small files so your initial synchronisation will be slow.": [
 		""
 	],
+	"%s tab opened": [
+		""
+	],
 	"%s: %d notes": [
 		"%s: %d bilješki"
 	],
@@ -86,6 +89,9 @@
 	"(In plugin: %s)": [
 		""
 	],
+	"(level %d)": [
+		""
+	],
 	"(None)": [
 		""
 	],
@@ -116,6 +122,9 @@
 	"A5": [
 		"A5"
 	],
+	"About": [
+		""
+	],
 	"About Joplin": [
 		"O Joplinu"
 	],
@@ -131,6 +140,9 @@
 	"Accept": [
 		""
 	],
+	"Accepted invitations": [
+		""
+	],
 	"Access denied: Please check your username and password": [
 		""
 	],
@@ -138,6 +150,9 @@
 		""
 	],
 	"Account": [
+		""
+	],
+	"Account type": [
 		""
 	],
 	"Active": [
@@ -153,6 +168,9 @@
 		"Dodajte ili uklonite oznake:"
 	],
 	"Add recipient:": [
+		""
+	],
+	"Add tag %s to note": [
 		""
 	],
 	"Add title": [
@@ -173,10 +191,16 @@
 	"All data, including notes, notebooks and tags will be permanently deleted.": [
 		""
 	],
+	"All item sync failures have been marked as \"ignored\".": [
+		""
+	],
 	"All notes": [
 		"Sve bilješke"
 	],
 	"All potential ports are in use - please report the issue at %s": [
+		""
+	],
+	"Allows debugging mobile plugins. See %s for details.": [
 		""
 	],
 	"Also displays unset and hidden config variables.": [
@@ -184,6 +208,9 @@
 	],
 	"Always": [
 		"Uvijek"
+	],
+	"Always open %s files without asking.": [
+		""
 	],
 	"Ambiguous notebook \"%s\". Please use notebook id instead - press \"ti\" to see the short notebook id or use $b for current selected notebook": [
 		""
@@ -200,6 +227,9 @@
 	"An update is available, do you want to download it now?": [
 		"Nova je verzija dostupna. Želite li je preuzeti?"
 	],
+	"Android API level: %d": [
+		""
+	],
 	"Any email sent to this address will be converted into a note and added to your collection. The note will be saved into the Inbox notebook": [
 		""
 	],
@@ -212,6 +242,9 @@
 	"Apply": [
 		"Primijeni"
 	],
+	"Are you sure that you want to restore the default toolbar layout?\nThis cannot be undone.": [
+		""
+	],
 	"Are you sure you want to renew the authorisation token?": [
 		""
 	],
@@ -223,6 +256,9 @@
 	],
 	"Aritim Dark": [
 		"Aritim tamna"
+	],
+	"At present, Joplin Web can only be open in one tab at a time. Please close the other instance of Joplin.": [
+		""
 	],
 	"Attach file": [
 		"Priloži datoteku"
@@ -254,8 +290,14 @@
 	"Auto-add disabled accounts for deletion": [
 		""
 	],
-	"Auto-pair braces, parenthesis, quotations, etc.": [
+	"Auto-pair braces, parentheses, quotations, etc.": [
 		"Automatski piši u paru sve zagrade, navodnike itd."
+	],
+	"Autocomplete Markdown and HTML": [
+		""
+	],
+	"Automatically delete notes in the trash after a number of days": [
+		""
 	],
 	"Automatically switch theme to match system theme": [
 		"Automatski podesi temu prema sistemskoj"
@@ -266,7 +308,7 @@
 	"Basic": [
 		""
 	],
-	"Biometric unlock is not setup on the device. Please set it up in order to unlock Joplin. If the device is on lockout, consider switching it off and on to reset biometrics scanning.": [
+	"Beta": [
 		""
 	],
 	"Bold": [
@@ -283,6 +325,12 @@
 	],
 	"Bulleted List": [
 		"Nabrajanje"
+	],
+	"by %s": [
+		""
+	],
+	"by word": [
+		""
 	],
 	"Can view": [
 		""
@@ -338,11 +386,17 @@
 	"Change application layout": [
 		""
 	],
+	"Change shortcut for \"%s\"": [
+		""
+	],
 	"Characters": [
 		"Znakova"
 	],
 	"Characters excluding spaces": [
 		"Znakova bez razmaka"
+	],
+	"Check elements to display in the toolbar": [
+		""
 	],
 	"Check for updates...": [
 		"Provjeri ažuriranja..."
@@ -374,11 +428,20 @@
 	"Close": [
 		"Zatvori"
 	],
+	"Close side menu": [
+		""
+	],
 	"Close the application, then delete your profile in \"%s\", and start the application again. Make sure you create a backup first by exporting all your notes as JEX.": [
 		""
 	],
 	"Close Window": [
 		"Zatvori prozor"
+	],
+	"Cmd-click to open": [
+		""
+	],
+	"Cmd-click to open: %s": [
+		""
 	],
 	"Code": [
 		"Kōd"
@@ -386,7 +449,7 @@
 	"Code Block": [
 		"Kōd (izdvojen)"
 	],
-	"Collapse": [
+	"Collapsed, press space to expand.": [
 		""
 	],
 	"Coming alarms": [
@@ -409,6 +472,12 @@
 	],
 	"Completed decryption.": [
 		"Dešifrovanje završeno."
+	],
+	"Completed with warnings:\n%s": [
+		""
+	],
+	"completion date": [
+		""
 	],
 	"Compress old changes": [
 		""
@@ -491,6 +560,15 @@
 	"Creating report...": [
 		"Kreiram izvještaj..."
 	],
+	"Ctrl-click to open": [
+		""
+	],
+	"Ctrl-click to open: %s": [
+		""
+	],
+	"current match": [
+		""
+	],
 	"Current version is up-to-date.": [
 		"Trenutna je verzija ažurirana."
 	],
@@ -517,9 +595,6 @@
 	],
 	"Dashboard": [
 		""
-	],
-	"Database v%s": [
-		"Baza podataka v%s"
 	],
 	"Date": [
 		""
@@ -548,23 +623,11 @@
 	"Delete local data and re-download from sync target": [
 		""
 	],
-	"Delete note \"%s\"?": [
-		"Izbrisati bilješku \"%s\"?"
-	],
-	"Delete note?": [
-		"Izbrisati bilješku?"
-	],
-	"Delete notebook \"%s\"?\n\nAll notes and sub-notebooks within this notebook will also be deleted.": [
-		"Izbrisati bilježnicu \"%s\"?\n\nSve bilješke i bilježnice unutar ove bilježnice također će biti izbrisane."
-	],
-	"Delete notebook? All notes and sub-notebooks within this notebook will also be deleted.": [
-		"Izbrisati bilježnicu? Sve bilješke i bilježnice unutar ove bilježnice također će biti izbrisane."
+	"Delete model and re-download?\nThis cannot be undone.": [
+		""
 	],
 	"Delete the Inbox notebook?\n\nIf you delete the inbox notebook, any email that's recently been sent to it may be lost.": [
 		""
-	],
-	"Delete these %d notes?": [
-		"Izbrisati ovih %d bilješki?"
 	],
 	"Delete this invitation? The recipient will no longer have access to this shared notebook.": [
 		""
@@ -574,6 +637,9 @@
 	],
 	"Deleted remote items: %d.": [
 		"Izbrisano spoljašnjih stavki: %d."
+	],
+	"Deletes notes permanently, skipping the trash.": [
+		""
 	],
 	"Deletes the given notebook.": [
 		"Briše datu bilježnicu."
@@ -591,6 +657,9 @@
 		"Format: %s"
 	],
 	"Detailed": [
+		""
+	],
+	"Dev": [
 		""
 	],
 	"Directory": [
@@ -686,6 +755,9 @@
 	"Dropbox Login": [
 		"Dropbox prijava"
 	],
+	"Due": [
+		""
+	],
 	"Duplicate": [
 		"Dupliciraj"
 	],
@@ -697,6 +769,9 @@
 	],
 	"Edit in external editor": [
 		"Uredi u vanjskom programu"
+	],
+	"Edit in new window": [
+		""
 	],
 	"Edit note.": [
 		"Uredi bilješku."
@@ -734,6 +809,9 @@
 	"Emails": [
 		""
 	],
+	"Empty trash": [
+		""
+	],
 	"Enable": [
 		"Aktiviraj"
 	],
@@ -757,6 +835,9 @@
 	],
 	"Enable encryption": [
 		"Uključi šifriranje"
+	],
+	"Enable file:// URLs for images and videos": [
+		""
 	],
 	"Enable footnotes": [
 		"Omogući pisanje fusnota"
@@ -803,6 +884,9 @@
 	"Enabled": [
 		"Uključeno"
 	],
+	"Enables Markdown list continuation, auto-closing HTML tags, and other markup autocompletions.": [
+		""
+	],
 	"Encrypted": [
 		"Šifrirano"
 	],
@@ -818,6 +902,9 @@
 	"Encryption is: %s": [
 		"Šifriranje je: %s"
 	],
+	"Ends voice typing": [
+		""
+	],
 	"Enter code here": [
 		"Unesite kōd ovdje"
 	],
@@ -826,6 +913,9 @@
 	],
 	"Enter notebook title": [
 		"Unesite naziv za bilježnicu"
+	],
+	"Entering selection mode": [
+		""
 	],
 	"Enum": [
 		"Enum"
@@ -848,7 +938,10 @@
 	"Exits the application.": [
 		"Zatvara aplikaciju."
 	],
-	"Expand": [
+	"Expand %s": [
+		""
+	],
+	"Expanded, press space to collapse.": [
 		""
 	],
 	"Export": [
@@ -893,9 +986,6 @@
 	"File system": [
 		"Datotečni sistem"
 	],
-	"Find and replace": [
-		""
-	],
 	"Firefox Extension": [
 		"Dodatak za Firefox"
 	],
@@ -914,8 +1004,8 @@
 	"Focus title": [
 		"Fokus na naziv"
 	],
-	"Folders": [
-		"Omotnice"
+	"Follow link": [
+		""
 	],
 	"For debugging purpose only: export your profile to an external SD card.": [
 		"Samo za testiranje: prenesite svoj profil na eksternu SD-karticu."
@@ -965,20 +1055,32 @@
 	"Gets or sets a config value. If [value] is not provided, it will show the value of [name]. If neither [name] nor [value] is provided, it will list the current configuration.": [
 		"Prima ili podešava konfiguracijske vrijednosti. Ako [value] nije navedena, tada će biti prikazana vrijednost [name]. Ako ni [name] ni [value] nisu precizirane, prikazat će se trenutna konfiguracija."
 	],
+	"go": [
+		""
+	],
+	"Go back": [
+		""
+	],
+	"Go to line": [
+		""
+	],
 	"Go to source URL": [
 		"Idi do izvornog URL-a"
 	],
 	"Goto Anything...": [
 		"Pronađite bilo šta..."
 	],
-	"Header %d": [
+	"Have you authorised the application login in the above URL?": [
 		""
 	],
-	"Headers": [
+	"Header %d": [
 		""
 	],
 	"Heading": [
 		"Naslov"
+	],
+	"Here's what we do to make plugins safer:": [
+		""
 	],
 	"Hide %s": [
 		"Sakrij %s"
@@ -990,9 +1092,6 @@
 		""
 	],
 	"Hide keyboard": [
-		""
-	],
-	"Hide more actions": [
 		""
 	],
 	"Highlight": [
@@ -1019,6 +1118,9 @@
 	"Idle": [
 		"Na čekanju"
 	],
+	"If you have already authorised, please wait for the application to sync to Joplin Cloud.": [
+		""
+	],
 	"Ignore": [
 		""
 	],
@@ -1030,6 +1132,18 @@
 	],
 	"Import": [
 		"Unesi"
+	],
+	"Import failed. Make sure a JEX file was selected.\nDetails: %s": [
+		""
+	],
+	"Import from JEX": [
+		""
+	],
+	"Import notes from a JEX (Joplin Export) file.": [
+		""
+	],
+	"Imported successfully!": [
+		""
 	],
 	"Importing notes...": [
 		"Unosim bilješke..."
@@ -1064,6 +1178,9 @@
 	"In: %s": [
 		"U: %s"
 	],
+	"Incompatible": [
+		""
+	],
 	"Increase indent level": [
 		""
 	],
@@ -1071,6 +1188,9 @@
 		""
 	],
 	"Indent more": [
+		""
+	],
+	"Info": [
 		""
 	],
 	"Inline Code": [
@@ -1115,10 +1235,13 @@
 	"Items that cannot be synchronised": [
 		"Stavke koje se ne mogu sinhronizovati"
 	],
-	"Join us on Twitter": [
+	"Join us on %s": [
 		""
 	],
 	"Joplin can synchronise your notes using various providers. Select one from the list below.": [
+		""
+	],
+	"Joplin doesn't recognise the %s extension. Opening this file could be dangerous. What would you like to do?": [
 		""
 	],
 	"Joplin Export Directory": [
@@ -1145,9 +1268,6 @@
 	"Joplin's own sync service. Also gives access to Joplin-specific features such as publishing notes or collaborating on notebooks with others.": [
 		""
 	],
-	"KaTeX": [
-		""
-	],
 	"Keep note history for": [
 		"Čuvaj historiju bilješki"
 	],
@@ -1169,11 +1289,17 @@
 	"Later": [
 		"Poslije"
 	],
+	"Latitude": [
+		""
+	],
 	"Layout": [
 		"Prikaz"
 	],
 	"Layout button sequence": [
 		"Slijed u promjeni prikaza"
+	],
+	"Learn more": [
+		""
 	],
 	"Leave it blank to download the language files from the default website": [
 		""
@@ -1187,17 +1313,14 @@
 	"Light": [
 		"Svijetla"
 	],
+	"Like any software you install, plugins can potentially cause security issues or data loss.": [
+		""
+	],
 	"Lines": [
 		"Redova"
 	],
-	"Links with protocol \"%s\" are not supported": [
-		"Veze sa protokolom \"%s\" nisu podržane"
-	],
 	"List item": [
 		"Stavka nabrajanja"
-	],
-	"Lists": [
-		""
 	],
 	"Location": [
 		"Lokacija"
@@ -1207,12 +1330,6 @@
 	],
 	"Log": [
 		"Radni dnevnik"
-	],
-	"Login": [
-		""
-	],
-	"Login below.": [
-		""
 	],
 	"Login with Dropbox": [
 		"Prijavite se preko Dropboxa"
@@ -1224,6 +1341,9 @@
 		""
 	],
 	"Logs, profiles, sync status": [
+		""
+	],
+	"Longitude": [
 		""
 	],
 	"Make a donation": [
@@ -1253,6 +1373,12 @@
 	"Master Key %s": [
 		"Glavni ključ %s"
 	],
+	"match case": [
+		""
+	],
+	"Math": [
+		""
+	],
 	"Max concurrent connections": [
 		"Maksimalni broj istovremenih konekcija"
 	],
@@ -1279,6 +1405,9 @@
 	],
 	"More than one item match \"%s\". Please narrow down your query.": [
 		"Više od jednog rezultata odgovara \"%s\". Molimo suzite obim pretrage."
+	],
+	"Most plugins have source code available for review on the plugin website.": [
+		""
 	],
 	"Move %d notes to notebook \"%s\"?": [
 		"Premjestiti %d bilješki u bilježnicu \"%s\"?"
@@ -1316,6 +1445,9 @@
 	"New version: %s": [
 		"Nova verzija: %s"
 	],
+	"next": [
+		""
+	],
 	"Next match": [
 		""
 	],
@@ -1337,8 +1469,8 @@
 	"No active notebook.": [
 		"Nema aktivne bilježnice."
 	],
-	"No item with ID %s": [
-		"Nema stavke čiji je ID %s"
+	"No new invitations": [
+		""
 	],
 	"No notebook has been specified.": [
 		"Nije precizirana bilježnica."
@@ -1348,6 +1480,9 @@
 	],
 	"No notes in here. Create one by clicking on \"New note\".": [
 		"Nema bilješki. Kreirajte bilješku pritisnuvši na \"Nova bilješka\"."
+	],
+	"No plugins are installed.": [
+		""
 	],
 	"No resources!": [
 		"Nema resursa!"
@@ -1360,6 +1495,9 @@
 	],
 	"No text editor is defined. Please set it using `config editor <editor-path>`": [
 		"Nije određen program za uređivanje teksta. Precizirajte ga pomoću `config editor <editor-path>`"
+	],
+	"None": [
+		""
 	],
 	"Nord": [
 		"Nord"
@@ -1424,11 +1562,17 @@
 	"Numbered List": [
 		"Numerisano nabrajanje"
 	],
+	"OCR: Clear cache and re-download language data files": [
+		""
+	],
 	"OK": [
 		"Uredu"
 	],
 	"On %s: %s": [
 		"U %s: %s"
+	],
+	"on line": [
+		""
 	],
 	"One or more items are currently encrypted and you may need to supply a master password. To do so please type `e2ee decrypt`. If you have already supplied the password, the encrypted items are being decrypted in the background and will be available soon.": [
 		"Jedna ili više stavki trenutno su šifrirane i možda ćete trebati unijeti glavnu lozinku. Da biste to učinili, kucajte `e2ee decrypt`. Ukoliko ste već unijeli lozinku, šifrirane stavke dešifruju se u pozadini i uskoro će biti dostupne."
@@ -1490,9 +1634,6 @@
 	"Per user. Minimum of %d users.": [
 		""
 	],
-	"Permission to use camera": [
-		"Dozvola za korištenje kamere"
-	],
 	"Please click on \"%s\" to proceed, or set the passwords in the \"%s\" list below.": [
 		""
 	],
@@ -1526,14 +1667,20 @@
 	"Please specify the notebook where the notes should be imported to.": [
 		"Navedite bilježnicu u koju će se bilješke unijeti."
 	],
-	"Please upgrade Joplin to use this plugin": [
-		"Molimo dogradite Joplin da bi koristili ovaj dodatak"
-	],
 	"Please wait for all attachments to be downloaded and decrypted. You may also switch to %s to edit the note.": [
 		"Pričekajte dok svi prilozi ne budu preuzeti i dešifrovani. Također možete otvoriti %s da uredite bilješku."
 	],
+	"Plugin repository failed to load": [
+		""
+	],
+	"Plugin WebView debugging": [
+		""
+	],
 	"Plugins": [
 		"Dodaci"
+	],
+	"Plugins extend Joplin with features that are not present by default. Plugins can extend Joplin's editor, viewer, and more.": [
+		""
 	],
 	"Portrait": [
 		"Uspravno"
@@ -1553,6 +1700,12 @@
 	"Preferred light theme": [
 		"Preferirana svijetla tema"
 	],
+	"Preferred voice typing provider": [
+		""
+	],
+	"Preserve colours when pasting text in Rich Text Editor": [
+		""
+	],
 	"Press Ctrl+D or type \"exit\" to exit the application": [
 		"Pritisnite Ctrl+D ili kucajte \"exit\" da zatvorite aplikaciju"
 	],
@@ -1564,6 +1717,9 @@
 	],
 	"Press to set the decryption password.": [
 		"Pritisnite da definišete lozinku za dešifrovanje."
+	],
+	"previous": [
+		""
 	],
 	"Previous match": [
 		""
@@ -1592,6 +1748,9 @@
 	"Process user deletions": [
 		""
 	],
+	"Processing": [
+		""
+	],
 	"Profile": [
 		""
 	],
@@ -1616,6 +1775,9 @@
 	"Quit": [
 		"Zatvori"
 	],
+	"Re-download model": [
+		""
+	],
 	"Re-upload local data to sync target": [
 		""
 	],
@@ -1635,6 +1797,12 @@
 		""
 	],
 	"Recipients:": [
+		""
+	],
+	"Recommended": [
+		""
+	],
+	"Recommended plugins": [
 		""
 	],
 	"Redo": [
@@ -1679,6 +1847,21 @@
 	"Replace: ": [
 		""
 	],
+	"replaced $ matches": [
+		""
+	],
+	"replaced match on line $": [
+		""
+	],
+	"Report an issue": [
+		""
+	],
+	"Report any issues concerning the plugin.": [
+		""
+	],
+	"Report fraudulent plugin": [
+		""
+	],
 	"Resize large images:": [
 		""
 	],
@@ -1691,6 +1874,9 @@
 	"Restored Notes": [
 		"Rekonstruisane bilješke"
 	],
+	"Results (%d):": [
+		""
+	],
 	"Retry": [
 		"Ponovi"
 	],
@@ -1702,6 +1888,12 @@
 	],
 	"Reverses the sorting order.": [
 		"Inverzni redoslijed sortiranja."
+	],
+	"Rich Text": [
+		""
+	],
+	"Rich Text editor. Press Escape then Tab to escape focus.": [
+		""
 	],
 	"Runs the commands contained in the text file. There should be one command per line.": [
 		""
@@ -1741,6 +1933,9 @@
 	],
 	"Save geo-location with notes": [
 		"Pohrani geografsku lokaciju u bilješkama"
+	],
+	"Scanned code": [
+		""
 	],
 	"Search": [
 		"Traži"
@@ -1789,6 +1984,9 @@
 	],
 	"Sets the property <name> of the given <note> to the given [value]. Possible properties are:\n\n%s": [
 		"Postavlja svojstvo <name> date <note> na vrijednost [value]. Moguća svojstva:\n\n%s"
+	],
+	"Settings": [
+		""
 	],
 	"Share": [
 		"Podijeli"
@@ -1853,6 +2051,12 @@
 	"Some items cannot be synchronised.": [
 		"Neke stavke nije moguće sinhronizovati."
 	],
+	"Sort \"%s\" in ascending order": [
+		""
+	],
+	"Sort \"%s\" in descending order": [
+		""
+	],
 	"Sort notebooks by": [
 		"Sortiraj bilježnice"
 	],
@@ -1865,8 +2069,14 @@
 	"Sorts the item by <field> (eg. title, updated_time, created_time).": [
 		"Sortira stavke prema <field> (npr. title, updated_time, created_time)."
 	],
+	"Source": [
+		"Izvor"
+	],
 	"Source format: %s": [
 		"Izvorni format: %s"
+	],
+	"Spacer": [
+		""
 	],
 	"Specify the port that should be used by the API server. If not set, a default will be used.": [
 		"Navedite koji će port API server koristiti. Ako port nije preciziran, koristit će se prekonfigurisani."
@@ -1949,6 +2159,9 @@
 	"Switch between note and to-do type": [
 		"Preinači bilješku u zadatak i obratno"
 	],
+	"Switch to back-facing camera": [
+		""
+	],
 	"Switch to note type": [
 		"Preinači u bilješku"
 	],
@@ -2018,6 +2231,9 @@
 	"Take photo": [
 		"Uslikaj"
 	],
+	"Task \"%s\" failed with error: %s": [
+		""
+	],
 	"Tasks": [
 		""
 	],
@@ -2026,9 +2242,6 @@
 	],
 	"Text editor command": [
 		"Komanda za uređivača teksta"
-	],
-	"Thank you! Your Joplin Cloud account is now setup and ready to use.": [
-		""
 	],
 	"The active profile cannot be deleted. Switch to a different profile and try again.": [
 		""
@@ -2080,8 +2293,8 @@
 	"The following attachments are being watched for changes:": [
 		""
 	],
-	"The Joplin mobile app does not currently support this type of link: %s": [
-		"Mobilna Joplin aplikacija trenutno ne podržava ovu vrstu veze: %s"
+	"The following plugins may not support the current markdown editor:": [
+		""
 	],
 	"The Joplin team has vetted this plugin and it meets our standards for security and performance.": [
 		""
@@ -2122,6 +2335,9 @@
 	"The target to synchronise to. Each sync target may have additional parameters which are named as `sync.NUM.NAME` (all documented below).": [
 		"Odredište za sinhronizaciju. Svako odredište može imati dodatne parametre imenovane kao `sync.NUM.NAME` (koji su dokumentovani ispod)."
 	],
+	"The web client does not support accepting encrypted shared notebooks. Please switch to the desktop or mobile app before accepting the share.\n\nError: \"%s\"": [
+		""
+	],
 	"The Web Clipper needs your authorisation to access your data.": [
 		""
 	],
@@ -2143,9 +2359,6 @@
 	"There are unsaved changes.": [
 		""
 	],
-	"There is currently no notebook. Create one by clicking on \"New notebook\".": [
-		"Nema bilježnica. Kreirajte bilježnicu pritisnuvši na \"Nova bilježnica\"."
-	],
 	"There is no data to export.": [
 		"Nema podataka za prenos."
 	],
@@ -2155,7 +2368,7 @@
 	"There was an error downloading this attachment:": [
 		"Došlo je do greške prilikom preuzimanja priloga:"
 	],
-	"There was an error setting up your Joplin Cloud account. Please verify your email and password and try again. Error was:\n\n%s": [
+	"These items failed to sync, but have been marked as \"ignored\". They won't cause the sync warning to appear, but still aren't synced. To unignore, click \"retry\".": [
 		""
 	],
 	"These items will remain on the device but will not be uploaded to the sync target. In order to find these items, either search for the title or the ID (which is displayed in brackets above).": [
@@ -2167,8 +2380,8 @@
 	"This allows another user to share a notebook with you, and you can then both collaborate on it. It does not however allow you to share a notebook with someone else, unless you have the feature \"%s\".": [
 		""
 	],
-	"This attachment is not downloaded or not decrypted yet.": [
-		"Prilog nije preuzet ili još nije dešifrovan."
+	"This attachment does not have OCR data (Status: %s)": [
+		""
 	],
 	"This authorisation token is only needed to allow third-party applications to access Joplin.": [
 		"Ovaj token za ovjeru potreban je samo kako bi se trećim aplikacijama omogućio pristup Joplinu."
@@ -2191,17 +2404,26 @@
 	"This note has no history": [
 		"Bilješka nema ranijih verzija"
 	],
+	"This plugin doesn't support %s.": [
+		""
+	],
 	"This Rich Text editor has a number of limitations and it is recommended to be aware of them before using it.": [
 		"Ovaj Text editor ima par ogranicenja i preporucujemo da budete upoznati sa njima prije koristenja."
 	],
 	"This service allows the browser extension to communicate with Joplin. When enabling it your firewall may ask you to give permission to Joplin to listen to a particular port.": [
 		"Ovaj servis dopušta dodatku za internet preglednik da komunicira sa Joplinom. Kada ga aktivirate, Vaš firewall može od Vas tražiti dopuštenje da bi Joplin mogao slušati specificirani port."
 	],
+	"This subfolder of the trash has no notes.": [
+		""
+	],
 	"This will allow Joplin to run in the background. It is recommended to enable this setting so that your notes are constantly being synchronised, thus reducing the number of conflicts.": [
 		"Ovo će omogućiti Joplinu da radi u pozadini. Preporučujemo aktiviranje ove opcije kako bi Vaše bilješke bile konstantno sinhronizovane i tako se broj sukoba sveo na minimum."
 	],
 	"This will open a new screen. Save your current changes?": [
 		"Otvorit će se novi prikaz. Želite li memorisati trenutne izmjene?"
+	],
+	"This will permanently delete all items in the trash. Continue?": [
+		""
 	],
 	"This will remove the notebook from your collection and you will no longer have access to its content. Do you wish to continue?": [
 		""
@@ -2266,6 +2488,9 @@
 	"Total: %d/%d": [
 		"Ukupno: %d/%d"
 	],
+	"Trash": [
+		""
+	],
 	"Try again": [
 		""
 	],
@@ -2282,9 +2507,6 @@
 		"Vrsta: %s."
 	],
 	"Unable to edit resource of type %s": [
-		""
-	],
-	"Unable to export or share data. Reason: %s": [
 		""
 	],
 	"Unable to share log data. Reason: %s": [
@@ -2383,6 +2605,9 @@
 	"Verify your identity": [
 		""
 	],
+	"View OCR text": [
+		""
+	],
 	"View on map": [
 		"Vidi na karti"
 	],
@@ -2398,11 +2623,20 @@
 	"Voice typing...": [
 		""
 	],
+	"Vosk": [
+		""
+	],
 	"Warning": [
 		"Upozorenje"
 	],
 	"Warning: not all resources shown for performance reasons (limit: %s).": [
 		"Upozorenje: zbog performansi nisu prikazani svi resursi (granica: %s)."
+	],
+	"We have a system for reporting and removing problematic plugins.": [
+		""
+	],
+	"We mark plugins developed by trusted Joplin community members as \"recommended\".": [
+		""
 	],
 	"Web Clipper": [
 		"Web clipper"
@@ -2422,6 +2656,9 @@
 	"Website and documentation": [
 		"Internet stranica i dokumentacija"
 	],
+	"WebView package: %s": [
+		""
+	],
 	"Welcome to Joplin!\n\nType `:help shortcuts` for the list of keyboard shortcuts, or just `:help` for usage information.\n\nFor example, to create a notebook press `mb`; to create a note press `mn`.": [
 		"Dobrodošli u Joplin!\n\nKucajte `:help shortcuts` za prikaz kratica, ili samo `:help` za informacije o korištenju.\n\nNaprimjer, da kreirate bilježnicu pritisnite `mb`; za kreiranje bilješke koristite `mn`."
 	],
@@ -2435,6 +2672,9 @@
 		"Prilikom kreiranja novog zadatka:"
 	],
 	"When enabled, the application will scan your attachments and extract the text from it. This will allow you to search for text in these attachments.": [
+		""
+	],
+	"Whisper": [
 		""
 	],
 	"Window unresponsive.": [
@@ -2455,6 +2695,9 @@
 	"You are about to attach a large image (%dx%d pixels). Would you like to resize it down to %d pixels before attaching it?": [
 		"Slika koju ćete priložiti prilično je velika (%dx%d piksela). Želite li je smanjiti na %d piksela prije nego što je priložite?"
 	],
+	"You are logged in into Joplin Cloud, you can leave this screen now.": [
+		""
+	],
 	"You currently have no notebooks.": [
 		"Trenutno nema nijedna bilježnica."
 	],
@@ -2464,20 +2707,26 @@
 	"You may use the tool below to re-encrypt your data, for example if you know that some of your notes are encrypted with an obsolete encryption method.": [
 		"Možete koristiti alatku niže da ponovo šifrirate svoje podatke, npr. ako znate da su neke od Vaših bilješki šifrirane koristeći zastarjeli metod."
 	],
+	"You were unable to connect to Joplin Cloud. Please check your credentials and try again. Error:": [
+		""
+	],
+	"Your account doesn't have access to this feature": [
+		""
+	],
 	"Your choice: ": [
 		"Vaš izbor: "
 	],
 	"Your data is going to be re-encrypted and synced again.": [
 		"Vaši podaci iznova će se šifrirati i sinhronizovati."
 	],
+	"Your Joplin Cloud credentials are invalid, please login.": [
+		""
+	],
 	"Your password is needed to decrypt some of your data.": [
 		""
 	],
 	"Your password is needed to decrypt some of your data. Type `:e2ee decrypt` to set it.": [
 		""
-	],
-	"Your permission to use your camera is required.": [
-		"Potrebno je Vaše dopuštenje za korištenje kamere."
 	],
 	"Your version: %s": [
 		"Vaša verzija: %s"

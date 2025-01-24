@@ -4,8 +4,8 @@ import { TextStyle, Text } from 'react-native';
 
 const FontAwesomeIcon = require('react-native-vector-icons/FontAwesome5').default;
 const AntIcon = require('react-native-vector-icons/AntDesign').default;
-const MaterialIcon = require('react-native-vector-icons/MaterialIcons').default;
-
+const MaterialCommunityIcon = require('react-native-vector-icons/MaterialCommunityIcons').default;
+const Ionicon = require('react-native-vector-icons/Ionicons').default;
 
 interface Props {
 	name: string;
@@ -34,8 +34,9 @@ const Icon: React.FC<Props> = props => {
 	const importantForAccessibility = accessibilityHidden ? 'no-hide-descendants' : 'yes';
 
 	const sharedProps = {
-		importantForAccessibility,
-		'aria-hidden': accessibilityHidden,
+		importantForAccessibility, // Android
+		accessibilityElementsHidden: accessibilityHidden, // iOS
+		'aria-hidden': accessibilityHidden, // Web
 		accessibilityLabel: props.accessibilityLabel,
 		style: props.style,
 		allowFontScaling: props.allowFontScaling,
@@ -53,13 +54,16 @@ const Icon: React.FC<Props> = props => {
 	} else if (namePrefix === 'ant') {
 		return <AntIcon name={nameSuffix} {...sharedProps}/>;
 	} else if (namePrefix === 'material') {
-		return <MaterialIcon name={nameSuffix} {...sharedProps}/>;
+		return <MaterialCommunityIcon name={nameSuffix} {...sharedProps}/>;
+	} else if (namePrefix === 'ionicon') {
+		return <Ionicon name={nameSuffix} {...sharedProps}/>;
 	} else if (namePrefix === 'text') {
 		return (
 			<Text
 				style={props.style}
 				aria-hidden={accessibilityHidden}
 				importantForAccessibility={importantForAccessibility}
+				accessibilityElementsHidden={accessibilityHidden}
 			>
 				{nameSuffix}
 			</Text>

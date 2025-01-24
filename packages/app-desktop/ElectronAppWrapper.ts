@@ -1,9 +1,11 @@
-import Logger from '@joplin/utils/Logger';
+import Logger, { LoggerWrapper } from '@joplin/utils/Logger';
 import { PluginMessage } from './services/plugins/PluginRunner';
-import shim from '@joplin/lib/shim';
+import AutoUpdaterService, { defaultUpdateInterval, initialUpdateStartup } from './services/autoUpdater/AutoUpdaterService';
+import type ShimType from '@joplin/lib/shim';
+const shim: typeof ShimType = require('@joplin/lib/shim').default;
 import { isCallbackUrl } from '@joplin/lib/callbackUrlUtils';
 
-import { BrowserWindow, Tray, screen } from 'electron';
+import { BrowserWindow, Tray, WebContents, screen } from 'electron';
 import bridge from './bridge';
 const url = require('url');
 const path = require('path');
@@ -13,31 +15,50 @@ const fs = require('fs-extra');
 import { dialog, ipcMain } from 'electron';
 import { _ } from '@joplin/lib/locale';
 import restartInSafeModeFromMain from './utils/restartInSafeModeFromMain';
+import handleCustomProtocols, { CustomProtocolHandler } from './utils/customProtocols/handleCustomProtocols';
 import { clearTimeout, setTimeout } from 'timers';
+import { resolve } from 'path';
+import { defaultWindowId } from '@joplin/lib/reducer';
 
 interface RendererProcessQuitReply {
 	canClose: boolean;
 }
 
 interface PluginWindows {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	[key: string]: any;
 }
 
-export default class ElectronAppWrapper {
+type SecondaryWindowId = string;
+interface SecondaryWindowData {
+	electronId: number;
+}
 
+export default class ElectronAppWrapper {
 	private logger_: Logger = null;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private electronApp_: any;
 	private env_: string;
 	private isDebugMode_: boolean;
 	private profilePath_: string;
+
 	private win_: BrowserWindow = null;
+	private mainWindowHidden_ = true;
+	private pluginWindows_: PluginWindows = {};
+	private secondaryWindows_: Map<SecondaryWindowId, SecondaryWindowData> = new Map();
+
 	private willQuitApp_ = false;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private tray_: any = null;
 	private buildDir_: string = null;
 	private rendererProcessQuitReply_: RendererProcessQuitReply = null;
-	private pluginWindows_: PluginWindows = {};
-	private initialCallbackUrl_: string = null;
 
+	private initialCallbackUrl_: string = null;
+	private updaterService_: AutoUpdaterService = null;
+	private customProtocolHandler_: CustomProtocolHandler = null;
+	private updatePollInterval_: ReturnType<typeof setTimeout>|null = null;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public constructor(electronApp: any, env: string, profilePath: string|null, isDebugMode: boolean, initialCallbackUrl: string) {
 		this.electronApp_ = electronApp;
 		this.env_ = env;
@@ -58,8 +79,29 @@ export default class ElectronAppWrapper {
 		return this.logger_;
 	}
 
-	public window() {
+	public mainWindow() {
 		return this.win_;
+	}
+
+	public activeWindow() {
+		return BrowserWindow.getFocusedWindow() ?? this.win_;
+	}
+
+	public windowById(joplinId: string) {
+		if (joplinId === defaultWindowId) {
+			return this.mainWindow();
+		}
+
+		const windowData = this.secondaryWindows_.get(joplinId);
+		if (windowData !== undefined) {
+			return BrowserWindow.fromId(windowData.electronId);
+		}
+		return null;
+	}
+
+	public allAppWindows() {
+		const allWindowIds = [...this.secondaryWindows_.keys(), defaultWindowId];
+		return allWindowIds.map(id => this.windowById(id));
 	}
 
 	public env() {
@@ -115,6 +157,7 @@ export default class ElectronAppWrapper {
 		const windowStateKeeper = require('electron-window-state');
 
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const stateOptions: any = {
 			defaultWidth: Math.round(0.8 * screen.getPrimaryDisplay().workArea.width),
 			defaultHeight: Math.round(0.8 * screen.getPrimaryDisplay().workArea.height),
@@ -126,6 +169,7 @@ export default class ElectronAppWrapper {
 		// Load the previous state with fallback to defaults
 		const windowState = windowStateKeeper(stateOptions);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const windowOptions: any = {
 			x: windowState.x,
 			y: windowState.y,
@@ -192,9 +236,19 @@ export default class ElectronAppWrapper {
 		});
 
 		this.win_.webContents.on('did-fail-load', async event => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			if ((event as any).isMainFrame) {
 				await this.handleAppFailure('Renderer process failed to load', false);
 			}
+		});
+
+		this.mainWindowHidden_ = !windowOptions.show;
+		this.win_.on('hide', () => {
+			this.mainWindowHidden_ = true;
+		});
+
+		this.win_.on('show', () => {
+			this.mainWindowHidden_ = false;
 		});
 
 		void this.win_.loadURL(url.format({
@@ -219,15 +273,42 @@ export default class ElectronAppWrapper {
 			}, 3000);
 		}
 
-		// will-frame-navigate is fired by clicking on a link within the BrowserWindow.
-		this.win_.webContents.on('will-frame-navigate', event => {
-			// If the link changes the URL of the browser window,
-			if (event.isMainFrame) {
-				event.preventDefault();
-				void bridge().openExternal(event.url);
-			}
-		});
+		const addWindowEventHandlers = (webContents: WebContents) => {
+			// will-frame-navigate is fired by clicking on a link within the BrowserWindow.
+			webContents.on('will-frame-navigate', event => {
+				// If the link changes the URL of the browser window,
+				if (event.isMainFrame) {
+					event.preventDefault();
+					void bridge().openExternal(event.url);
+				}
+			});
 
+			// Override calls to window.open and links with target="_blank": Open most in a browser instead
+			// of Electron:
+			webContents.setWindowOpenHandler((event) => {
+				if (event.url === 'about:blank') {
+					// Script-controlled pages: Used for opening notes in new windows
+					return {
+						action: 'allow',
+						overrideBrowserWindowOptions: {
+							webPreferences: {
+								preload: resolve(__dirname, './utils/window/secondaryWindowPreload.js'),
+							},
+						},
+					};
+				} else if (event.url.match(/^https?:\/\//)) {
+					void bridge().openExternal(event.url);
+				}
+				return { action: 'deny' };
+			});
+
+			webContents.on('did-create-window', (event) => {
+				addWindowEventHandlers(event.webContents);
+			});
+		};
+		addWindowEventHandlers(this.win_.webContents);
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.win_.on('close', (event: any) => {
 			// If it's on macOS, the app is completely closed only if the user chooses to close the app (willQuitApp_ will be true)
 			// otherwise the window is simply hidden, and will be re-open once the app is "activated" (which happens when the
@@ -246,7 +327,8 @@ export default class ElectronAppWrapper {
 					this.hide();
 				}
 			} else {
-				if (this.trayShown() && !this.willQuitApp_) {
+				const hasBackgroundWindows = this.secondaryWindows_.size > 0;
+				if ((hasBackgroundWindows || this.trayShown()) && !this.willQuitApp_) {
 					event.preventDefault();
 					this.win_.hide();
 				} else {
@@ -276,6 +358,27 @@ export default class ElectronAppWrapper {
 			}
 		});
 
+		ipcMain.on('secondary-window-added', (event, windowId: string) => {
+			const window = BrowserWindow.fromWebContents(event.sender);
+			const electronWindowId = window?.id;
+			this.secondaryWindows_.set(windowId, { electronId: electronWindowId });
+
+			// Match the main window's zoom:
+			window.webContents.setZoomFactor(this.mainWindow().webContents.getZoomFactor());
+
+			window.once('close', () => {
+				this.secondaryWindows_.delete(windowId);
+
+				const allSecondaryWindowsClosed = this.secondaryWindows_.size === 0;
+				const mainWindowVisuallyClosed = this.mainWindowHidden_;
+				if (allSecondaryWindowsClosed && mainWindowVisuallyClosed && !this.trayShown()) {
+					// Gracefully quit the app if the user has closed all windows
+					this.win_.close();
+				}
+			});
+		});
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		ipcMain.on('asynchronous-message', (_event: any, message: string, args: any) => {
 			if (message === 'appCloseReply') {
 				// We got the response from the renderer process:
@@ -287,6 +390,7 @@ export default class ElectronAppWrapper {
 
 		// This handler receives IPC messages from a plugin or from the main window,
 		// and forwards it to the main window or the plugin window.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		ipcMain.on('pluginMessage', (_event: any, message: PluginMessage) => {
 			try {
 				if (message.target === 'mainWindow') {
@@ -312,6 +416,14 @@ export default class ElectronAppWrapper {
 			}
 		});
 
+		ipcMain.on('apply-update-now', () => {
+			this.updaterService_.updateApp();
+		});
+
+		ipcMain.on('check-for-updates', () => {
+			void this.updaterService_.checkForUpdates(true);
+		});
+
 		// Let us register listeners on the window, so we can update the state
 		// automatically (the listeners will be removed when the window is closed)
 		// and restore the maximized or full screen state
@@ -325,6 +437,7 @@ export default class ElectronAppWrapper {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public registerPluginWindow(pluginId: string, window: any) {
 		this.pluginWindows_[pluginId] = window;
 	}
@@ -343,6 +456,7 @@ export default class ElectronAppWrapper {
 	}
 
 	public quit() {
+		this.stopPeriodicUpdateCheck();
 		this.electronApp_.quit();
 	}
 
@@ -387,6 +501,7 @@ export default class ElectronAppWrapper {
 	}
 
 	// Note: this must be called only after the "ready" event of the app has been dispatched
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public createTray(contextMenu: any) {
 		try {
 			this.tray_ = new Tray(`${this.buildDir()}/icons/${this.trayIconFilename_()}`);
@@ -394,11 +509,11 @@ export default class ElectronAppWrapper {
 			this.tray_.setContextMenu(contextMenu);
 
 			this.tray_.on('click', () => {
-				if (!this.window()) {
+				if (!this.mainWindow()) {
 					console.warn('The window object was not available during the click event from tray icon');
 					return;
 				}
-				this.window().show();
+				this.mainWindow().show();
 			});
 		} catch (error) {
 			console.error('Cannot create tray', error);
@@ -423,11 +538,13 @@ export default class ElectronAppWrapper {
 		}
 
 		// Someone tried to open a second instance - focus our window instead
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.electronApp_.on('second-instance', (_e: any, argv: string[]) => {
-			const win = this.window();
+			const win = this.mainWindow();
 			if (!win) return;
 			if (win.isMinimized()) win.restore();
 			win.show();
+			// eslint-disable-next-line no-restricted-properties
 			win.focus();
 			if (process.platform !== 'darwin') {
 				const url = argv.find((arg) => isCallbackUrl(arg));
@@ -438,6 +555,40 @@ export default class ElectronAppWrapper {
 		});
 
 		return false;
+	}
+
+	public initializeCustomProtocolHandler(logger: LoggerWrapper) {
+		this.customProtocolHandler_ ??= handleCustomProtocols(logger);
+	}
+
+	// Electron's autoUpdater has to be init from the main process
+	public initializeAutoUpdaterService(logger: LoggerWrapper, devMode: boolean, includePreReleases: boolean) {
+		if (shim.isWindows() || shim.isMac()) {
+			if (!this.updaterService_) {
+				this.updaterService_ = new AutoUpdaterService(this.win_, logger, devMode, includePreReleases);
+				this.startPeriodicUpdateCheck();
+			}
+		}
+	}
+
+	private startPeriodicUpdateCheck = (updateInterval: number = defaultUpdateInterval): void => {
+		this.stopPeriodicUpdateCheck();
+		this.updatePollInterval_ = setInterval(() => {
+			void this.updaterService_.checkForUpdates(false);
+		}, updateInterval);
+		setTimeout(this.updaterService_.checkForUpdates, initialUpdateStartup);
+	};
+
+	private stopPeriodicUpdateCheck = (): void => {
+		if (this.updatePollInterval_) {
+			clearInterval(this.updatePollInterval_);
+			this.updatePollInterval_ = null;
+			this.updaterService_ = null;
+		}
+	};
+
+	public getCustomProtocolHandler() {
+		return this.customProtocolHandler_;
 	}
 
 	public async start() {
@@ -462,6 +613,7 @@ export default class ElectronAppWrapper {
 			this.win_.show();
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.electronApp_.on('open-url', (event: any, url: string) => {
 			event.preventDefault();
 			void this.openCallbackUrl(url);

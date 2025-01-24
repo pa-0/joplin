@@ -5,7 +5,7 @@ import * as Koa from 'koa';
 import * as fs from 'fs-extra';
 import Logger, { LogLevel, LoggerWrapper, TargetType } from '@joplin/utils/Logger';
 import config, { fullVersionString, initConfig, runningInDocker } from './config';
-import { migrateLatest, waitForConnection, sqliteDefaultDir, latestMigration, needsMigration, migrateList, versionCheck } from './db';
+import { migrateLatest, waitForConnection, sqliteDefaultDir, latestMigration, needsMigration, migrateList, versionCheck, ConnectionCheckResult } from './db';
 import { AppContext, Env, KoaNext } from './utils/types';
 import FsDriverNode from '@joplin/lib/fs-driver-node';
 import { getDeviceTimeDrift } from '@joplin/lib/ntp';
@@ -27,6 +27,7 @@ import storageConnectionCheck from './utils/storageConnectionCheck';
 import { setLocale } from '@joplin/lib/locale';
 import initLib from '@joplin/lib/initLib';
 import checkAdminHandler from './middleware/checkAdminHandler';
+import ActionLogger from '@joplin/lib/utils/ActionLogger';
 
 interface Argv {
 	env?: Env;
@@ -39,11 +40,12 @@ const cors = require('@koa/cors');
 const { shimInit } = require('@joplin/lib/shim-init-node.js');
 shimInit({ nodeSqlite });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const defaultEnvVariables: Record<Env, any> = {
 	dev: {
 		// To test with the Postgres database, uncomment DB_CLIENT below and
 		// comment out SQLITE_DATABASE. Then start the Postgres server using
-		// `docker-compose --file docker-compose.db-dev.yml up`
+		// `docker compose --file docker-compose.db-dev.yml up`
 
 		// DB_CLIENT: 'pg',
 		SQLITE_DATABASE: `${sqliteDefaultDir}/db-dev.sqlite`,
@@ -65,9 +67,11 @@ function appLogger(): LoggerWrapper {
 	return appLogger_;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function markPasswords(o: Record<string, any>): Record<string, any> {
 	if (!o) return o;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const output: Record<string, any> = {};
 
 	for (const k of Object.keys(o)) {
@@ -81,6 +85,7 @@ function markPasswords(o: Record<string, any>): Record<string, any> {
 	return output;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function getEnvFilePath(env: Env, argv: any): Promise<string> {
 	if (argv.envFile) return argv.envFile;
 
@@ -94,6 +99,7 @@ async function getEnvFilePath(env: Env, argv: any): Promise<string> {
 async function main() {
 	const { selectedCommand, argv: yargsArgv } = await setupCommands();
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const argv: Argv = yargsArgv as any;
 	const env: Env = argv.env as Env || Env.Prod;
 
@@ -125,10 +131,17 @@ async function main() {
 	// layout these dependencies in code but not clear how to do this.
 	const corsAllowedDomains = [
 		'https://joplinapp.org',
+
+		// Allows sync with the web version of Joplin
+		'https://app.joplincloud.com',
 	];
 
 	if (env === Env.Dev) {
+		// Stripe (dev)
 		corsAllowedDomains.push('http://localhost:8077');
+
+		// Web client (dev)
+		corsAllowedDomains.push('http://localhost:8088');
 	}
 
 	function acceptOrigin(origin: string): boolean {
@@ -232,6 +245,11 @@ async function main() {
 	Logger.initializeGlobalLogger(globalLogger);
 	initLib(globalLogger);
 
+	// Don't log deletions made by the @joplin/lib API -- ActionLogger is
+	// designed for Joplin client use.
+	ActionLogger.enabled = false;
+
+
 	if (envFilePath) appLogger().info(`Env variables were loaded from: ${envFilePath}`);
 
 	const pidFile = argv.pidfile as string;
@@ -247,6 +265,7 @@ async function main() {
 	if (selectedCommand) {
 		const commandArgv = {
 			...argv,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			_: (argv as any)._.slice(),
 		};
 		commandArgv._.splice(0, 1);
@@ -258,7 +277,7 @@ async function main() {
 			});
 		} else {
 			const connectionCheck = await waitForConnection(config().database);
-			const models = newModelFactory(connectionCheck.connection, config());
+			const models = newModelFactory(connectionCheck.connection, connectionCheck.connection, config());
 
 			await selectedCommand.run(commandArgv, {
 				db: connectionCheck.connection,
@@ -281,6 +300,12 @@ async function main() {
 			appLogger().info('Skipping NTP time check because MAX_TIME_DRIFT is 0.');
 		}
 
+		const printConnectionCheckInfo = (connectionCheck: ConnectionCheckResult) => {
+			const connectionCheckLogInfo = { ...connectionCheck };
+			delete connectionCheckLogInfo.connection;
+			appLogger().info('Connection check:', connectionCheckLogInfo);
+		};
+
 		setLocale('en_GB');
 
 		appLogger().info('Running in Docker:', runningInDocker());
@@ -295,11 +320,8 @@ async function main() {
 
 		appLogger().info('Trying to connect to database...');
 		const connectionCheck = await waitForConnection(config().database);
+		printConnectionCheckInfo(connectionCheck);
 
-		const connectionCheckLogInfo = { ...connectionCheck };
-		delete connectionCheckLogInfo.connection;
-
-		appLogger().info('Connection check:', connectionCheckLogInfo);
 		const ctx = app.context as AppContext;
 
 		await versionCheck(connectionCheck.connection);
@@ -316,16 +338,31 @@ async function main() {
 			appLogger().info('Skipped database auto-migration.');
 		}
 
-		await setupAppContext(ctx, env, connectionCheck.connection, appLogger);
+		if (config().DB_USE_SLAVE) appLogger().info('Using database replication - trying to connect to slave...');
+		const slaveConnectionCheck = config().DB_USE_SLAVE ? await waitForConnection(config().databaseSlave) : null;
+
+		if (slaveConnectionCheck) {
+			printConnectionCheckInfo(slaveConnectionCheck);
+		} else {
+			appLogger().info('Not using database replication...');
+		}
+
+		await setupAppContext(
+			ctx,
+			env,
+			connectionCheck.connection,
+			slaveConnectionCheck ? slaveConnectionCheck.connection : connectionCheck.connection,
+			appLogger,
+		);
 
 		await initializeJoplinUtils(config(), ctx.joplinBase.models, ctx.joplinBase.services.mustache);
 
 		appLogger().info('Performing main storage check...');
-		appLogger().info(await storageConnectionCheck(config().storageDriver, ctx.joplinBase.db, ctx.joplinBase.models));
+		appLogger().info(await storageConnectionCheck(config().storageDriver, ctx.joplinBase.db, ctx.joplinBase.dbSlave, ctx.joplinBase.models));
 
 		if (config().storageDriverFallback) {
 			appLogger().info('Performing fallback storage check...');
-			appLogger().info(await storageConnectionCheck(config().storageDriverFallback, ctx.joplinBase.db, ctx.joplinBase.models));
+			appLogger().info(await storageConnectionCheck(config().storageDriverFallback, ctx.joplinBase.db, ctx.joplinBase.dbSlave, ctx.joplinBase.models));
 		}
 
 		appLogger().info('Starting services...');
@@ -339,6 +376,7 @@ async function main() {
 	if (runCommandAndExitApp) process.exit(0);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 main().catch((error: any) => {
 	console.error(error);
 	process.exit(1);

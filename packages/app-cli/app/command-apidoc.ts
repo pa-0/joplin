@@ -37,6 +37,7 @@ class Command extends BaseCommand {
 		return markdownUtils.createMarkdownTable(headers, tableFields);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override async action(args: any) {
 		const models = [
 			{
@@ -188,9 +189,9 @@ async function fetchAllNotes() {
 
 		lines.push('## Searching');
 		lines.push('');
-		lines.push('Call **GET /search?query=YOUR_QUERY** to search for notes. This end-point supports the `field` parameter which is recommended to use so that you only get the data that you need. The query syntax is as described in the main documentation: https://joplinapp.org/help/#searching');
+		lines.push('Call **GET /search?query=YOUR_QUERY** to search for notes. This end-point supports the `field` parameter which is recommended to use so that you only get the data that you need. The query syntax is as described in the main documentation: https://joplinapp.org/help/apps/search');
 		lines.push('');
-		lines.push('To retrieve non-notes items, such as notebooks or tags, add a `type` parameter and set it to the required [item type name](#item-type-id). In that case, full text search will not be used - instead it will be a simple case-insensitive search. You can also use `*` as a wildcard. This is convenient for example to retrieve notebooks or tags by title.');
+		lines.push('To retrieve non-notes items, such as notebooks or tags, add a `type` parameter and set it to the required [item type name](#item-type-ids). In that case, full text search will not be used - instead it will be a simple case-insensitive search. You can also use `*` as a wildcard. This is convenient for example to retrieve notebooks or tags by title.');
 		lines.push('');
 		lines.push('For example, to retrieve the notebook named `recipes`: **GET /search?query=recipes&type=folder**');
 		lines.push('');
@@ -238,11 +239,6 @@ async function fetchAllNotes() {
 					type: Database.enumId('fieldType', 'text'),
 					description: 'If an image is provided, you can also specify an optional rectangle that will be used to crop the image. In format `{ x: x, y: y, width: width, height: height }`',
 				});
-				// tableFields.push({
-				// 	name: 'tags',
-				// 	type: Database.enumId('fieldType', 'text'),
-				// 	description: 'Comma-separated list of tags. eg. `tag1,tag2`.',
-				// });
 			}
 
 			lines.push(`## ${toTitleCase(tableName)}`);
@@ -265,6 +261,11 @@ async function fetchAllNotes() {
 
 			if (model.type === BaseModel.TYPE_FOLDER) {
 				lines.push('The folders are returned as a tree. The sub-notebooks of a notebook, if any, are under the `children` key.');
+				lines.push('');
+			}
+
+			if (model.type === BaseModel.TYPE_NOTE) {
+				lines.push('By default, this call will return the all notes **except** the notes in the trash folder and any conflict note. To include these too, you can specify `include_deleted=1` and `include_conflicts=1` as query parameters.');
 				lines.push('');
 			}
 
@@ -398,6 +399,11 @@ async function fetchAllNotes() {
 				lines.push('### DELETE /tags/:id/notes/:note_id');
 				lines.push('');
 				lines.push('Remove the tag from the note.');
+				lines.push('');
+			}
+
+			if (model.type === BaseModel.TYPE_NOTE || model.type === BaseModel.TYPE_FOLDER) {
+				lines.push(`By default, the ${singular} will be moved **to the trash**. To permanently delete it, add the query parameter \`permanent=1\``);
 				lines.push('');
 			}
 		}

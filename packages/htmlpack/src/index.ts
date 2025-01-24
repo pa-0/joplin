@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { pathExistsSync } from 'fs-extra';
 const Entities = require('html-entities').AllHtmlEntities;
 const htmlparser2 = require('@joplin/fork-htmlparser2');
 const Datauri = require('datauri/sync');
@@ -43,6 +44,7 @@ const dataUriEncode = (filePath: string): string => {
 	}
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const attributesHtml = (attr: any) => {
 	const output = [];
 
@@ -54,6 +56,7 @@ const attributesHtml = (attr: any) => {
 	return output.join(' ');
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const attrValue = (attrs: any, name: string): string => {
 	if (!attrs[name]) return '';
 	return attrs[name];
@@ -76,6 +79,7 @@ const processCssContent = (cssBaseDir: string, content: string): string => {
 				}
 
 				if (declaration.property === 'src') {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 					declaration.value = declaration.value.replace(/url\((.*?)\)/g, (_v: any, url: string) => {
 						const cssFilePath = `${cssBaseDir}/${url}`;
 						if (fs.existsSync(cssFilePath)) {
@@ -92,16 +96,19 @@ const processCssContent = (cssBaseDir: string, content: string): string => {
 	return cssStringify(o);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const processLinkTag = (baseDir: string, _name: string, attrs: any): string => {
 	const href = attrValue(attrs, 'href');
 	if (!href) return null;
 
 	const filePath = `${baseDir}/${href}`;
 
+	if (!pathExistsSync(filePath)) return null;
 	const content = fs.readFileSync(filePath, 'utf8');
 	return `<style>${processCssContent(dirname(filePath), content)}</style>`;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const processScriptTag = (baseDir: string, _name: string, attrs: any): string => {
 	const src = attrValue(attrs, 'src');
 	if (!src) return null;
@@ -128,6 +135,7 @@ const processScriptTag = (baseDir: string, _name: string, attrs: any): string =>
 	return `<script>${content}</script>`;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const processImgTag = (baseDir: string, _name: string, attrs: any): string => {
 	const src = attrValue(attrs, 'src');
 	if (!src) return null;
@@ -140,6 +148,7 @@ const processImgTag = (baseDir: string, _name: string, attrs: any): string => {
 	return `<img src="${dataUriEncode(filePath)}" ${attributesHtml(modAttrs)}/>`;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const processAnchorTag = (baseDir: string, _name: string, attrs: any): string => {
 	const href = attrValue(attrs, 'href');
 	if (!href) return null;
@@ -185,6 +194,7 @@ export default async function htmlpack(inputFile: string, outputFile: string): P
 
 	const parser = new htmlparser2.Parser({
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		onopentag: (name: string, attrs: any) => {
 			name = name.toLowerCase();
 

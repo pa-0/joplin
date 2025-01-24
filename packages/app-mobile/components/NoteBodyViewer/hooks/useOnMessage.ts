@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import shared from '@joplin/lib/components/shared/note-screen-shared';
+import Logger from '@joplin/utils/Logger';
 
 export type HandleMessageCallback = (message: string)=> void;
 export type OnMarkForDownloadCallback = (resource: { resourceId: string })=> void;
-export type HandleScrollCallback = (scrollTop: number)=> void;
 
 interface MessageCallbacks {
 	onMarkForDownload?: OnMarkForDownloadCallback;
@@ -11,8 +11,9 @@ interface MessageCallbacks {
 	onResourceLongPress: HandleMessageCallback;
 	onRequestEditResource?: HandleMessageCallback;
 	onCheckboxChange: HandleMessageCallback;
-	onMainContainerScroll: HandleScrollCallback;
 }
+
+const logger = Logger.create('useOnMessage');
 
 export default function useOnMessage(
 	noteBody: string,
@@ -26,35 +27,18 @@ export default function useOnMessage(
 	// Thus, useCallback should depend on each callback individually.
 	const {
 		onMarkForDownload, onResourceLongPress, onCheckboxChange, onRequestEditResource, onJoplinLinkClick,
-		onMainContainerScroll,
 	} = callbacks;
 
-	return useCallback((event: any) => {
-		// 2021-05-19: Historically this was unescaped twice as it was
-		// apparently needed after an upgrade to RN 58 (or 59). However this is
-		// no longer needed and in fact would break certain URLs so it can be
-		// removed. Keeping the comment here anyway in case we find some URLs
-		// that end up being broken after removing the double unescaping.
-		// https://github.com/laurent22/joplin/issues/4494
-		const msg = event.nativeEvent.data;
-
+	return useCallback((msg: string) => {
 		const isScrollMessage = msg.startsWith('onscroll:');
 
-		// Scroll messages are very frequent so we avoid logging them.
+		// Scroll messages are very frequent so we avoid logging them, even
+		// in debug mode
 		if (!isScrollMessage) {
-			// eslint-disable-next-line no-console
-			console.info('Got IPC message: ', msg);
+			logger.debug('Got IPC message: ', msg);
 		}
 
-		if (isScrollMessage) {
-			const eventData = JSON.parse(msg.substring(msg.indexOf(':') + 1));
-
-			if (typeof eventData.scrollTop !== 'number') {
-				throw new Error(`Invalid scroll message, ${msg}`);
-			}
-
-			onMainContainerScroll?.(eventData.scrollTop);
-		} else if (msg.indexOf('checkboxclick:') === 0) {
+		if (msg.indexOf('checkboxclick:') === 0) {
 			const newBody = shared.toggleCheckbox(msg, noteBody);
 			onCheckboxChange?.(newBody);
 		} else if (msg.indexOf('markForDownload:') === 0) {
@@ -79,6 +63,5 @@ export default function useOnMessage(
 		onJoplinLinkClick,
 		onResourceLongPress,
 		onRequestEditResource,
-		onMainContainerScroll,
 	]);
 }

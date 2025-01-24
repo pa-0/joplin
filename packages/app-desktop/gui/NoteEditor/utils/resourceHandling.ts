@@ -1,12 +1,11 @@
 import shim from '@joplin/lib/shim';
 import Setting from '@joplin/lib/models/Setting';
 import Note from '@joplin/lib/models/Note';
-import BaseModel from '@joplin/lib/BaseModel';
 import Resource from '@joplin/lib/models/Resource';
 const bridge = require('@electron/remote').require('./bridge').default;
 import ResourceFetcher from '@joplin/lib/services/ResourceFetcher';
 import htmlUtils from '@joplin/lib/htmlUtils';
-import rendererHtmlUtils, { extractHtmlBody } from '@joplin/renderer/htmlUtils';
+import rendererHtmlUtils, { extractHtmlBody, removeWrappingParagraphAndTrailingEmptyElements } from '@joplin/renderer/htmlUtils';
 import Logger from '@joplin/utils/Logger';
 import { fileUriToPath } from '@joplin/utils/url';
 import { MarkupLanguage } from '@joplin/renderer';
@@ -15,7 +14,7 @@ import markupRenderOptions from './markupRenderOptions';
 import { fileExtension, filename, safeFileExtension, safeFilename } from '@joplin/utils/path';
 const joplinRendererUtils = require('@joplin/renderer').utils;
 const { clipboard } = require('electron');
-const mimeUtils = require('@joplin/lib/mime-utils.js').mime;
+import * as mimeUtils from '@joplin/lib/mime-utils';
 const md5 = require('md5');
 const path = require('path');
 
@@ -28,40 +27,7 @@ export async function handleResourceDownloadMode(noteBody: string) {
 	}
 }
 
-let resourceCache_: any = {};
-
-export function clearResourceCache() {
-	resourceCache_ = {};
-}
-
-export async function attachedResources(noteBody: string): Promise<any> {
-	if (!noteBody) return {};
-	const resourceIds = await Note.linkedItemIdsByType(BaseModel.TYPE_RESOURCE, noteBody);
-
-	const output: any = {};
-	for (let i = 0; i < resourceIds.length; i++) {
-		const id = resourceIds[i];
-
-		if (resourceCache_[id]) {
-			output[id] = resourceCache_[id];
-		} else {
-			const resource = await Resource.load(id);
-			const localState = await Resource.localState(resource);
-
-			const o = {
-				item: resource,
-				localState: localState,
-			};
-
-			// eslint-disable-next-line require-atomic-updates
-			resourceCache_[id] = o;
-			output[id] = o;
-		}
-	}
-
-	return output;
-}
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export async function commandAttachFileToBody(body: string, filePaths: string[] = null, options: any = null) {
 	options = {
 		createFileURL: false,
@@ -85,6 +51,7 @@ export async function commandAttachFileToBody(body: string, filePaths: string[] 
 				createFileURL: options.createFileURL,
 				resizeLargeImages: Setting.value('imageResizing'),
 				markupLanguage: options.markupLanguage,
+				resourceSuffix: i > 0 ? ' ' : '',
 			});
 
 			if (!newBody) {
@@ -103,6 +70,7 @@ export async function commandAttachFileToBody(body: string, filePaths: string[] 
 	return body;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export function resourcesStatus(resourceInfos: any) {
 	let lowestIndex = joplinRendererUtils.resourceStatusIndex('ready');
 	for (const id in resourceInfos) {
@@ -113,6 +81,7 @@ export function resourcesStatus(resourceInfos: any) {
 	return joplinRendererUtils.resourceStatusName(lowestIndex);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export async function getResourcesFromPasteEvent(event: any) {
 	const output = [];
 	const formats = clipboard.availableFormats();
@@ -138,16 +107,10 @@ export async function getResourcesFromPasteEvent(event: any) {
 	return output;
 }
 
-export async function processPastedHtml(html: string, htmlToMd: HtmlToMarkdownHandler | null, mdToHtml: MarkupToHtmlHandler | null) {
+
+const processImagesInPastedHtml = async (html: string) => {
 	const allImageUrls: string[] = [];
 	const mappedResources: Record<string, string> = {};
-
-	// When copying text from eg. GitHub, the HTML might contain non-breaking
-	// spaces instead of regular spaces. If these non-breaking spaces are
-	// inserted into the TinyMCE editor (using insertContent), they will be
-	// dropped. So here we convert them to regular spaces.
-	// https://stackoverflow.com/a/31790544/561309
-	html = html.replace(/[\u202F\u00A0]/g, ' ');
 
 	htmlUtils.replaceImageUrls(html, (src: string) => {
 		allImageUrls.push(src);
@@ -200,20 +163,36 @@ export async function processPastedHtml(html: string, htmlToMd: HtmlToMarkdownHa
 
 	await Promise.all(downloadImages);
 
+	return htmlUtils.replaceImageUrls(html, (src: string) => mappedResources[src]);
+};
+
+export async function processPastedHtml(html: string, htmlToMd: HtmlToMarkdownHandler | null, mdToHtml: MarkupToHtmlHandler | null) {
+	// When copying text from eg. GitHub, the HTML might contain non-breaking
+	// spaces instead of regular spaces. If these non-breaking spaces are
+	// inserted into the TinyMCE editor (using insertContent), they will be
+	// dropped. So here we convert them to regular spaces.
+	// https://stackoverflow.com/a/31790544/561309
+	html = html.replace(/[\u202F\u00A0]/g, ' ');
+
+	html = await processImagesInPastedHtml(html);
+
 	// TinyMCE can accept any type of HTML, including HTML that may not be preserved once saved as
 	// Markdown. For example the content may have a dark background which would be supported by
 	// TinyMCE, but lost once the note is saved. So here we convert the HTML to Markdown then back
 	// to HTML to ensure that the content we paste will be handled correctly by the app.
 	if (htmlToMd && mdToHtml) {
-		const md = await htmlToMd(MarkupLanguage.Markdown, html, '');
+		const md = await htmlToMd(MarkupLanguage.Markdown, html, '', { preserveColorStyles: Setting.value('editor.pastePreserveColors') });
 		html = (await mdToHtml(MarkupLanguage.Markdown, md, markupRenderOptions({ bodyOnly: true }))).html;
+
+		// When plugins that add to the end of rendered content are installed, bodyOnly can
+		// fail to remove the wrapping paragraph. This works around that issue by removing
+		// the wrapping paragraph in more cases. See issue #10061.
+		if (!md.trim().includes('\n')) {
+			html = removeWrappingParagraphAndTrailingEmptyElements(html);
+		}
 	}
 
-	return extractHtmlBody(rendererHtmlUtils.sanitizeHtml(
-		htmlUtils.replaceImageUrls(html, (src: string) => {
-			return mappedResources[src];
-		}), {
-			allowedFilePrefixes: [Setting.value('resourceDir')],
-		},
-	));
+	return extractHtmlBody(rendererHtmlUtils.sanitizeHtml(html, {
+		allowedFilePrefixes: [Setting.value('resourceDir')],
+	}));
 }
