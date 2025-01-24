@@ -20,7 +20,7 @@ import { Path } from './types';
  * In general you would use the methods in this class as if you were using a REST API. There are four methods that map to GET, POST, PUT and DELETE calls.
  * And each method takes these parameters:
  *
- * * `path`: This is an array that represents the path to the resource in the form `["resouceName", "resourceId", "resourceLink"]` (eg. ["tags", ":id", "notes"]). The "resources" segment is the name of the resources you want to access (eg. "notes", "folders", etc.). If not followed by anything, it will refer to all the resources in that collection. The optional "resourceId" points to a particular resources within the collection. Finally, an optional "link" can be present, which links the resource to a collection of resources. This can be used in the API for example to retrieve all the notes associated with a tag.
+ * * `path`: This is an array that represents the path to the resource in the form `["resourceName", "resourceId", "resourceLink"]` (eg. ["tags", ":id", "notes"]). The "resources" segment is the name of the resources you want to access (eg. "notes", "folders", etc.). If not followed by anything, it will refer to all the resources in that collection. The optional "resourceId" points to a particular resources within the collection. Finally, an optional "link" can be present, which links the resource to a collection of resources. This can be used in the API for example to retrieve all the notes associated with a tag.
  * * `query`: (Optional) The query parameters. In a URL, this is the part after the question mark "?". In this case, it should be an object with key/value pairs.
  * * `data`: (Optional) Applies to PUT and POST calls only. The request body contains the data you want to create or modify, for example the content of a note or folder.
  * * `files`: (Optional) Used to create new resources and associate them with files.
@@ -46,6 +46,7 @@ import { Path } from './types';
  */
 export default class JoplinData {
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private api_: any = new Api();
 	private pathSegmentRegex_: RegExp;
 	private plugin: Plugin;
@@ -54,6 +55,7 @@ export default class JoplinData {
 		this.plugin = plugin;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private serializeApiBody(body: any) {
 		if (typeof body !== 'string') { return JSON.stringify(body); }
 		return body;
@@ -75,18 +77,22 @@ export default class JoplinData {
 		return path.join('/');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async get(path: Path, query: any = null) {
 		return this.api_.route('GET', this.pathToString(path), query);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async post(path: Path, query: any = null, body: any = null, files: any[] = null) {
 		return this.api_.route('POST', this.pathToString(path), query, this.serializeApiBody(body), files);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async put(path: Path, query: any = null, body: any = null, files: any[] = null) {
 		return this.api_.route('PUT', this.pathToString(path), query, this.serializeApiBody(body), files);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async delete(path: Path, query: any = null) {
 		return this.api_.route('DELETE', this.pathToString(path), query);
 	}

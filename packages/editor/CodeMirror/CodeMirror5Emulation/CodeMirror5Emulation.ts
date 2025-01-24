@@ -6,23 +6,35 @@ import { LogMessageCallback } from '../../types';
 import editorCommands from '../editorCommands/editorCommands';
 import { StateEffect } from '@codemirror/state';
 import { StreamParser } from '@codemirror/language';
-import Decorator, { LineWidgetOptions } from './Decorator';
+import Decorator, { LineWidgetOptions, MarkTextOptions } from './Decorator';
+import insertLineAfter from '../editorCommands/insertLineAfter';
+import CodeMirror5BuiltInOptions from './CodeMirror5BuiltInOptions';
 const { pregQuote } = require('@joplin/lib/string-utils-common');
 
 
 type CodeMirror5Command = (codeMirror: CodeMirror5Emulation)=> void;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 type EditorEventCallback = (editor: CodeMirror5Emulation, ...args: any[])=> void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 type OptionUpdateCallback = (editor: CodeMirror5Emulation, newVal: any, oldVal: any)=> void;
+
+type OverlayType<State> = StreamParser<State>|{ query: RegExp };
 
 interface CodeMirror5OptionRecord {
 	onUpdate: OptionUpdateCallback;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	value: any;
 }
 
 interface DocumentPosition {
 	line: number;
 	ch: number;
+}
+
+interface DocumentPositionRange {
+	from: DocumentPosition;
+	to: DocumentPosition;
 }
 
 const documentPositionFromPos = (doc: Text, pos: number): DocumentPosition => {
@@ -34,13 +46,22 @@ const documentPositionFromPos = (doc: Text, pos: number): DocumentPosition => {
 	};
 };
 
+const posFromDocumentPosition = (doc: Text, pos: DocumentPosition) => {
+	const line = doc.line(pos.line + 1);
+	return line.from + pos.ch;
+};
+
 export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 	private _events: Record<string, EditorEventCallback[]> = {};
 	private _options: Record<string, CodeMirror5OptionRecord> = Object.create(null);
 	private _decorator: Decorator;
 	private _decoratorExtension: Extension;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	private _userExtensions: Record<string, any> = Object.create(null);
+	private _builtInOptions: CodeMirror5BuiltInOptions;
 
 	// Used by some plugins to store state.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public state: Record<string, any> = Object.create(null);
 
 	public Vim = Vim;
@@ -57,6 +78,7 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 		const { decorator, extension: decoratorExtension } = Decorator.create(editor);
 		this._decorator = decorator;
 		this._decoratorExtension = decoratorExtension;
+		this._builtInOptions = new CodeMirror5BuiltInOptions(editor);
 
 		editor.dispatch({
 			effects: StateEffect.appendConfig.of(this.makeCM6Extensions()),
@@ -113,13 +135,18 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 			showPanel.of(() => {
 				const dom = document.createElement('div');
 				dom.classList.add('CodeMirror-measure');
+
+				// Make invisible, but still measurable
+				dom.style.visibility = 'hidden';
+				dom.style.pointerEvents = 'none';
+				dom.style.height = '0';
+				dom.style.overflow = 'auto';
+
 				return { dom };
 			}),
 
-			// Note: We can allow legacy CM5 CSS to apply to the editor
-			// with a line similar to the following:
-			//    EditorView.editorAttributes.of({ class: 'CodeMirror' }),
-			// Many of these styles, however, don't work well with CodeMirror 6.
+			// Allows legacy CM5 CSS to apply to the editor:
+			EditorView.editorAttributes.of({ class: 'CodeMirror' }),
 		];
 	}
 
@@ -145,6 +172,7 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 		);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public static signal(target: CodeMirror5Emulation, eventName: string, ...args: any[]) {
 		const listeners = target._events[eventName] ?? [];
 
@@ -250,6 +278,7 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 			handle: lineNumber,
 
 			text: line.text,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			gutterMarkers: [] as any[],
 			textClass: ['cm-line', ...this._decorator.getLineClasses(lineNumber)],
 			bgClass: '',
@@ -270,10 +299,30 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 		return getScrollFraction(this.editor);
 	}
 
-	public defineExtension(name: string, value: any) {
-		(CodeMirror5Emulation.prototype as any)[name] ??= value;
+	// CodeMirror-Vim's scrollIntoView only supports pos as a DocumentPosition.
+	public override scrollIntoView(
+		pos: DocumentPosition|DocumentPositionRange, margin?: number,
+	): void {
+		const isPosition = (arg: unknown): arg is DocumentPosition => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+			return (arg as any).line !== undefined && (arg as any).ch !== undefined;
+		};
+
+		if (isPosition(pos)) {
+			return super.scrollIntoView(pos, margin);
+		} else {
+			return super.scrollIntoView(pos.from, margin);
+		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public defineExtension(name: string, value: any) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+		(CodeMirror5Emulation.prototype as any)[name] = value;
+		this._userExtensions[name] = value;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public defineOption(name: string, defaultValue: any, onUpdate: OptionUpdateCallback) {
 		this._options[name] = {
 			value: defaultValue,
@@ -283,16 +332,20 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 	}
 
 	// Override codemirror-vim's setOption to allow user-defined options
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override setOption(name: string, value: any) {
 		if (name in this._options) {
 			const oldValue = this._options[name].value;
 			this._options[name].value = value;
 			this._options[name].onUpdate(this, value, oldValue);
+		} else if (this._builtInOptions.supportsOption(name)) {
+			this._builtInOptions.setOption(name, value);
 		} else {
 			super.setOption(name, value);
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override getOption(name: string): any {
 		if (name in this._options) {
 			return this._options[name].value;
@@ -301,14 +354,35 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 		}
 	}
 
+	public override coordsChar(coords: { left: number; top: number }, mode?: 'div' | 'local'): DocumentPosition {
+		// codemirror-vim's API only supports "div" mode. Thus, we convert
+		// local to div:
+		if (mode !== 'div') {
+			const bbox = this.editor.contentDOM.getBoundingClientRect();
+			coords = {
+				left: coords.left - bbox.left,
+				top: coords.top - bbox.top,
+			};
+		}
+
+		return super.coordsChar(coords, 'div');
+	}
+
 	// codemirror-vim's API doesn't match the API docs here -- it expects addOverlay
 	// to return a SearchQuery. As such, this override returns "any".
-	public override addOverlay<State>(modeObject: StreamParser<State>|{ query: RegExp }): any {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public override addOverlay<State>(modeObject: OverlayType<State>): any {
 		if ('query' in modeObject) {
 			return super.addOverlay(modeObject);
 		}
 
-		this._decorator.addOverlay(modeObject);
+		return this._decorator.addOverlay(modeObject);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public override removeOverlay(overlay?: OverlayType<any>): void {
+		super.removeOverlay(overlay);
+		this._decorator.removeOverlay(overlay);
 	}
 
 	public addLineClass(lineNumber: number, where: string, className: string) {
@@ -320,51 +394,64 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 	}
 
 	public addLineWidget(lineNumber: number, node: HTMLElement, options: LineWidgetOptions) {
-		this._decorator.addLineWidget(lineNumber, node, options);
+		return this._decorator.addLineWidget(lineNumber, node, options);
 	}
 
-	// TODO: Currently copied from useCursorUtils.ts.
-	// TODO: Remove the duplicate code when CodeMirror 5 is eventually removed.
-	public wrapSelections(string1: string, string2: string) {
-		const selectedStrings = this.getSelections();
+	public addWidget(pos: DocumentPosition, node: HTMLElement) {
+		if (node.parentElement) {
+			node.remove();
+		}
 
-		// Batches the insert operations, if this wasn't done the inserts
-		// could potentially overwrite one another
-		this.operation(() => {
-			for (let i = 0; i < selectedStrings.length; i++) {
-				const selected = selectedStrings[i];
+		const loc = posFromDocumentPosition(this.editor.state.doc, pos);
+		const screenCoords = this.editor.coordsAtPos(loc);
+		const bbox = this.editor.contentDOM.getBoundingClientRect();
 
-				// Remove white space on either side of selection
-				const start = selected.search(/[^\s]/);
-				const end = selected.search(/[^\s](?=[\s]*$)/);
-				const core = selected.substring(start, end - start + 1);
+		node.style.position = 'absolute';
 
-				// If selection can be toggled do that
-				if (core.startsWith(string1) && core.endsWith(string2)) {
-					const inside = core.substring(string1.length, core.length - string1.length - string2.length);
-					selectedStrings[i] = selected.substring(0, start) + inside + selected.substring(end + 1);
-				} else {
-					selectedStrings[i] = selected.substring(0, start) + string1 + core + string2 + selected.substring(end + 1);
-				}
-			}
-			this.replaceSelections(selectedStrings);
-		});
+		const left = screenCoords.left - bbox.left;
+		node.style.left = `${left}px`;
+		node.style.maxWidth = `${bbox.width - left}px`;
+		node.style.top = `${screenCoords.top + this.editor.scrollDOM.scrollTop}px`;
+
+		this.editor.scrollDOM.appendChild(node);
+	}
+
+	public markText(from: DocumentPosition, to: DocumentPosition, options?: MarkTextOptions) {
+		const doc = this.editor.state.doc;
+
+		return this._decorator.markText(
+			posFromDocumentPosition(doc, from),
+			posFromDocumentPosition(doc, to),
+			options,
+		);
+	}
+
+	public getDoc() {
+		// The emulation layer has several of the methods available on a CodeMirror 5 document.
+		// For some plugins, `this` is sufficient.
+		return this;
 	}
 
 	public static commands = (() => {
 		const commands: Record<string, CodeMirror5Command> = {
 			...BaseCodeMirror5Emulation.commands,
+
+			vimInsertListElement: (codeMirror: BaseCodeMirror5Emulation) => {
+				insertLineAfter(codeMirror.cm6);
+				Vim.handleKey(codeMirror, 'i', 'macro');
+			},
 		};
 
 		for (const commandName in editorCommands) {
 			const command = editorCommands[commandName as keyof typeof editorCommands];
 
-			commands[commandName] = (codeMirror: CodeMirror5Emulation) => command(codeMirror.editor);
+			commands[commandName] = (codeMirror: BaseCodeMirror5Emulation) => command(codeMirror.cm6);
 		}
 
 		// as any: Required to properly extend the base class -- without this,
 		// the commands dictionary isn't known (by TypeScript) to have the same
 		// properties as the commands dictionary in the parent class.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		return commands as any;
 	})();
 
@@ -392,20 +479,27 @@ export default class CodeMirror5Emulation extends BaseCodeMirror5Emulation {
 			return;
 		}
 
-		this.execCommand(commandName);
+		if (this.commandExists(commandName)) {
+			return this.execCommand(commandName);
+		}
 	}
 
 	public commandExists(commandName: string) {
-		return commandName in CodeMirror5Emulation.commands;
+		return commandName in CodeMirror5Emulation.commands || typeof this._userExtensions[commandName] === 'function';
 	}
 
-	public execCommand(name: string) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public execCommand(name: string, ...args: any[]) {
 		if (!this.commandExists(name)) {
 			this.logMessage(`Unsupported CodeMirror command, ${name}`);
 			return;
 		}
 
-		CodeMirror5Emulation.commands[name as (keyof typeof CodeMirror5Emulation.commands)](this);
+		if (name in CodeMirror5Emulation.commands) {
+			return CodeMirror5Emulation.commands[name as (keyof typeof CodeMirror5Emulation.commands)](this);
+		} else if (typeof this._userExtensions[name] === 'function') {
+			return this._userExtensions[name].call(this, ...args);
+		}
 	}
 }
 

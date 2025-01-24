@@ -104,6 +104,7 @@ async function loadGitHubUsernameCache() {
 	return {};
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 async function saveGitHubUsernameCache(cache: any) {
 	const path = `${__dirname}/github_username_cache.json`;
 	await writeFile(path, JSON.stringify(cache));
@@ -112,12 +113,14 @@ async function saveGitHubUsernameCache(cache: any) {
 // Returns the project root dir
 export const rootDir: string = require('path').dirname(require('path').dirname(__dirname));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export function execCommand(command: string, options: any = null): Promise<string> {
 	options = options || {};
 
 	const exec = require('child_process').exec;
 
 	return new Promise((resolve, reject) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		exec(command, options, (error: any, stdout: any, stderr: any) => {
 			if (error) {
 				if (error.signal === 'SIGTERM') {
@@ -153,13 +156,15 @@ export function execCommandWithPipes(executable: string, args: string[]) {
 	return new Promise((resolve, reject) => {
 		const child = spawn(executable, args, { stdio: 'inherit' });
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		child.on('error', (error: any) => {
 			reject(error);
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		child.on('close', (code: any) => {
 			if (code !== 0) {
-				reject(`Ended with code ${code}`);
+				reject(new Error(`Ended with code ${code}`));
 			} else {
 				resolve(null);
 			}
@@ -173,6 +178,7 @@ export function toSystemSlashes(path: string) {
 	return path.replace(/\\/g, '/');
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export async function setPackagePrivateField(filePath: string, value: any) {
 	const text = await readFile(filePath, 'utf8');
 	const obj = JSON.parse(text);
@@ -184,21 +190,49 @@ export async function setPackagePrivateField(filePath: string, value: any) {
 	await writeFile(filePath, JSON.stringify(obj, null, 2), 'utf8');
 }
 
-export async function downloadFile(url: string, targetPath: string) {
+export async function downloadFile(url: string, targetPath: string, headers: { [key: string]: string }) {
 	const https = require('https');
 
 	return new Promise((resolve, reject) => {
-		const file = createWriteStream(targetPath);
-		https.get(url, (response: any) => {
-			if (response.statusCode !== 200) reject(new Error(`HTTP error ${response.statusCode}`));
-			response.pipe(file);
-			file.on('finish', () => {
-				// file.close();
-				resolve(null);
+		const makeDownloadRequest = (url: string) => {
+			const file = createWriteStream(targetPath);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+			https.get(url, headers, (response: any) => {
+				if (response.statusCode === 403) {
+					let data = '';
+					response.on('data', (chunk: string) => {
+						data += chunk;
+					});
+					response.on('end', () => {
+						console.log(`Body: ${data}`);
+						reject(new Error('Access forbidden. Possibly due to rate limiting or lack of permission.'));
+					});
+				} else if (response.statusCode === 302 || response.statusCode === 301) {
+					const newUrl = response.headers.location;
+					if (newUrl) {
+						console.log(`Redirecting download request to ${newUrl}`);
+						file.close();
+						makeDownloadRequest(url);
+					} else {
+						reject(new Error('Redirection failed, url undefined'));
+					}
+				} else if (response.statusCode !== 200) {
+					reject(new Error(`HTTP error ${response.statusCode}`));
+				} else {
+					response.pipe(file);
+					file.on('finish', () => {
+						file.close();
+						resolve(null);
+					});
+				}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+			}).on('error', (error: any) => {
+				reject(error);
 			});
-		}).on('error', (error: any) => {
-			reject(error);
-		});
+		};
+
+		makeDownloadRequest(url);
 	});
 }
 
@@ -210,11 +244,13 @@ export function fileSha256(filePath: string) {
 		const shasum = crypto.createHash(algo);
 
 		const s = fs.ReadStream(filePath);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		s.on('data', (d: any) => { shasum.update(d); });
 		s.on('end', () => {
 			const d = shasum.digest('hex');
 			resolve(d);
 		});
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		s.on('error', (error: any) => {
 			reject(error);
 		});
@@ -232,6 +268,7 @@ export async function unlinkForce(filePath: string) {
 
 export function fileExists(filePath: string) {
 	return new Promise((resolve, reject) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		stat(filePath, (error: any) => {
 			if (!error) {
 				resolve(true);
@@ -273,6 +310,11 @@ export const gitCurrentBranch = async (): Promise<string> => {
 };
 
 export async function githubUsername(email: string, name: string) {
+	if (email.endsWith('@users.noreply.github.com')) {
+		const splitted = email.split('@')[0].split('+');
+		return splitted.length === 1 ? splitted[0] : splitted[1];
+	}
+
 	const cache = await loadGitHubUsernameCache();
 	const cacheKey = `${email}:${name}`;
 	if (cacheKey in cache) return cache[cacheKey];
@@ -331,7 +373,7 @@ export function githubOauthToken() {
 // Note that the GitHub API releases/latest is broken on the joplin-android repo
 // as of Nov 2021 (last working on 3 November 2021, first broken on 19
 // November). It used to return the latest **published** release but now it
-// retuns... some release, always the same one, but not the latest one. GitHub
+// returns... some release, always the same one, but not the latest one. GitHub
 // says that nothing has changed on the API, although it used to work. So since
 // we can't use /latest anymore, we need to fetch all the releases to find the
 // latest published one.
@@ -339,6 +381,7 @@ export function githubOauthToken() {
 // As of July 2023 /latest seems to be working again, so switching back to this
 // method, but let's keep the old method just in case they break the API again.
 export async function gitHubLatestRelease(repoName: string): Promise<GitHubRelease> {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const response: any = await fetch(`https://api.github.com/repos/laurent22/${repoName}/releases/latest`, {
 		headers: {
 			'Content-Type': 'application/json',
@@ -355,6 +398,7 @@ export async function gitHubLatestRelease_KeepInCaseMicrosoftBreaksTheApiAgain(r
 	let pageNum = 1;
 
 	while (true) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const response: any = await fetch(`https://api.github.com/repos/laurent22/${repoName}/releases?page=${pageNum}`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -392,6 +436,7 @@ export const gitHubLatestReleases = async (page: number, perPage: number) => {
 	return releases;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export async function githubRelease(project: string, tagName: string, options: any = null): Promise<GitHubRelease> {
 	options = { isDraft: false,
 		isPreRelease: false, ...options };

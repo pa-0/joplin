@@ -1,7 +1,7 @@
 
 /* eslint-disable no-console */
 
-import { copy, exists, remove, mkdirp, readdir, mkdtemp } from 'fs-extra';
+import { copy, exists, remove, readdir, mkdtemp } from 'fs-extra';
 import { join, resolve, basename } from 'path';
 import { tmpdir } from 'os';
 import { chdir, cwd } from 'process';
@@ -10,10 +10,14 @@ import { glob } from 'glob';
 import readRepositoryJson from './utils/readRepositoryJson';
 import waitForCliInput from './utils/waitForCliInput';
 import getPathToPatchFileFor from './utils/getPathToPatchFileFor';
+import getCurrentCommitHash from './utils/getCurrentCommitHash';
 
-type BeforeEachInstallCallback = (buildDir: string, pluginName: string)=> Promise<void>;
+interface Options {
+	beforeInstall: (buildDir: string, pluginName: string)=> Promise<void>;
+	beforePatch: ()=> Promise<void>;
+}
 
-const buildDefaultPlugins = async (outputParentDir: string|null, beforeInstall: BeforeEachInstallCallback) => {
+const buildDefaultPlugins = async (outputParentDir: string|null, options: Options) => {
 	const pluginSourcesDir = resolve(join(__dirname, 'plugin-sources'));
 	const pluginRepositoryData = await readRepositoryJson(join(__dirname, 'pluginRepositories.json'));
 
@@ -41,13 +45,21 @@ const buildDefaultPlugins = async (outputParentDir: string|null, beforeInstall: 
 			}
 
 			chdir(pluginDir);
-			const currentCommitHash = (await execCommand(['git', 'rev-parse', 'HEAD~'])).trim();
 			const expectedCommitHash = repositoryData.commit;
 
-			if (currentCommitHash !== expectedCommitHash) {
-				logStatus(`Switching to commit ${expectedCommitHash}`);
-				await execCommand(['git', 'switch', repositoryData.branch]);
+			logStatus(`Switching to commit ${expectedCommitHash}`);
+			await execCommand(['git', 'switch', repositoryData.branch]);
+
+			try {
 				await execCommand(['git', 'checkout', expectedCommitHash]);
+			} catch (error) {
+				logStatus(`git checkout failed with error ${error}. Fetching...`);
+				await execCommand(['git', 'fetch']);
+				await execCommand(['git', 'checkout', expectedCommitHash]);
+			}
+
+			if (await getCurrentCommitHash() !== expectedCommitHash) {
+				throw new Error(`Unable to checkout commit ${expectedCommitHash}`);
 			}
 
 			logStatus('Copying repository files...');
@@ -62,11 +74,8 @@ const buildDefaultPlugins = async (outputParentDir: string|null, beforeInstall: 
 			logStatus('Initializing repository.');
 			await execCommand('git init . -b main');
 
-			logStatus('Creating initial commit.');
-			await execCommand('git add .');
-			await execCommand(['git', 'config', 'user.name', 'Build script']);
-			await execCommand(['git', 'config', 'user.email', '']);
-			await execCommand(['git', 'commit', '-m', 'Initial commit']);
+			logStatus('Running before-patch hook.');
+			await options.beforePatch();
 
 			const patchFile = getPathToPatchFileFor(pluginId);
 			if (await exists(patchFile)) {
@@ -74,7 +83,7 @@ const buildDefaultPlugins = async (outputParentDir: string|null, beforeInstall: 
 				await execCommand(['git', 'apply', patchFile]);
 			}
 
-			await beforeInstall(buildDir, pluginId);
+			await options.beforeInstall(buildDir, pluginId);
 
 			logStatus('Installing dependencies.');
 			await execCommand('npm install');
@@ -88,17 +97,11 @@ const buildDefaultPlugins = async (outputParentDir: string|null, beforeInstall: 
 
 			if (outputParentDir !== null) {
 				logStatus(`Checking output directory in ${outputParentDir}`);
-				const outputDirectory = join(outputParentDir, pluginId);
-				if (await exists(outputDirectory)) {
-					await remove(outputDirectory);
-				}
-				await mkdirp(outputDirectory);
+				const outputPath = join(outputParentDir, `${pluginId}.jpl`);
 
 				const sourceFile = jplFiles[0];
-				const destFile = join(outputDirectory, 'plugin.jpl');
-
-				logStatus(`Copying built file from ${sourceFile} to ${destFile}`);
-				await copy(sourceFile, destFile);
+				logStatus(`Copying built file from ${sourceFile} to ${outputPath}`);
+				await copy(sourceFile, outputPath);
 			} else {
 				console.warn('No output directory specified. Not copying built .jpl files.');
 			}

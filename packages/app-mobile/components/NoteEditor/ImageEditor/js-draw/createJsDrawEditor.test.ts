@@ -3,6 +3,7 @@
 // Hide warnings from js-draw.
 // jsdom doesn't support ResizeObserver and HTMLCanvasElement.getContext.
 HTMLCanvasElement.prototype.getContext = () => null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 window.ResizeObserver = class { public observe() { } } as any;
 
 import { describe, it, expect, jest } from '@jest/globals';
@@ -20,10 +21,15 @@ const createEditorWithCallbacks = (callbacks: Partial<ImageEditorCallbacks>) => 
 	const locale = 'en';
 
 	const allCallbacks: ImageEditorCallbacks = {
-		saveDrawing: () => {},
+		save: () => {},
+		saveThenClose: ()=> {},
 		closeEditor: ()=> {},
 		setImageHasChanges: ()=> {},
 		updateEditorTemplate: ()=> {},
+		updateToolbarState: ()=> {},
+		onLoadedEditor: ()=> {},
+		writeClipboardText: async ()=>{},
+		readClipboardText: async ()=> '',
 
 		...callbacks,
 	};
@@ -49,7 +55,7 @@ describe('createJsDrawEditor', () => {
 
 		jest.useFakeTimers();
 		const editorControl = createEditorWithCallbacks({
-			saveDrawing: (_drawing: SVGElement, isAutosave: boolean) => {
+			save: (_drawing: string, isAutosave: boolean) => {
 				if (isAutosave) {
 					calledAutosaveCount ++;
 				}
@@ -57,7 +63,7 @@ describe('createJsDrawEditor', () => {
 		});
 
 		// Load no image and an empty template so that autosave can start
-		await editorControl.loadImageOrTemplate('', '{}');
+		await editorControl.loadImageOrTemplate('', '{}', undefined);
 
 		expect(calledAutosaveCount).toBe(0);
 

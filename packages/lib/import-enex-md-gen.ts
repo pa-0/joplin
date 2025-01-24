@@ -4,7 +4,7 @@ import { htmlentities } from '@joplin/utils/html';
 const stringPadding = require('string-padding');
 const stringToStream = require('string-to-stream');
 const resourceUtils = require('./resourceUtils.js');
-const cssParser = require('css');
+const cssParser = require('@adobe/css-tools');
 
 const BLOCK_OPEN = '[[BLOCK_OPEN]]';
 const BLOCK_CLOSE = '[[BLOCK_CLOSE]]';
@@ -25,6 +25,7 @@ enum SectionType {
 interface Section {
 	type: SectionType;
 	parent: Section;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	lines: any[];
 	isHeader?: boolean;
 }
@@ -54,11 +55,11 @@ interface ParserState {
 	inPre: boolean;
 	inQuote: boolean;
 	lists: ParserStateList[];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	anchorAttributes: any[];
 	spanAttributes: string[];
 	tags: ParserStateTag[];
 	currentCode?: string;
-	evernoteLinkTitles: Record<string, string>;
 }
 
 
@@ -304,8 +305,8 @@ function isWhiteSpace(c: string): boolean {
 	return c === '\n' || c === '\r' || c === '\v' || c === '\f' || c === '\t' || c === ' ';
 }
 
-// Like QString::simpified(), except that it preserves non-breaking spaces (which
-// Evernote uses for identation, etc.)
+// Like QString::simplified(), except that it preserves non-breaking spaces (which
+// Evernote uses for indentation, etc.)
 function simplifyString(s: string): string {
 	let output = '';
 	let previousWhite = false;
@@ -326,6 +327,7 @@ function simplifyString(s: string): string {
 	return output;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function collapseWhiteSpaceAndAppend(lines: string[], state: any, text: string) {
 	if (state.inCode.length) {
 		lines.push(text);
@@ -455,8 +457,10 @@ function isNewLineBlock(s: string) {
 	return s === BLOCK_OPEN || s === BLOCK_CLOSE;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function attributeToLowerCase(node: any) {
 	if (!node.attributes) return {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const output: any = {};
 	for (const n in node.attributes) {
 		if (!node.attributes.hasOwnProperty(n)) continue;
@@ -465,6 +469,7 @@ function attributeToLowerCase(node: any) {
 	return output;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function cssValue(context: any, style: string, propName: string | string[]): string {
 	if (!style) return null;
 
@@ -475,6 +480,7 @@ function cssValue(context: any, style: string, propName: string | string[]): str
 		if (!o.stylesheet.rules.length) return null;
 
 		for (const propName of propNames) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			const prop = o.stylesheet.rules[0].declarations.find((d: any) => d.property.toLowerCase() === propName);
 			if (prop && prop.value) return prop.value.trim().toLowerCase();
 		}
@@ -486,6 +492,7 @@ function cssValue(context: any, style: string, propName: string | string[]): str
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isInvisibleBlock(context: any, attributes: any) {
 	const display = cssValue(context, attributes.style, 'display');
 	return display && display.indexOf('none') === 0;
@@ -505,6 +512,7 @@ function trimBlockOpenAndClose(lines: string[]): string[] {
 	return output;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isSpanWithStyle(attributes: any) {
 	if (attributes) {
 		if ('style' in attributes) {
@@ -516,6 +524,7 @@ function isSpanWithStyle(attributes: any) {
 	return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isSpanStyleBold(attributes: any) {
 	let style = attributes.style;
 	if (!style) return false;
@@ -530,12 +539,14 @@ function isSpanStyleBold(attributes: any) {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isSpanStyleItalic(attributes: any) {
 	let style = attributes.style;
 	style = style.replace(/\s+/g, '');
 	return (style.toLowerCase().includes('font-style:italic'));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function displaySaxWarning(context: any, message: string) {
 	const line = [];
 	const parser = context ? context._parser : null;
@@ -546,6 +557,7 @@ function displaySaxWarning(context: any, message: string) {
 	console.warn(line.join(': '));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isCodeBlock(context: any, nodeName: string, attributes: any) {
 	if (nodeName === 'code') return true;
 
@@ -565,6 +577,7 @@ function isCodeBlock(context: any, nodeName: string, attributes: any) {
 	return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function isHighlight(context: any, _nodeName: string, attributes: any) {
 	if (attributes && attributes.style) {
 		// Evernote uses various inconsistent CSS prefixes: so far I've found
@@ -587,6 +600,7 @@ function isHighlight(context: any, _nodeName: string, attributes: any) {
 	return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: ExtractedTask[]): Promise<EnexXmlToMdArrayResult> {
 	const remainingResources = resources.slice();
 
@@ -608,7 +622,6 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 			anchorAttributes: [],
 			spanAttributes: [],
 			tags: [],
-			evernoteLinkTitles: {},
 		};
 
 		const options = {};
@@ -621,6 +634,7 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 			parent: null,
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		saxStream.on('error', (e: any) => {
 			console.warn(e);
 		});
@@ -662,6 +676,7 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 			section.lines = collapseWhiteSpaceAndAppend(section.lines, state, text);
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		saxStream.on('opentag', function(node: any) {
 			const nodeAttributes = attributeToLowerCase(node);
 			const n = node.name.toLowerCase();
@@ -907,7 +922,7 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 					//	<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export2.dtd">
 					//	<en-export export-date="20161221T203133Z" application="Evernote/Windows" version="6.x">
 					//		<note>
-					//			<title>Commande</title>
+					//			<title>Command</title>
 					//			<content>
 					//				<![CDATA[
 					//					<?xml version="1.0" encoding="UTF-8"?>
@@ -953,7 +968,7 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 				}
 
 				// If the resource does not appear among the note's resources, it
-				// means it's an attachement. It will be appended along with the
+				// means it's an attachment. It will be appended along with the
 				// other remaining resources at the bottom of the markdown text.
 				if (resource && !!resource.id) {
 					section.lines = addResourceTag(section.lines, `:/${resource.id}`, resource.mime, {
@@ -1082,7 +1097,7 @@ function enexXmlToMdArray(stream: any, resources: ResourceEntity[], tasks: Extra
 					// it's interactive bits) and it's not user-generated content such as a URL that would appear in a comment.
 					// So in this case, we still want to preserve the information but display it in a discreet way as a simple [L].
 
-					// Need to pop everything inside the current [] because it can only be special chars that we don't want (they would create uncessary newlines)
+					// Need to pop everything inside the current [] because it can only be special chars that we don't want (they would create unnecessary newlines)
 					for (let i = section.lines.length - 1; i >= 0; i--) {
 						if (section.lines[i] !== '[') {
 							section.lines.pop();
@@ -1264,6 +1279,7 @@ function drawTable(table: Section) {
 			if (flatRender) {
 				line.push(BLOCK_OPEN);
 
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				let currentCells: any[] = [];
 
 				const renderCurrentCells = () => {
@@ -1345,6 +1361,7 @@ function drawTable(table: Section) {
 	lines.push(BLOCK_CLOSE);
 
 	if (caption) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const captionLines: any[] = renderLines(caption.lines);
 		lines = lines.concat(captionLines);
 	}
@@ -1406,6 +1423,7 @@ function postProcessMarkdown(lines: string[]) {
 
 // A "line" can be some Markdown text, or it can be a section, like a table,
 // etc. so this function returns an array of strings.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function renderLine(line: any) {
 	if (typeof line === 'object' && line.type === 'table') {
 		// A table
@@ -1436,6 +1454,7 @@ function renderLine(line: any) {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 function renderLines(lines: any[]) {
 	let mdLines: string[] = [];
 	for (let i = 0; i < lines.length; i++) {

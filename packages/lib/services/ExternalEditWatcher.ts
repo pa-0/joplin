@@ -17,9 +17,13 @@ export default class ExternalEditWatcher {
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	private bridge_: Function;
 	private logger_: Logger = new Logger();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private watcher_: any = null;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private eventEmitter_: any = new EventEmitter();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private skipNextChangeEvent_: any = {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private chokidar_: any = chokidar;
 
 	private static instance_: ExternalEditWatcher;
@@ -44,13 +48,16 @@ export default class ExternalEditWatcher {
 		};
 
 		return {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			openAndWatch: async (args: any) => {
 				const note = await loadNote(args.noteId);
 				return this.openAndWatch(note);
 			},
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			stopWatching: async (args: any) => {
 				return this.stopWatching(args.noteId);
 			},
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			noteIsWatched: async (args: any) => {
 				const note = await loadNote(args.noteId);
 				return this.noteIsWatched(note);
@@ -152,16 +159,6 @@ export default class ExternalEditWatcher {
 					this.logger().error('ExternalEditWatcher: error');
 				}
 			});
-			// Hack to support external watcher on some linux applications (gedit, gvim, etc)
-			// taken from https://github.com/paulmillr/chokidar/issues/591
-			this.watcher_.on('raw', async (event: string, _path: string, options: any) => {
-				const watchedPath: string = options.watchedPath;
-				this.logger().debug(`ExternalEditWatcher: Raw event: ${event}: ${watchedPath}`);
-				if (event === 'rename') {
-					this.watcher_.unwatch(watchedPath);
-					this.watcher_.add(watchedPath);
-				}
-			});
 		} else {
 			this.watcher_.add(fileToWatch);
 		}
@@ -174,6 +171,7 @@ export default class ExternalEditWatcher {
 	}
 
 	private noteFilePathToId_(path: string) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		let id: any = toSystemSlashes(path, 'linux').split('/');
 		if (!id.length) throw new Error(`Invalid path: ${path}`);
 		id = id[id.length - 1];

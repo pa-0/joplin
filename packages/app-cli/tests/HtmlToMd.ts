@@ -22,6 +22,7 @@ describe('HtmlToMd', () => {
 
 			// if (htmlFilename.indexOf('image_preserve_size') !== 0) continue;
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 			const htmlToMdOptions: any = {};
 
 			if (htmlFilename === 'anchor_local.html') {
@@ -38,6 +39,10 @@ describe('HtmlToMd', () => {
 
 			if (htmlFilename.indexOf('preserve_nested_tables') === 0) {
 				htmlToMdOptions.preserveNestedTables = true;
+			}
+
+			if (htmlFilename.indexOf('text_color') === 0) {
+				htmlToMdOptions.preserveColorStyles = true;
 			}
 
 			const html = await readFile(htmlPath, 'utf8');

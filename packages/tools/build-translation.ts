@@ -53,6 +53,7 @@ async function createPotFile(potFilePath: string) {
 		'./packages/app-desktop/dist/*',
 		'./packages/app-desktop/gui/note-viewer/pluginAssets/*',
 		'./packages/app-desktop/gui/style/*',
+		'./packages/app-desktop/integration-tests/*',
 		'./packages/app-desktop/lib/*',
 		'./packages/app-desktop/pluginAssets/*',
 		'./packages/app-desktop/tools/*',
@@ -61,6 +62,8 @@ async function createPotFile(potFilePath: string) {
 		'./packages/app-mobile/ios/*',
 		'./packages/app-mobile/pluginAssets/*',
 		'./packages/app-mobile/tools/*',
+		'./packages/default-plugins/plugin-sources/*',
+		'./packages/doc-builder/build/*',
 		'./packages/fork-*/*',
 		'./packages/lib/rnInjectedJs/*',
 		'./packages/lib/vendor/*',
@@ -79,7 +82,7 @@ async function createPotFile(potFilePath: string) {
 
 	// Further filter files - in particular remove some specific files and
 	// extensions we don't need. Also, when there's two file with the same
-	// basename, such as "exmaple.js", and "example.ts", we only keep the file
+	// basename, such as "example.js", and "example.ts", we only keep the file
 	// with ".ts" extension (since the .js should be the compiled file).
 
 	const toProcess: Record<string, string> = {};

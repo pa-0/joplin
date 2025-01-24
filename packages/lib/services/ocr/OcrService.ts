@@ -1,4 +1,4 @@
-import { toIso639 } from '../../locale';
+import { toIso639Alpha3 } from '../../locale';
 import Resource from '../../models/Resource';
 import Setting from '../../models/Setting';
 import shim from '../../shim';
@@ -32,6 +32,7 @@ export default class OcrService {
 
 	private driver_: OcrDriverBase;
 	private isRunningInBackground_ = false;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private maintenanceTimer_: any = null;
 	private pdfExtractDir_: string = null;
 	private isProcessingResources_ = false;
@@ -62,6 +63,17 @@ export default class OcrService {
 		const resourceFilePath = Resource.fullPath(resource);
 
 		if (resource.mime === 'application/pdf') {
+			// OCR can be slow for large PDFs.
+			// Skip it if the PDF already includes text.
+			const pageTexts = await shim.pdfExtractEmbeddedText(resourceFilePath);
+			const pagesWithText = pageTexts.filter(text => !!text.trim().length);
+
+			if (pagesWithText.length > 0) {
+				return {
+					text: pageTexts.join('\n'),
+				};
+			}
+
 			const imageFilePaths = await shim.pdfToImages(resourceFilePath, await this.pdfExtractDir());
 			const results: RecognizeResult[] = [];
 
@@ -123,7 +135,7 @@ export default class OcrService {
 					const result = await this.recognize(language, resource);
 					toSave.ocr_status = ResourceOcrStatus.Done;
 					toSave.ocr_text = filterOcrText(result.text);
-					toSave.ocr_details = Resource.serializeOcrDetails(result.lines),
+					toSave.ocr_details = Resource.serializeOcrDetails(result.lines);
 					toSave.ocr_error = '';
 				} catch (error) {
 					const errorMessage = typeof error === 'string' ? error : error?.message;
@@ -139,7 +151,7 @@ export default class OcrService {
 		};
 
 		try {
-			const language = toIso639(Setting.value('locale'));
+			const language = toIso639Alpha3(Setting.value('locale'));
 
 			let totalProcessed = 0;
 

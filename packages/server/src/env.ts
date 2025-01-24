@@ -22,6 +22,7 @@ const defaultEnvValues: EnvVariables = {
 	ERROR_STACK_TRACES: false,
 	COOKIES_SECURE: false,
 	RUNNING_IN_DOCKER: false,
+	HEARTBEAT_MESSAGE_SCHEDULE: '* * * * *',
 
 	// The admin panel is accessible only if this is an admin instance.
 	// Additionally, processing services (those defined in setupTaskService.ts)
@@ -29,7 +30,7 @@ const defaultEnvValues: EnvVariables = {
 	IS_ADMIN_INSTANCE: true,
 	INSTANCE_NAME: '',
 
-	// Maxiumm allowed drift between NTP time and server time. A few
+	// Maximum allowed drift between NTP time and server time. A few
 	// milliseconds is normally not an issue unless many clients are modifying
 	// the same note at the exact same time. But past a certain limit, it might
 	// mean the server clock is incorrect and should be fixed, as that could
@@ -59,6 +60,7 @@ const defaultEnvValues: EnvVariables = {
 	DB_SLOW_QUERY_LOG_MIN_DURATION: 1000,
 	DB_AUTO_MIGRATION: true,
 	DB_ALLOW_INCOMPLETE_MIGRATIONS: false,
+	DB_USE_SLAVE: false,
 
 	POSTGRES_PASSWORD: 'joplin',
 	POSTGRES_DATABASE: 'joplin',
@@ -67,8 +69,16 @@ const defaultEnvValues: EnvVariables = {
 	POSTGRES_PORT: 5432,
 	POSTGRES_CONNECTION_STRING: '',
 
+	SLAVE_POSTGRES_PASSWORD: 'joplin',
+	SLAVE_POSTGRES_DATABASE: 'joplin',
+	SLAVE_POSTGRES_USER: 'joplin',
+	SLAVE_POSTGRES_HOST: '',
+	SLAVE_POSTGRES_PORT: 5432,
+	SLAVE_POSTGRES_CONNECTION_STRING: '',
+
 	// This must be the full path to the database file
 	SQLITE_DATABASE: '',
+	SLAVE_SQLITE_DATABASE: '',
 
 	// ==================================================
 	// Content driver config
@@ -109,6 +119,13 @@ const defaultEnvValues: EnvVariables = {
 	USER_DATA_AUTO_DELETE_AFTER_DAYS: 90,
 
 	// ==================================================
+	// Events deletion
+	// ==================================================
+
+	EVENTS_AUTO_DELETE_ENABLED: false,
+	EVENTS_AUTO_DELETE_AFTER_DAYS: 30,
+
+	// ==================================================
 	// LDAP configuration
 	// ==================================================
 
@@ -120,6 +137,7 @@ const defaultEnvValues: EnvVariables = {
 	LDAP_1_BASE_DN: '',
 	LDAP_1_BIND_DN: '', // used for user search - leave empty if ldap server allows anonymous bind
 	LDAP_1_BIND_PW: '', // used for user search - leave empty if ldap server allows anonymous bind
+	LDAP_1_TLS_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
 
 	LDAP_2_ENABLED: false,
 	LDAP_2_USER_AUTO_CREATION: true, // if set to true, users will be created on the fly after ldap authentication
@@ -129,6 +147,7 @@ const defaultEnvValues: EnvVariables = {
 	LDAP_2_BASE_DN: '',
 	LDAP_2_BIND_DN: '', // used for user search - leave empty if ldap server allows anonymous bind
 	LDAP_2_BIND_PW: '', // used for user search - leave empty if ldap server allows anonymous bind
+	LDAP_2_TLS_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
 
 };
 
@@ -141,6 +160,8 @@ export interface EnvVariables {
 	ERROR_STACK_TRACES: boolean;
 	COOKIES_SECURE: boolean;
 	RUNNING_IN_DOCKER: boolean;
+	HEARTBEAT_MESSAGE_SCHEDULE: string;
+
 	MAX_TIME_DRIFT: number;
 	NTP_SERVER: string;
 	DELTA_INCLUDES_ITEMS: boolean;
@@ -157,6 +178,7 @@ export interface EnvVariables {
 	DB_SLOW_QUERY_LOG_MIN_DURATION: number;
 	DB_AUTO_MIGRATION: boolean;
 	DB_ALLOW_INCOMPLETE_MIGRATIONS: boolean;
+	DB_USE_SLAVE: boolean;
 
 	POSTGRES_PASSWORD: string;
 	POSTGRES_DATABASE: string;
@@ -165,7 +187,15 @@ export interface EnvVariables {
 	POSTGRES_PORT: number;
 	POSTGRES_CONNECTION_STRING: string;
 
+	SLAVE_POSTGRES_PASSWORD: string;
+	SLAVE_POSTGRES_DATABASE: string;
+	SLAVE_POSTGRES_USER: string;
+	SLAVE_POSTGRES_HOST: string;
+	SLAVE_POSTGRES_PORT: number;
+	SLAVE_POSTGRES_CONNECTION_STRING: string;
+
 	SQLITE_DATABASE: string;
+	SLAVE_SQLITE_DATABASE: string;
 
 	STORAGE_DRIVER: string;
 	STORAGE_DRIVER_FALLBACK: string;
@@ -189,6 +219,9 @@ export interface EnvVariables {
 	USER_DATA_AUTO_DELETE_ENABLED: boolean;
 	USER_DATA_AUTO_DELETE_AFTER_DAYS: number;
 
+	EVENTS_AUTO_DELETE_ENABLED: boolean;
+	EVENTS_AUTO_DELETE_AFTER_DAYS: number;
+
 	LDAP_1_ENABLED: boolean;
 	LDAP_1_USER_AUTO_CREATION: boolean;
 	LDAP_1_HOST: string;
@@ -197,6 +230,7 @@ export interface EnvVariables {
 	LDAP_1_BASE_DN: string;
 	LDAP_1_BIND_DN: string;
 	LDAP_1_BIND_PW: string;
+	LDAP_1_TLS_CA_FILE: string;
 
 	LDAP_2_ENABLED: boolean;
 	LDAP_2_USER_AUTO_CREATION: boolean;
@@ -206,6 +240,7 @@ export interface EnvVariables {
 	LDAP_2_BASE_DN: string;
 	LDAP_2_BIND_DN: string;
 	LDAP_2_BIND_PW: string;
+	LDAP_2_TLS_CA_FILE: string;
 }
 
 const parseBoolean = (s: string): boolean => {
@@ -214,6 +249,7 @@ const parseBoolean = (s: string): boolean => {
 	throw new Error(`Invalid boolean value: "${s}" (Must be one of "true", "false", "0, "1")`);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 export function parseEnv(rawEnv: Record<string, string>, defaultOverrides: any = null): EnvVariables {
 	const output: EnvVariables = {
 		...defaultEnvValues,
@@ -229,10 +265,13 @@ export function parseEnv(rawEnv: Record<string, string>, defaultOverrides: any =
 			if (typeof value === 'number') {
 				const v = Number(rawEnvValue);
 				if (isNaN(v)) throw new Error(`Invalid number value "${rawEnvValue}"`);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				(output as any)[key] = v;
 			} else if (typeof value === 'boolean') {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				(output as any)[key] = parseBoolean(rawEnvValue);
 			} else if (typeof value === 'string') {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 				(output as any)[key] = `${rawEnvValue}`;
 			} else {
 				throw new Error(`Invalid env default value type: ${typeof value}`);

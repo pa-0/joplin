@@ -2,20 +2,27 @@ import Logger from '@joplin/utils/Logger';
 import Setting from './models/Setting';
 import shim from './shim';
 import SyncTargetRegistry from './SyncTargetRegistry';
+import { AnyAction, Dispatch } from 'redux';
 
 class Registry {
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private syncTargets_: any = {};
 	private logger_: Logger = null;
 	private schedSyncCalls_: boolean[] = [];
 	private waitForReSyncCalls_: boolean[] = [];
 	private setupRecurrentCalls_: boolean[] = [];
 	private timerCallbackCalls_: boolean[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private showErrorMessageBoxHandler_: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private scheduleSyncId_: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private recurrentSyncId_: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private db_: any;
 	private isOnMobileData_ = false;
+	private dispatch_: Dispatch = (() => {}) as Dispatch;
 
 	public logger() {
 		if (!this.logger_) {
@@ -30,6 +37,7 @@ class Registry {
 		this.logger_ = l;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public setShowErrorMessageBoxHandler(v: any) {
 		this.showErrorMessageBoxHandler_ = v;
 	}
@@ -37,6 +45,14 @@ class Registry {
 	public showErrorMessageBox(message: string) {
 		if (!this.showErrorMessageBoxHandler_) return;
 		this.showErrorMessageBoxHandler_(message);
+	}
+
+	public setDispatch(dispatch: Dispatch) {
+		this.dispatch_ = dispatch;
+	}
+
+	private dispatch(action: AnyAction) {
+		return this.dispatch_(action);
 	}
 
 	// If isOnMobileData is true, the doWifiConnectionCheck is not set
@@ -86,6 +102,7 @@ class Registry {
 		}
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public scheduleSync = async (delay: number = null, syncOptions: any = null, doWifiConnectionCheck = false) => {
 		this.schedSyncCalls_.push(true);
 
@@ -132,10 +149,18 @@ class Registry {
 					}
 
 					if (!(await this.syncTarget(syncTargetId).isAuthenticated())) {
+						this.dispatch({
+							type: 'MUST_AUTHENTICATE',
+							value: true,
+						});
 						this.logger().info('Synchroniser is missing credentials - manual sync required to authenticate.');
 						promiseResolve();
 						return;
 					}
+					this.dispatch({
+						type: 'MUST_AUTHENTICATE',
+						value: false,
+					});
 
 					try {
 						const sync = await this.syncTarget(syncTargetId).synchronizer();
@@ -157,6 +182,7 @@ class Registry {
 							this.logger().info('Starting scheduled sync');
 							const options = { ...syncOptions, context: context };
 							if (!options.saveContextHandler) {
+								// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 								options.saveContextHandler = (newContext: any) => {
 									Setting.setValue(contextKey, JSON.stringify(newContext));
 								};
@@ -224,6 +250,7 @@ class Registry {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public setDb = (v: any) => {
 		this.db_ = v;
 	};

@@ -1,19 +1,13 @@
-import { createNoteAndResource, ocrSampleDir, resourceFetcher, setupDatabaseAndSynchronizer, supportDir, switchClient, synchronizerStart } from '../../testing/test-utils';
-import OcrDriverTesseract from './drivers/OcrDriverTesseract';
-import OcrService from './OcrService';
+import { createNoteAndResource, newOcrService, ocrSampleDir, resourceFetcher, setupDatabaseAndSynchronizer, supportDir, switchClient, synchronizerStart } from '../../testing/test-utils';
 import { supportedMimeTypes } from './OcrService';
-import { createWorker } from 'tesseract.js';
 import Resource from '../../models/Resource';
 import { ResourceEntity, ResourceOcrStatus } from '../database/types';
 import { msleep } from '@joplin/utils/time';
 import Logger from '@joplin/utils/Logger';
 
-const newService = () => {
-	const driver = new OcrDriverTesseract({ createWorker });
-	return new OcrService(driver);
-};
-
 describe('OcrService', () => {
+
+	jest.retryTimes(2);
 
 	beforeEach(async () => {
 		await setupDatabaseAndSynchronizer(1);
@@ -31,7 +25,7 @@ describe('OcrService', () => {
 
 		expect(await Resource.needOcrCount(supportedMimeTypes)).toBe(3);
 
-		const service = newService();
+		const service = newOcrService();
 		await service.processResources();
 
 		const expectedText = 'This is a lot of 12 point text to test the\n' +
@@ -83,17 +77,27 @@ describe('OcrService', () => {
 		expect(processedResource2.updated_time).toBeGreaterThan(resource2.updated_time);
 
 		await service.dispose();
-	});
 
-	it('should process PDF resources', async () => {
-		const { resource } = await createNoteAndResource({ path: `${ocrSampleDir}/dummy.pdf` });
+		// On CI these tests can randomly throw the error "Exceeded timeout of
+		// 90000 ms for a test.". So for now increase the timeout and if that's
+		// not sufficient it means the test is simply stuck, and we should use
+		// `jest.retryTimes(2)`
+	}, 60000 * 5);
 
-		const service = newService();
+	test.each([
+		// Use embedded text (skip OCR)
+		['dummy.pdf', 'Dummy PDF file'],
+		['multi_page__embedded_text.pdf', 'This is a test.\nTesting...\nThis PDF has 3 pages.\nThis is page 3.'],
+		['multi_page__no_embedded_text.pdf', 'This is a multi-page PDF\nwith no embedded text.\nPage 2: more text.\nThe third page.'],
+	])('should process PDF resources', async (samplePath: string, expectedText: string) => {
+		const { resource } = await createNoteAndResource({ path: `${ocrSampleDir}/${samplePath}` });
+
+		const service = newOcrService();
 
 		await service.processResources();
 
 		const processedResource: ResourceEntity = await Resource.load(resource.id);
-		expect(processedResource.ocr_text).toBe('Dummy PDF file');
+		expect(processedResource.ocr_text).toBe(expectedText);
 		expect(processedResource.ocr_status).toBe(ResourceOcrStatus.Done);
 		expect(processedResource.ocr_error).toBe('');
 
@@ -111,7 +115,7 @@ describe('OcrService', () => {
 
 		await msleep(1);
 
-		const service = newService();
+		const service = newOcrService();
 
 		await service.processResources();
 
@@ -157,9 +161,9 @@ describe('OcrService', () => {
 			fetch_error: 'cannot be downloaded',
 		});
 
-		const service = newService();
+		const service = newOcrService();
 
-		// The service will print a warnign so we disable it in tests
+		// The service will print a warning so we disable it in tests
 		Logger.globalLogger.enabled = false;
 		await service.processResources();
 		Logger.globalLogger.enabled = true;
@@ -196,7 +200,7 @@ describe('OcrService', () => {
 	it('should handle conflicts if two clients process the same resource then sync', async () => {
 		await createNoteAndResource({ path: `${ocrSampleDir}/dummy.pdf` });
 
-		const service1 = newService();
+		const service1 = newOcrService();
 		await synchronizerStart();
 		await service1.processResources();
 
@@ -205,10 +209,10 @@ describe('OcrService', () => {
 		await synchronizerStart();
 		await msleep(1);
 		await resourceFetcher().startAndWait();
-		const service2 = newService();
+		const service2 = newOcrService();
 		await service2.processResources();
 		await synchronizerStart();
-		const expectedResouceUpatedTime = (await Resource.all())[0].updated_time;
+		const expectedResourceUpdatedTime = (await Resource.all())[0].updated_time;
 
 		await switchClient(1);
 
@@ -224,7 +228,7 @@ describe('OcrService', () => {
 			expect(resource.ocr_text).toBe('Dummy PDF file');
 			expect(resource.ocr_error).toBe('');
 			expect(resource.ocr_status).toBe(ResourceOcrStatus.Done);
-			expect(resource.updated_time).toBe(expectedResouceUpatedTime);
+			expect(resource.updated_time).toBe(expectedResourceUpdatedTime);
 		}
 
 		await service1.dispose();
@@ -236,7 +240,7 @@ describe('OcrService', () => {
 	// it('should process resources 2', async () => {
 	// 	await createNoteAndResource({ path: `${require('os').homedir()}/Desktop/AllClients.png` });
 
-	// 	const service = newService();
+	// 	const service = newOcrService();
 	// 	await service.processResources();
 
 	// 	console.info(await Resource.all());

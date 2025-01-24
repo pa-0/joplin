@@ -36,7 +36,7 @@ export async function setupAndEnableEncryption(service: EncryptionService, maste
 
 export async function setupAndDisableEncryption(service: EncryptionService) {
 	// Allow disabling encryption even if some items are still encrypted, because whether E2EE is enabled or disabled
-	// should not affect whether items will enventually be decrypted or not (DecryptionWorker will still work as
+	// should not affect whether items will eventually be decrypted or not (DecryptionWorker will still work as
 	// long as there are encrypted items). Also even if decryption is disabled, it's possible that encrypted items
 	// will still be received via synchronisation.
 
@@ -113,7 +113,7 @@ export async function migrateMasterPassword() {
 	}
 }
 
-// All master keys normally should be decryped with the master password, however
+// All master keys normally should be decrypted with the master password, however
 // previously any master key could be encrypted with any password, so to support
 // this legacy case, we first check if the MK decrypts with the master password.
 // If not, try with the master key specific password, if any is defined.
@@ -142,14 +142,10 @@ export async function loadMasterKeysFromSettings(service: EncryptionService) {
 		const mk = masterKeys[i];
 		if (service.isMasterKeyLoaded(mk)) continue;
 
-		const password = await findMasterKeyPassword(service, mk);
-		if (!password) continue;
-
-		try {
-			await service.loadMasterKey(mk, password, activeMasterKeyId === mk.id);
-		} catch (error) {
-			logger.warn(`Cannot load master key ${mk.id}. Invalid password?`, error);
-		}
+		await service.loadMasterKey(mk, async () => {
+			const password = await findMasterKeyPassword(service, mk);
+			return password;
+		}, activeMasterKeyId === mk.id);
 	}
 
 	logger.info(`Loaded master keys: ${service.loadedMasterKeysCount()}`);

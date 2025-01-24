@@ -4,7 +4,7 @@
 
 ### Importing from Evernote
 
-Joplin was designed as a replacement for Evernote and so can import complete Evernote notebooks, as well as notes, tags, resources (attached files) and note metadata (such as author, geo-location, etc.) via ENEX files. In terms of data, the only two things that might slightly differ are:
+Joplin can import complete Evernote notebooks, as well as notes, tags, resources (attached files) and note metadata (such as author, geo-location, etc.) via ENEX files. In terms of data, the only two things that might slightly differ are:
 
 - Recognition data - Evernote images, in particular scanned (or photographed) documents have [recognition data](https://en.wikipedia.org/wiki/Optical_character_recognition) associated with them. It is the text that Evernote has been able to recognise in the document. This data is not preserved when the note are imported into Joplin. However, if you have enabled OCR in Joplin, that recognition data will be recreated in a format compatible with Joplin.
 
@@ -18,6 +18,12 @@ In the **desktop application**, open File > Import > ENEX and select your file. 
 
 In the **terminal application**, in [command-line mode](https://github.com/laurent22/joplin/blob/dev/readme/apps/terminal.md#command-line-mode), type `import /path/to/file.enex`. This will import the notes into a new notebook named after the filename.
 
+In both cases you can either import a single file or a directory that contains multiple ENEX files.
+
+- If you import a single file, a notebook with the same name will be created, and all notes will be imported in this notebook.
+
+- If you import a directory, Joplin will create a notebook per file and import the notes into them.
+
 ### Importing from Markdown files
 
 Joplin can import notes from plain Markdown file. You can either import a complete directory of Markdown files or individual files.
@@ -30,6 +36,15 @@ In the **desktop application**:
 In the **terminal application**, in [command-line mode](https://github.com/laurent22/joplin/blob/dev/readme/apps/terminal.md#command-line-mode):
 
 Type `import --format md /path/to/file.md` or `import --format md /path/to/directory/`.
+
+### Importing from OneNote
+
+Joplin can also import OneNote notebooks. To do this:
+
+- Visit [OneNote Web](https://www.onenote.com/notebooks). 
+- Right-click the desired notebook and choose *Export notebook*.
+- Follow the instructions to download the backup. It should be a ZIP file.
+- Open the **desktop application** and go to File > Import > ZIP - OneNote Notebook, and select the exported file.
 
 ### Importing from other applications
 

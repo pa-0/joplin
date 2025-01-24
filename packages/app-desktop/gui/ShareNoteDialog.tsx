@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../app.reducer';
 import { getEncryptionEnabled } from '@joplin/lib/services/synchronizer/syncInfoUtils';
 import SyncTargetRegistry from '@joplin/lib/SyncTargetRegistry';
+import shim from '@joplin/lib/shim';
 const { clipboard } = require('electron');
 
 interface Props {
@@ -28,7 +29,7 @@ interface Props {
 }
 
 function styles_(props: Props) {
-	return buildStyle('ShareNoteDialog', props.themeId, (theme: any) => {
+	return buildStyle('ShareNoteDialog', props.themeId, theme => {
 		return {
 			root: {
 				minWidth: 500,
@@ -146,13 +147,14 @@ export function ShareNoteDialog(props: Props) {
 				reg.logger().error('ShareNoteDialog: Cannot publish note:', error);
 
 				setSharesState('idle');
-				alert(JoplinServerApi.connectionErrorMessage(error));
+				void shim.showErrorDialog(JoplinServerApi.connectionErrorMessage(error));
 			}
 
 			break;
 		}
 	}, [recursiveShare, notes]);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const unshareNoteButton_click = async (event: any) => {
 		await ShareService.instance().unshareNote(event.noteId);
 		await ShareService.instance().refreshShares();
@@ -170,6 +172,7 @@ export function ShareNoteDialog(props: Props) {
 		);
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const renderNoteList = (notes: any) => {
 		const noteComps = [];
 		for (const note of notes) {
@@ -224,7 +227,7 @@ export function ShareNoteDialog(props: Props) {
 	};
 
 	return (
-		<Dialog renderContent={renderContent}/>
+		<Dialog>{renderContent()}</Dialog>
 	);
 }
 
